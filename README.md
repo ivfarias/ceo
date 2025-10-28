@@ -1,6 +1,43 @@
-# Getting Started with Codex
+# CEO-led Orchestration System
 
-Welcome to Codex! This guide will walk you through setting up your AI agent team to help you with your project. Think of it as hiring and training a team of digital experts who are tailored to your specific needs.
+Welcome to the CEO-led Orchestration System, a framework for building, managing, and directing your own team of specialized AI agents. This system puts you in the driver's seat, acting as the CEO to orchestrate complex tasks and projects with AI assistance that is tailored *specifically* to your needs.
+
+## Why Does This Exist?
+
+Artificial intelligence has opened a door for anyone, especially **non-technical creators**, to bring their ideas to life. For the first time, you don't need to be a professional coder to build an application. However, anyone who has tried to build a project using AI alone (sometimes called "vibe coding") often runs into a wall. The process is plagued with common frustrations:
+
+* **Inconsistent Outputs:** The AI's style and quality change from one prompt to the next.
+* **Context Limitations:** The AI quickly forgets key details about your project, leading to bugs and nonsensical suggestions.
+* **Lack of Structure:** A long chat history is a poor substitute for a structured project plan, making it impossible to manage complexity.
+* **Degrading Quality:** Without a clear framework, the initial burst of progress quickly devolves into a messy, unmaintainable codebase.
+
+This system was created specifically to solve these problems. It provides the structure and methodology that are missing from unstructured "AI coding." It establishes a clear, repeatable process that helps you maintain consistency and quality, turning the chaos of vibe coding into a focused, managed workflow.
+
+While it's designed to empower non-technical users, it also serves as an excellent foundation for experienced developers who want to integrate AI into their workflow to handle the heavy lifting and accelerate their projects.
+
+## What Does It Do?
+
+This repository provides a structured set of templates for creating a team of AI agents with distinct roles and capabilities (e.g., Developer, Product Manager, QA, Marketer). The core of the system is the **CEO-led workflow**:
+
+1. **You are the CEO:** You initiate every task with a high-level goal.
+2. **You Delegate:** You *could* talk directly to specialist agents directly, but do it later, once you're familiar with the structure. At first, consult the main `CEO` agent, who helps you delegate the task to the correct specialist.
+3. **Specialists Execute:** Each specialist agent has a focused persona and a clear set of tasks it can perform, ensuring high-quality, context-aware results.
+
+This approach is highly efficient and gives you fine-grained control over the entire process, while still benefiting from the power of specialized AI assistants.
+
+## How and When Should You Use It?
+
+You should use this system when you want to go beyond simple one-shot prompts and bring structured AI assistance into your development or creative workflow. It's a template, not a plug-and-play product. Your first and most important job is to **train your team**.
+
+Think of the initial setup as an investment. You will teach the agents about your project's specific technologies, coding conventions, and goals. Once they are trained, you will have a powerful, customized AI team that can help you:
+
+* Brainstorm and spec out new features.
+* Write, review, and refactor code.
+* Generate documentation.
+* Create marketing strategies.
+* ...and much more.
+
+You are the CEO. This is your company. Let's get your team ready for work.
 
 ## How to Get Started: Training Your AI Team
 
@@ -10,8 +47,8 @@ The goal of this setup process is to teach your AI agents about your project. Yo
 
 Before you begin, you need to place the `.codex` directory (the one containing this guide) into the root folder of your own project.
 
-- **If your project does not have a `.codex` directory:** Simply copy or move this entire `.codex` folder into your project's main directory.
-- **If your project already has a `.codex` directory:** You will need to merge the contents. Copy all the files and folders from inside this `.codex` directory into your existing one. If any files have the same name, it is generally safe to overwrite them with the ones from this template.
+* **If your project does not have a `.codex` directory:** Simply copy or move this entire `.codex` folder into your project's main directory.
+* **If your project already has a `.codex` directory:** You will need to merge the contents. Copy all the files and folders from inside this `.codex` directory into your existing one. If any files have the same name, it is generally safe to overwrite them with the ones from this template.
 
 ### Step 1: Create a Project Snapshot
 
@@ -24,8 +61,8 @@ From your terminal, inside the `.codex` directory, run the following command:
 ./utils/flatten-project.sh ../project_flatten.txt ../
 ```
 
-- The first part (`../project_flatten.txt`) is the name of the output file that will be created.
-- The second part (`../`) tells the script to look for your project in the parent directory.
+* The first part (`../project_flatten.txt`) is the name of the output file that will be created.
+* The second part (`../`) tells the script to look for your project in the parent directory.
 
 This script is smart: it automatically ignores unnecessary files (like `node_modules`, `.git`, etc.) to create a clean, compact snapshot of your project for the AI to study.
 
@@ -38,16 +75,16 @@ Now you'll work with a special "Prepper" agent to configure the rest of your AI 
 1. **Start a new chat** on your chosen AI platform (e.g., Google AI Studio).
 
 2. **Upload the necessary files.** For the Prepper agent to do its job, it needs its instructions and its tools. Upload the following files:
-    - The agent's "brain": `.codex/agents/prepper.md`
-    - The project snapshot you created: `project_flatten.txt`
-    - Its task instructions:
-        - `.codex/tasks/analyze-project-context.yaml`
-        - `.codex/tasks/optimize-agent.yaml`
-        - `.codex/tasks/optimize-task.yaml`
-        - `.codex/tasks/optimize-checklist.yaml`
-    - Its templates and knowledge:
-        - `.codex/templates/project-analysis-tmpl.yaml`
-        - `.codex/data/optimization-best-practices.md`
+    * The agent's "brain": `.codex/agents/prepper.md`
+    * The project snapshot you created: `project_flatten.txt`
+    * Its task instructions:
+        * `.codex/tasks/analyze-project-context.yaml`
+        * `.codex/tasks/optimize-agent.yaml`
+        * `.codex/tasks/optimize-task.yaml`
+        * `.codex/tasks/optimize-checklist.yaml`
+    * Its templates and knowledge:
+        * `.codex/templates/project-analysis-tmpl.yaml`
+        * `.codex/data/optimization-best-practices.md`
 
 3. **Give the AI its first prompt.** Copy and paste the following into the chat:
 
@@ -108,10 +145,10 @@ This process is highly token-efficient and leads to better performance by giving
 
 ### The Components
 
-- **Agents (`.codex/agents/`):** These are the AI personas that perform the work (e.g., Developer, QA, PM).
-- **Tasks (`.codex/tasks/`):** These are structured workflows that agents can execute (e.g., `create-task.yaml`).
-- **Checklists (`.codex/checklists/`):** These are validation lists used by agents to ensure quality and completeness.
-- **Templates (`.codex/templates/`):** These are boilerplate structures for documents like PRDs, tasks, and reports.
-- **AGENTS.md:** Your go-to reference for a directory of all available agents and their roles.
+* **Agents (`.codex/agents/`):** These are the AI personas that perform the work (e.g., Developer, QA, PM).
+* **Tasks (`.codex/tasks/`):** These are structured workflows that agents can execute (e.g., `create-task.yaml`).
+* **Checklists (`.codex/checklists/`):** These are validation lists used by agents to ensure quality and completeness.
+* **Templates (`.codex/templates/`):** These are boilerplate structures for documents like PRDs, tasks, and reports.
+* **AGENTS.md:** Your go-to reference for a directory of all available agents and their roles.
 
 By following this model, you can leverage a team of specialized AI agents to build, test, and manage your project with greater efficiency and quality.
