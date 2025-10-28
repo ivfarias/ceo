@@ -1,0 +1,114 @@
+template:
+  id: prd-template-v4-lean
+  name: Lean Product Spec
+  version: 4.0
+  max_length: "1 page ideal, 2 pages max"
+  output:
+    format: markdown
+    filename: docs/specs/{{project_name}}-spec.md
+    title: "{{project_name}} — Product Spec"
+
+workflow:
+  mode: interactive
+  elicitation: minimal-elicitation
+  bias: "Favor clarity and brevity. Cut ruthlessly."
+
+sections:
+  - id: problem-solution
+    title: Problem & Solution
+    instruction: |
+      What problem are we solving and why does it matter?
+      Keep it to 2-3 sentences maximum.
+    sections:
+      - id: user_problem
+        title: User Problem
+        type: paragraph
+        max_length: "2-3 sentences"
+        instruction: "What specific pain point are users experiencing?"
+        validation_required: true
+
+      - id: solution
+        title: Proposed Solution
+        type: paragraph
+        max_length: "1-2 sentences"
+        instruction: "How will we solve it? (High-level only)"
+
+      - id: why_now
+        title: Why Now?
+        type: paragraph
+        max_length: "1 sentence"
+        instruction: "Why is this the right time to build this?"
+
+  - id: validation
+    title: Validation Evidence
+    instruction: |
+      How do we know users actually want this?
+      Evidence required: user interviews, data, market signals.
+    sections:
+      - id: evidence
+        title: Evidence
+        type: bullet-list
+        max_items: 3
+        instruction: "List evidence that validates this solves a real problem."
+        examples:
+          - "5/5 target users said they'd pay for this"
+          - "Current workaround costs users 2hrs/week"
+
+  - id: scope
+    title: What We're Building (v1)
+    instruction: "The absolute minimum to validate the hypothesis. What's IN scope?"
+    sections:
+      - id: must_have
+        title: Must Have
+        type: bullet-list
+        max_items: 5
+        instruction: "Core features only. If it's not critical for v1, cut it."
+
+      - id: explicitly_not_building
+        title: Explicitly NOT Building (v1)
+        type: bullet-list
+        instruction: "What are we cutting to ship fast?"
+
+  - id: success
+    title: Success Criteria
+    instruction: "How do we know if this is successful? What must be true?"
+    sections:
+      - id: criteria
+        title: Success Criteria
+        type: bullet-list
+        max_items: 5
+        instruction: "Clear, testable criteria that define success. Not metrics, but outcomes."
+        examples:
+          - "Users can complete the task without support"
+          - "Feature is used by target users within first week"
+          - "Solves the core problem (validated through user feedback)"
+          - "No critical bugs reported"
+          - "Performance meets requirements (< 2s load time)"
+
+  - id: tech-context
+    title: Tech Context
+    instruction: "Key technical details. Use context7 MCP to validate tech choices."
+    sections:
+      - id: stack
+        title: Stack
+        type: bullet-list
+        instruction: "Languages, frameworks, services (with version numbers)."
+        context7_required: true
+
+      - id: constraints
+        title: Technical Constraints
+        type: bullet-list
+        instruction: "Performance, security, compatibility requirements."
+        examples:
+          - "Must work on mobile"
+          - "Max 2s page load"
+
+  - id: next
+    title: Next Steps
+    instruction: "What happens after this spec is approved?"
+    sections:
+      - id: action
+        title: Immediate Actions
+        type: numbered-list
+        max_items: 3
+        instruction: "Concrete next steps to start building."

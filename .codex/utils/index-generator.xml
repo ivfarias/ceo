@@ -1,0 +1,179 @@
+<index_generator_spec model="gpt-5-codex" version="1.0">
+  <task title="Build .codex Indexes">
+    <description>
+      <![CDATA[
+      Build canonical index files under .codex/ for programmatic discovery of all agents, tasks,
+      checklists, templates, data, and workflows. Safe, idempotent, deterministic.
+      ]]>
+    </description>
+  </task>
+
+  <goal>
+    <item>Create or refresh canonical index files under .codex/ for programmatic discovery:</item>
+    <output>agents.index.yaml</output>
+    <output>tasks.index.yaml</output>
+    <output>checklists.index.yaml</output>
+    <output>templates.index.yaml</output>
+    <output>data.index.yaml</output>
+    <output>workflows.index.yaml (optional, inferred)</output>
+  </goal>
+
+  <scope_and_safety>
+    <rule>Read-only across repo except when writing .codex/*index.yaml and .codex/.backup/*.</rule>
+    <rule>Never modify agent/task/template source files directly.</rule>
+    <rule>Idempotent — rewrite only if new content differs byte-for-byte.</rule>
+    <rule>Before overwriting an existing index, create a backup in .codex/.backup/{filename}.{timestamp}.yaml.</rule>
+  </scope_and_safety>
+
+  <discovery_rules>
+    <root>.codex</root>
+    <categories>
+      <category name="agents">
+        <pattern>agents/*.md</pattern>
+      </category>
+      <category name="tasks">
+        <pattern>tasks/*.md</pattern>
+        <pattern>tasks/*.yaml</pattern>
+      </category>
+      <category name="checklists">
+        <pattern>checklists/*.md</pattern>
+        <pattern>checklists/*.yaml</pattern>
+      </category>
+      <category name="templates">
+        <pattern>templates/*.yaml</pattern>
+      </category>
+      <category name="data">
+        <pattern>data/**/*.*</pattern>
+      </category>
+      <category name="utils">
+        <pattern>utils/**/*.*</pattern>
+      </category>
+    </categories>
+    <notes>
+      <note>Use glob paths relative to .codex/.</note>
+      <note>Sort results case-insensitively by normalized path.</note>
+      <note>Paths must be repo-relative with forward slashes.</note>
+    </notes>
+  </discovery_rules>
+
+  <extraction_rules>
+    <agents>
+      <field name="id">
+        <rule>Prefer manifest field: agent.id</rule>
+        <fallback>Filename stem (kebab-case)</fallback>
+      </field>
+      <field name="name">
+        <rule>Prefer manifest field: agent.name</rule>
+        <fallback>Title Case of id</fallback>
+      </field>
+      <field name="description">
+        <rule>metadata.description or top-level description</rule>
+        <fallback>N/A</fallback>
+      </field>
+      <field name="modes">
+        <rule>modes keys at top-level</rule>
+        <fallback>["default"]</fallback>
+      </field>
+      <field name="model">
+        <rule>metadata.model</rule>
+        <fallback>orchestrator default if known</fallback>
+      </field>
+      <field name="path">repo-relative path (e.g., "agents/marketer.md")</field>
+    </agents>
+
+    <common_fields>
+      <field name="id">filename-stem (kebab-case)</field>
+      <field name="name">
+        <rule>first H1 in .md</rule>
+        <fallback>Title Case of id</fallback>
+      </field>
+      <field name="path">repo-relative path under .codex</field>
+      <field name="description">
+        <rule>.md: first paragraph after H1</rule>
+        <rule>.yaml/.yml: metadata.description</rule>
+      </field>
+      <field name="type_hints">
+        <hint>tasks.index.yaml: "task-md" | "task-yaml"</hint>
+        <hint>checklists.index.yaml: "checklist-md" | "checklist-yaml"</hint>
+        <hint>templates.index.yaml: "template-yaml"</hint>
+        <hint>data.index.yaml: extension-based ("md","csv","json","yaml","other")</hint>
+      </field>
+    </common_fields>
+
+    <workflows>
+      <inference_order>
+        <rule>From orchestrator manifests referencing known task files</rule>
+        <rule>From "*workflow*.yaml" or "workflows/" directories</rule>
+        <rule>From frontmatter keys: workflow_id, workflow_name</rule>
+      </inference_order>
+      <minimal_fields>
+        <field>id</field>
+        <field>name</field>
+        <field>path</field>
+        <field>steps (optional)</field>
+        <field>uses (referenced agents/tasks)</field>
+      </minimal_fields>
+    </workflows>
+  </extraction_rules>
+
+  <index_file_schemas>
+    <![CDATA[
+    agents.index.yaml:
+      version: 1
+      agents:
+        - id: string
+          name: string
+          description: string
+          model: string | null
+          modes: [string]
+          path: "agents/<file>.yaml"
+
+    tasks.index.yaml:
+      version: 1
+      tasks:
+        - id: string
+          name: string
+          description: string
+          type: "task-md" | "task-yaml"
+          path: "tasks/<file>"
+    ]]>
+  </index_file_schemas>
+
+  <formatting_rules>
+    <rule>YAML output, 2-space indentation.</rule>
+    <rule>Key order: id, name, description, model/modes/type/kind, path, steps/uses.</rule>
+    <rule>No trailing spaces; end file with single newline.</rule>
+  </formatting_rules>
+
+  <idempotency_and_validation>
+    <rule>Compute SHA256 of content; skip write if identical.</rule>
+    <rule>Validate that all referenced paths exist.</rule>
+    <rule>Validate uniqueness of ids within each index.</rule>
+    <rule>Validate agent ids in workflows.index.yaml exist in agents.index.yaml.</rule>
+    <report>Emit concise summary: counts, warnings, validation results.</report>
+  </idempotency_and_validation>
+
+  <example_outputs>
+    <![CDATA[
+    agents.index.yaml (excerpt):
+      version: 1
+      agents:
+        - id: marketer
+          name: Mark
+          description: "Unified Marketing Strategist agent."
+          model: "gpt-5-codex"
+          modes: ["default","strategy"]
+          path: "agents/marketer.yaml"
+    ]]>
+  </example_outputs>
+
+  <completion_criteria>
+    <rule>All six index files created or updated.</rule>
+    <rule>No validation errors present.</rule>
+    <rule>Summary printed with counts and warnings.</rule>
+  </completion_criteria>
+
+  <final_note>
+    <rule>If any category has zero items, still emit an empty array for contract stability.</rule>
+  </final_note>
+</index_generator_spec>

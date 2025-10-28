@@ -1,0 +1,293 @@
+template:
+  id: marketing-strategy-template-v1
+  name: Marketing Strategy Document
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/marketing/marketing-strategy.md
+    title: "Marketing Strategy: {{project_name}}"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+agent_config:
+  editable_sections:
+    - Executive Summary
+    - Target Audience
+    - Channel Strategy
+    - Content Strategy
+    - Budget Allocation
+    - Metrics and KPIs
+    - Timeline and Milestones
+
+sections:
+  - id: executive-summary
+    title: Executive Summary
+    type: text
+    instruction: |
+      Provide a high-level overview of the marketing strategy including:
+      - Product/project being promoted
+      - Primary marketing objectives
+      - Key target audiences
+      - Recommended channel mix
+      - Expected outcomes
+    elicit: true
+
+  - id: product-overview
+    title: Product Overview
+    subsections:
+      - id: product-description
+        title: Product Description
+        type: text
+        instruction: Describe what the product/project is and its core value proposition
+        elicit: true
+
+      - id: unique-selling-points
+        title: Unique Selling Points (USPs)
+        type: bullet-list
+        instruction: List the key differentiators that make this product unique
+        elicit: true
+
+      - id: competitive-landscape
+        title: Competitive Landscape
+        type: text
+        instruction: Brief overview of main competitors and how this product differs
+        elicit: true
+
+  - id: target-audience
+    title: Target Audience Analysis
+    subsections:
+      - id: primary-audience
+        title: Primary Audience
+        type: structured-list
+        instruction: |
+          Define primary target audience segments with:
+          - Demographics (age, location, income, education)
+          - Psychographics (interests, values, lifestyle)
+          - Behavioral traits (tech savviness, purchase behavior)
+          - Pain points this product solves
+          - Where they spend time online
+        elicit: true
+
+      - id: secondary-audience
+        title: Secondary Audience
+        type: structured-list
+        instruction: Define any secondary audience segments (optional)
+        elicit: false
+
+      - id: audience-personas
+        title: User Personas
+        type: structured-list
+        instruction: |
+          Create 2-3 detailed personas representing key user segments:
+          - Name and brief description
+          - Goals and motivations
+          - Challenges and pain points
+          - Preferred channels and content types
+        elicit: true
+
+  - id: marketing-objectives
+    title: Marketing Objectives
+    type: numbered-list
+    instruction: |
+      Define SMART (Specific, Measurable, Achievable, Relevant, Time-bound) marketing objectives.
+      Examples:
+      - Acquire 10,000 active users within 6 months
+      - Achieve 100,000 app downloads in Q1
+      - Generate 5,000 qualified leads by end of year
+      - Reach 50,000 website visitors per month by Q2
+    elicit: true
+
+  - id: channel-strategy
+    title: Channel Strategy
+    subsections:
+      - id: channel-selection
+        title: Recommended Channels
+        type: structured-list
+        instruction: |
+          For each recommended channel, provide:
+          - Channel name (ASO, SEO, Paid Media, Social Media, etc.)
+          - Priority level (Primary, Secondary, Tertiary)
+          - Rationale for selection
+          - Target audience alignment
+          - Expected ROI tier (High/Medium/Low)
+        elicit: true
+
+      - id: aso-strategy
+        title: App Store Optimization (ASO)
+        condition: if_mobile_app
+        subsections:
+          - id: aso-keywords
+            title: Primary Keywords
+            type: bullet-list
+            instruction: List primary keywords for app store optimization
+
+          - id: aso-tactics
+            title: ASO Tactics
+            type: bullet-list
+            instruction: |
+              List specific ASO tactics:
+              - App title and subtitle optimization
+              - Keyword optimization
+              - Description optimization
+              - Screenshot and preview strategy
+              - Ratings and reviews strategy
+              - Localization plan
+
+      - id: seo-strategy
+        title: Search Engine Optimization (SEO)
+        condition: if_web_or_hybrid
+        subsections:
+          - id: target-keywords
+            title: Target Keywords
+            type: structured-list
+            instruction: |
+              List primary and secondary keywords with:
+              - Keyword phrase
+              - Search volume estimate
+              - Competition level
+              - Target page/content
+
+          - id: seo-tactics
+            title: SEO Tactics
+            type: bullet-list
+            instruction: |
+              List specific SEO tactics:
+              - On-page optimization
+              - Technical SEO improvements
+              - Content creation plan
+              - Link building strategy
+              - Local SEO (if applicable)
+
+      - id: paid-media-strategy
+        title: Paid Media Strategy
+        subsections:
+          - id: paid-channels
+            title: Paid Channels
+            type: structured-list
+            instruction: |
+              For each paid channel, specify:
+              - Platform (Google Ads, Facebook Ads, LinkedIn, etc.)
+              - Campaign objectives
+              - Target audience
+              - Budget allocation
+              - Expected CPA/CAC
+
+          - id: paid-creative-strategy
+            title: Creative Strategy
+            type: text
+            instruction: Describe the creative approach for paid campaigns
+
+      - id: social-media-strategy
+        title: Social Media Strategy
+        subsections:
+          - id: platform-selection
+            title: Platform Selection
+            type: structured-list
+            instruction: |
+              For each social platform:
+              - Platform name
+              - Audience fit rationale
+              - Content themes
+              - Posting frequency
+              - Engagement tactics
+
+          - id: content-pillars
+            title: Content Pillars
+            type: bullet-list
+            instruction: Define 3-5 content themes that align with brand and audience interests
+
+      - id: other-channels
+        title: Other Marketing Channels
+        type: structured-list
+        instruction: |
+          List any additional channels (email, influencer, partnerships, PR, content marketing, community, etc.)
+          with brief strategy for each
+
+  - id: content-strategy
+    title: Content Strategy
+    subsections:
+      - id: content-themes
+        title: Content Themes
+        type: bullet-list
+        instruction: Define overarching content themes that resonate with target audience
+
+      - id: content-calendar
+        title: Content Calendar Framework
+        type: text
+        instruction: Describe the content planning and scheduling approach
+
+      - id: content-distribution
+        title: Content Distribution
+        type: text
+        instruction: Explain how content will be distributed across channels
+
+  - id: budget-allocation
+    title: Budget Allocation
+    type: table
+    columns: [Channel, Monthly Budget, Percentage, Expected ROI]
+    instruction: |
+      Allocate budget across channels. Include:
+      - Channel name
+      - Recommended monthly budget
+      - Percentage of total budget
+      - Expected ROI or target metrics
+    elicit: true
+
+  - id: metrics-and-kpis
+    title: Metrics and KPIs
+    subsections:
+      - id: channel-metrics
+        title: Channel-Specific Metrics
+        type: structured-list
+        instruction: |
+          For each channel, define:
+          - Key metrics to track
+          - Target benchmarks
+          - Reporting frequency
+
+      - id: overall-kpis
+        title: Overall Marketing KPIs
+        type: bullet-list
+        instruction: |
+          List top-level KPIs:
+          - User acquisition cost (CAC)
+          - Lifetime value (LTV)
+          - LTV:CAC ratio
+          - Conversion rates
+          - Retention rates
+          - Brand awareness metrics
+
+  - id: timeline-and-milestones
+    title: Timeline and Milestones
+    type: table
+    columns: [Milestone, Target Date, Owner, Status]
+    instruction: |
+      Define key milestones:
+      - Launch activities
+      - Campaign rollouts
+      - Major content releases
+      - Review and optimization points
+    elicit: true
+
+  - id: risks-and-mitigation
+    title: Risks and Mitigation
+    type: structured-list
+    instruction: |
+      Identify potential risks and mitigation strategies:
+      - Risk description
+      - Impact level (High/Medium/Low)
+      - Mitigation approach
+
+  - id: success-criteria
+    title: Success Criteria
+    type: text
+    instruction: Define what success looks like at 3 months, 6 months, and 12 months
+    elicit: true
+
+  - id: next-steps
+    title: Next Steps
+    type: numbered-list
+    instruction: List immediate action items to begin execution
+    elicit: true

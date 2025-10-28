@@ -1,0 +1,199 @@
+metadata:
+  title: Optimize Single Task
+  owner: prepper
+  model: gpt-5-codex
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Prepper processes one task during optimize-tasks or optimize-all sequence
+  principle: "One task at a time. Validate tech stack with context7. Stop for confirmation."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Get user confirmation for each fix
+  - termination_policy: "Stop after user confirms completion or skips"
+  - early_exit_ok: true  # User can skip optimization
+  </reasoning_control>
+
+workflow:
+  - id: validate_prerequisites
+    type: validation
+    checks:
+      - "analysis_report exists and is populated"
+      - "target task file path provided"
+    action: if_fail → halt_and_request_analysis
+
+  - id: read_task_file
+    type: read
+    target: "{{task_file_path}}"
+    announce: |
+      Reading task file: {{task_file_path}}
+      Purpose: Align with project standards and validate tech references
+
+  - id: extract_task_issues
+    type: analysis
+    inputs:
+      - analysis_report.project_structure
+      - analysis_report.tech_stack
+      - analysis_report.code_standards
+      - analysis_report.existing_tasks
+      - current_task_content
+    identify:
+      - incorrect_file_paths
+      - outdated_tech_stack_refs
+      - missing_context7_validation
+      - template_reference_errors
+      - elicitation_gaps
+      - workflow_step_inconsistencies
+      - model_config_mismatches
+    validation:
+      - verify_paths_exist: true
+      - use_context7_for_tech: true
+      - check_template_availability: true
+    store_in: task_optimization_plan
+
+  - id: validate_tech_stack_references
+    type: context7_validation
+    condition: task_contains_tech_references
+    action:
+      - extract_all_library_framework_mentions
+      - use_context7_mcp_to_validate_versions
+      - check_api_patterns_against_latest_docs
+      - flag_deprecated_usage
+    store_in: tech_validation_results
+
+  - id: prioritize_fixes
+    type: ranking
+    inputs:
+      - task_optimization_plan
+      - tech_validation_results
+    criteria:
+      - critical: broken_paths_or_missing_deps
+      - high: incorrect_tech_stack_or_versions
+      - medium: missing_context7_validation
+      - low: style_consistency_improvements
+    output: ranked_fixes
+    rule: propose_one_fix_at_a_time
+
+  - id: prepare_fix_proposal
+    type: generate
+    template: |
+      ## Task Optimization: {{task_name}}
+
+      **Issue Identified:**
+      {{issue_description_with_evidence}}
+
+      **Root Cause:**
+      {{link_to_analysis_report_finding}}
+
+      **Proposed Fix:**
+      ```diff
+      {{before_after_diff}}
+      ```
+
+      **Validation:**
+      {{context7_validation_result if applicable}}
+
+      **Impact:**
+      - Developer experience: {{dx_impact}}
+      - Task clarity: {{clarity_impact}}
+      - Standards alignment: {{standards_impact}}
+
+      **Options:**
+      [1] Apply this fix
+      [2] Suggest alternative approach
+      [3] Skip this issue
+      [4] Show next priority issue
+
+  - id: await_user_decision
+    type: elicit
+    prompt: "Select option [1-4]:"
+    validation:
+      - check: valid_numeric_choice
+        action: if_invalid → re_prompt
+
+  - id: apply_fix
+    type: conditional
+    condition: user_choice == 1
+    action:
+      - edit_task_file
+      - update_audit_log_with_context7_evidence
+      - update_progress_table
+      - store_rollback_notes
+    next: announce_completion
+
+  - id: suggest_alternative
+    type: conditional
+    condition: user_choice == 2
+    prompt: "Describe your preferred approach or concern:"
+    action:
+      - incorporate_user_feedback
+      - regenerate_proposal
+    next: prepare_fix_proposal
+
+  - id: skip_issue
+    type: conditional
+    condition: user_choice == 3
+    action:
+      - log_skip_with_reason
+      - update_progress_table
+      - mark_task_reviewed
+    next: announce_completion
+
+  - id: show_next_issue
+    type: conditional
+    condition: user_choice == 4
+    action:
+      - remove_current_from_ranked_fixes
+      - select_next_priority
+    next: prepare_fix_proposal
+
+  - id: announce_completion
+    type: output
+    format: |
+      ✓ Task optimization step complete: {{task_name}}
+
+      **Progress Update:**
+      {{progress_table}}
+
+      **Context7 Validations:** {{count_validations_performed}}
+
+      **Next Steps:**
+      [1] Continue to next task
+      [2] Show full optimization progress
+      [3] Pause optimization sequence
+      [4] Return to Prepper menu
+
+completion:
+  criteria:
+    - user_confirmed_completion_or_skip
+    - progress_table_updated
+    - audit_log_with_context7_citations
+    - rollback_notes_stored
+
+anti_patterns:
+  never:
+    - "Optimize multiple tasks in one step"
+    - "Apply fix without user confirmation"
+    - "Skip context7 validation for tech references"
+    - "Propose changes without verifying file paths exist"
+    - "Remove elicit=true user interaction points"
+  always:
+    - "One task at a time, one fix at a time"
+    - "Use context7 MCP for ALL tech/framework references"
+    - "Present fix proposal with evidence"
+    - "Await user decision before applying"
+    - "Maintain audit_log with context7 citations"
+
+notes:
+  - CRITICAL: Use context7 MCP for ALL tech stack/framework/library references
+  - Validate file paths exist before proposing changes
+  - Check that referenced templates are available
+  - Ensure workflow steps align with core-config orchestration mode
+  - Preserve elicit=true fields; do not remove user interaction points
+  - If task references outdated library versions, provide context7 evidence
+  - NEVER process multiple tasks in single step
+  - Maintain detailed audit_log with context7 citations

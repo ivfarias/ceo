@@ -1,0 +1,137 @@
+metadata:
+  title: Execute Checklist
+  owner: qa
+  model: gpt-5-codex
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Need to validate document/codebase against checklist
+  principle: "Systematic validation. Evidence-based. Actionable recommendations."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: true  # Validate autonomously with evidence
+  - termination_policy: "Complete validation and generate report"
+  - early_exit_ok: false  # Must validate all items and write report
+  </reasoning_control>
+
+inputs:
+  required:
+    - checklist_file: "Path to checklist file"
+    - target_path: "File or directory to validate"
+
+workflow:
+  - id: load_checklist
+    type: read
+    target: "{{checklist_file}}"
+    extract:
+      - checklist_items
+      - validation_criteria
+      - category_groupings
+    store_in: checklist
+
+  - id: analyze_target
+    type: read
+    target: "{{target_path}}"
+    mode: directory_or_file
+    action:
+      - if_file: read_content
+      - if_directory: analyze_contents_recursively
+    store_in: target_content
+
+  - id: execute_validation
+    type: validation
+    for_each: checklist.items
+    against: target_content
+    status_options: [PASS, FAIL, PARTIAL, N/A]
+    output_per_item:
+      - status
+      - evidence
+      - rationale
+      - line_references_if_applicable
+
+  - id: calculate_pass_rate
+    type: calculation
+    formula: |
+      total_applicable = count(items where status != N/A)
+      passed = count(items where status == PASS)
+      pass_rate = (passed / total_applicable) * 100
+
+  - id: generate_report
+    type: generate
+    template: |
+      # Compliance Report: {{checklist_name}} → {{target_name}}
+
+      **Date**: {{date}}
+      **Checklist**: {{checklist_file}}
+      **Target**: {{target_path}}
+
+      ## Summary
+      - **Pass Rate**: {{pass_rate}}% ({{passed}}/{{total_applicable}})
+      - **Total Items**: {{total_items}}
+      - **Passed**: {{pass_count}} ✅
+      - **Failed**: {{fail_count}} ❌
+      - **Partial**: {{partial_count}} ⚠️
+      - **Not Applicable**: {{na_count}}
+
+      ## Detailed Results
+
+      {{for each category}}
+      ### {{category_name}}
+
+      {{for each item in category}}
+      #### {{item_number}}. {{item_description}}
+      **Status**: {{status_icon}} {{status}}
+      **Evidence**: {{evidence_or_rationale}}
+      {{if line_refs}}**Location**: {{file_path}}:{{line_numbers}}{{end}}
+      {{if status != PASS}}**Recommendation**: {{specific_fix}}{{end}}
+
+      {{end for category items}}
+      {{end for categories}}
+
+      ## Failed/Partial Items Summary
+
+      {{for each item where status in [FAIL, PARTIAL]}}
+      - **{{item_id}}**: {{item_description}}
+        - Issue: {{problem}}
+        - Fix: {{recommendation}}
+        - Priority: {{high_medium_low}}
+      {{end for}}
+
+      ## Recommendations
+
+      {{prioritized_list_of_actions_to_achieve_full_compliance}}
+
+  - id: write_report
+    type: write
+    path: "report-{{checklist_name}}-{{target_name}}.md"
+    content: generated_report
+    on_complete: return_file_path
+
+completion:
+  outputs:
+    - compliance_report_file
+    - pass_rate_percentage
+    - failed_items_list
+
+anti_patterns:
+  never:
+    - "Mark items as PASS without concrete evidence"
+    - "Skip evidence collection or line references"
+    - "Mark items as N/A to inflate pass rate"
+    - "Generate report without validating all items"
+  always:
+    - "Provide concrete evidence for each status"
+    - "Include line references when possible"
+    - "Prioritize failed items by impact"
+    - "Give specific, actionable recommendations"
+
+notes:
+  - Validate each item independently
+  - Collect concrete evidence for each status
+  - Provide specific line references when possible
+  - Mark N/A only when truly not applicable
+  - Prioritize recommendations by impact

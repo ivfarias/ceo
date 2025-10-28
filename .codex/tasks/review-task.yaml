@@ -1,0 +1,204 @@
+metadata:
+  title: Review Task (Lean)
+  owner: qa
+  model: gpt-5-codex
+  reasoning_effort: low
+  verbosity: low
+  description: "Adaptive QA review with Quality Gate and Risk Summary in single operation"
+
+activation:
+  when: QA needs to review completed task
+  principle: "SaaS-tight, deterministic, minimal overhead, human-auditable"
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: low  # Lean review, not deep analysis
+  - verbosity: low
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: true
+  - max_tool_calls: 2
+  - termination_policy: "Stop after QA Results and Gate YAML written"
+  </reasoning_control>
+
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - include_previous_response_id: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["review_depth", "qa_decision", "risk_summary", "traceability_map"]
+  </session_memory>
+
+context_gathering: |
+  <context_gathering>
+  Goal: Get enough evidence for deterministic gate decision. Stop when confident.
+
+  Method:
+  - Read task file for requirements and ACs
+  - Check changed files and test coverage
+  - Assess NFR compliance (security, performance, reliability, maintainability)
+
+  Early stop criteria:
+  - Can map PASS/CONCERNS/FAIL deterministically
+  - All ACs checked for test coverage
+  - Top 1-3 risks identified
+
+  Depth:
+  - Review only changed files and related tests
+  - Don't audit entire codebase
+  - Focus on task scope only
+
+  Tool budget:
+  - Basic review: 2-3 file reads (task + key changed files)
+  - Deep review: escalate if security/auth/payment or 500+ LOC
+  </context_gathering>
+
+permissions:
+  write_only: "## QA Results section"
+  forbidden: [Status, Requirements, Context, Subtasks]
+  rule: "Each run adds dated entry, never replace existing"
+
+inputs:
+  required:
+    - task_id: "Task identifier"
+    - task_path: "Path to task file"
+  optional:
+    - task_title: "Task title"
+    - task_slug: "URL-friendly slug"
+
+workflow:
+  - id: quick_triage
+    type: evaluation
+    time_limit: 2min
+    escalate_to_deep_if:
+      - security_auth_payment_code
+      - no_tests_added
+      - diff_over_500_loc
+      - previous_gate_fail_or_concerns
+      - requirements_over_5_or_ambiguous
+    output: review_depth [basic | deep]
+
+  - id: focused_qa_basic
+    type: review
+    condition: review_depth == basic
+    checks:
+      - id: traceability
+        rule: map_each_ac_to_test
+        output: note_gaps_only
+      - id: code_quality
+        rule: spot_check_security_duplication_performance
+        standards:
+          - docs/coding-standards.md
+          - docs/testing-strategy.md
+      - id: nfr_snapshot
+        categories: [security, performance, reliability, maintainability]
+        output: "PASS | CONCERNS | FAIL + 1-line note"
+      - id: testability
+        assess: [controllability, observability, debuggability]
+
+  - id: deep_review
+    type: review
+    condition: review_depth == deep
+    includes: all_basic_checks
+    additional:
+      - full_traceability_all_acs
+      - risk_table_max_3_entries_with_priority_impact
+      - optional_safe_refactors
+      - focus_top_1_to_3_issues
+
+  - id: calculate_qa_recommendation
+    type: deterministic_mapping
+    rules:
+      "Changes Required":
+        - any_risk_score >= 9
+        - any_nfr == FAIL
+      "Minor Concerns":
+        - any_risk_score >= 6
+        - any_nfr == CONCERNS
+      "Ready": else
+
+  - id: append_qa_results
+    type: write
+    target: "{{task_path}}"
+    section: "## QA Results"
+    mode: append_dated_entry
+    template: |
+      ## QA Results
+
+      ### Review Date: {{YYYY-MM-DD}}
+      ### Reviewed By: Quinn (Test Architect)
+
+      ### Summary
+      - Depth: {{review_depth}}
+      - Key changes: {{1_to_3_bullets}}
+      - Overall quality: {{verdict}}
+
+      ### Traceability (AC → Test)
+      {{for each ac}}
+      - AC{{n}} → {{scenario_or_gwt}}
+      {{end}}
+      - Gaps: {{ac_numbers_lacking_tests}}
+
+      ### NFR Snapshot
+      - Security: {{status}} — {{one_line_note}}
+      - Performance: {{status}} — {{one_line_note}}
+      - Reliability: {{status}} — {{one_line_note}}
+      - Maintainability: {{status}} — {{one_line_note}}
+
+      ### Risk Summary (Top 3 max)
+      | ID | Title | P | I | Score |
+      |-|-|-|-|-|
+      {{for each risk}}
+      | {{id}} | {{title}} | {{p}} | {{i}} | {{score}} |
+      {{end}}
+
+      Totals: critical(9)={{x}}, high(6)={{y}}, medium(4)={{z}}, low(2-3)={{w}}
+
+      ### Compliance Check
+      - Coding Standards: {{pass_fail}} {{notes}}
+      - Testing Strategy: {{pass_fail}} {{notes}}
+      - All ACs Met: {{pass_fail}} {{notes}}
+
+      ### Recommendation
+      {{calculate_qa_recommendation}}
+
+      ### Suggested Next Step
+      {{ready_for_done_or_changes_required}}
+
+
+
+  - id: emit_risk_note
+    type: write
+    condition: any_risk >= 6
+    path: "{{qa_location}}/assessments/{{task_id}}-risk-{{YYYYMMDD}}.md"
+    template: |
+      # Risk Profile — {{task_id}}
+      Date: {{date}} | Reviewer: Quinn
+
+      ## Top Risks (max 3)
+      | ID | Title | P | I | Score | Mitigation |
+      |-|-|-|-|-|-|-|
+      {{for each top_risk}}
+      | {{id}} | {{title}} | {{p}} | {{i}} | {{score}} | {{mitigation}} |
+      {{end}}
+
+      ## Testing Focus
+      {{1_to_3_bullets_derived_from_risks}}
+
+verification:
+  - validate_gate_follows_deterministic_mapping
+  - verify_only_one_qa_results_section
+  - confirm_all_required_fields_populated
+  - stop_immediately_after_successful_append
+
+lean_rules:
+  - act_on_top_1_to_3_issues_only
+  - no_long_test_plans
+  - use_gwt_for_clarity_not_duplication
+  - outputs_readable_in_3min
+  - prefer_actionable_over_exhaustive
+
+notes:
+  - Never modify sections outside QA Results
+  - Each run adds new dated entry
+  - Gate mapping is deterministic
+  - Focus on top issues, not exhaustive audit

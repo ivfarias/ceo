@@ -1,0 +1,174 @@
+meta:
+  scope: changed files + directly impacted dependencies
+  stop_condition: fail_on(HIGH) OR findings_count > 25
+
+severity:
+  HIGH: correctness, security, runtime impact, system-wide drift
+  MEDIUM: maintainability, test brittleness
+  LOW: style, docs, minor cleanup
+rules:
+  id: C1
+  name: Duplicate Logic/Utils
+  severity: HIGH
+  detect: "≥2 files contain functions with ≥85% token similarity or identical names; e.g., formatPhone repeated."
+  fix: "Consolidate into src/shared/utils/<name>.ts; replace call sites."
+  autofix: true
+  id: C2
+  name: Unused Abstractions
+  severity: MEDIUM
+  detect: "Interface/abstract class has only 1 concrete impl and no second planned use."
+  fix: "Inline or delete abstraction; keep simplest concrete fn/class."
+  autofix: true
+  id: C3
+  name: Config Drift
+  severity: HIGH
+  detect: "Same env key has divergent defaults or parsing across files."
+  fix: "Single source in src/shared/config/, validated at boot."
+  autofix: true
+  id: C4
+  name: Tool Duplication
+  severity: MEDIUM
+  detect: "Overlapping tool definitions/descriptions do the same job."
+  fix: "Keep 1 canonical tool; delete others; update registry/imports."
+  autofix: true
+  id: C5
+  name: Validation Scatter
+  severity: MEDIUM
+  detect: "Multiple input validators for same boundary/schema."
+  fix: "Standardize on Zod; co-locate schemas at boundaries."
+  autofix: partial
+  id: C6
+  name: Error Shape Drift
+  severity: MEDIUM
+  detect: "Inconsistent error payloads across modules."
+  fix: "Enforce AppError base; normalize to {code,message,meta?}."
+  autofix: partial
+  id: C7
+  name: Logger Chaos
+  severity: LOW
+  detect: "Mixed logging libs or raw console in prod paths."
+  fix: "Use shared logger from src/shared/utils/logging.ts only."
+  autofix: true
+  id: C8
+  name: Date Library Mix
+  severity: LOW
+  detect: "Multiple date libs or native Date scattered."
+  fix: "Choose one (e.g., dayjs); migrate imports and usage."
+  autofix: partial
+  id: C9
+  name: Regex for Natural Language
+  severity: MEDIUM
+  detect: "Regex used to parse user free-text intent."
+  fix: "Use structured inputs or NLP; keep regex for strict patterns only."
+  autofix: false
+  id: D10
+  name: Unused Imports
+  severity: LOW
+  detect: "Imports with zero references."
+  fix: "Remove import."
+  autofix: true
+  id: D11
+  name: Commented Code Blocks
+  severity: LOW
+  detect: "Commented blocks >5 lines without ticket reference."
+  fix: "Delete or add ticket + rationale."
+  autofix: true
+  id: D12
+  name: Unreachable Code
+  severity: HIGH
+  detect: "Code paths after return/throw or statically impossible branches."
+  fix: "Delete unreachable code; keep tests."
+  autofix: true
+  id: D13
+  name: Unused Exports
+  severity: MEDIUM
+  detect: "Exported symbol with zero inbound imports."
+  fix: "Delete export or the file if fully unused."
+  autofix: true
+  id: D14
+  name: Dead Files
+  severity: MEDIUM
+  detect: "No imports; no runtime entry; not required by build."
+  fix: "Delete file; purge references from configs."
+  autofix: true
+  id: D15
+  name: Premature Abstraction
+  severity: MEDIUM
+  detect: "General utility used in <3 places."
+  fix: "Inline where used; re-abstract at 3rd usage."
+  autofix: partial
+  id: D16
+  name: Unnecessary Wrappers
+  severity: LOW
+  detect: "Wrapper only forwards args to another function."
+  fix: "Remove wrapper; call target directly."
+  autofix: true
+  id: D17
+  name: Over-Parameterized API
+  severity: MEDIUM
+  detect: "Fn has >5 params or config object with ≥80% optional."
+  fix: "Simplify signature; introduce small typed input object; builder only if justified."
+  autofix: partial
+  id: D18
+  name: Dead Feature Flags
+  severity: LOW
+  detect: "Flag always true/false with no roadmap."
+  fix: "Delete flag; inline winning path."
+  autofix: true
+  id: D19
+  name: Stale TODO/FIXME
+  severity: LOW
+  detect: "TODO older than 90 days without ticket."
+  fix: "Create ticket or delete if obsolete."
+  autofix: partial
+  id: D20
+  name: Duplicate Types
+  severity: MEDIUM
+  detect: "Equivalent TS interfaces/types defined in multiple files."
+  fix: "Merge into src/shared/types/; update imports."
+  autofix: true
+  id: D21
+  name: Unused Config Keys
+  severity: MEDIUM
+  detect: "Env vars defined but never read."
+  fix: "Remove from .env + config schema."
+  autofix: true
+  id: D22
+  name: Legacy Error Handling
+  severity: MEDIUM
+  detect: "Old error pattern coexists with new."
+  fix: "Migrate callers to AppError; delete legacy."
+  autofix: partial
+  id: D23
+  name: Orphaned Tests
+  severity: LOW
+  detect: "Tests target deleted code or are permanently skipped."
+  fix: "Delete or fix + unskip."
+  autofix: partial
+lean_guards:
+  do_not_expand_scope: true
+  prefer_small_safe_fixes: true
+  refactor_only_if_required_by_rule: true
+  skip_large_migrations: true
+output_schema:
+  findings:
+    id: string
+    severity: enum(HIGH|MEDIUM|LOW)
+    file: string
+    symbol: string?
+    evidence: string
+    fix: string
+    autofix: boolean
+  summary:
+  high: int
+  medium: int
+  low: int
+  decision: enum(READY|NEEDS_REVISION|BLOCKED)
+activation_hint:
+  Evaluate rules top-down; stop on first HIGH unless --exhaustive.
+  Mark each rule PASS or FAIL→reason.
+  decision:
+    BLOCKED if any HIGH fails.
+    NEEDS_REVISION if no HIGH but any MEDIUM/LOW fails.
+    READY if all PASS.
+    

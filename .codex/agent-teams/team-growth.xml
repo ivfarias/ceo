@@ -1,0 +1,46 @@
+<agent_team id="team-growth" version="1.0">
+  <bundle>
+    <name>Growth &amp; Analytics Team</name>
+    <icon>🌱</icon>
+    <description>
+      <![CDATA[
+      A focused team for go-to-market strategy, user acquisition,
+      and performance analysis.
+      ]]>
+    </description>
+  </bundle>
+
+  <agents>
+    <agent id="ceo" role="orchestrator" />
+    <agent id="marketer" role="strategy" />
+    <agent id="analytics" role="data" />
+  </agents>
+
+  <coordination>
+    <rules>
+      <rule>All agents share unified growth objectives defined in core-config.xml</rule>
+      <rule>Primary lead: marketer</rule>
+      <rule>Analytics provides performance data to marketer and ceo</rule>
+    </rules>
+  </coordination>
+
+  <communication>
+    <mode>sequential-synchronous</mode>
+    <handoff_policy>explicit</handoff_policy>
+    <summary_format>markdown</summary_format>
+  </communication>
+
+  <persistence>
+    <shared_context>true</shared_context>
+    <memory_scope>team</memory_scope>
+    <session_reuse>true</session_reuse>
+  </persistence>
+
+  <output>
+    <deliverables>
+      <deliverable>growth_strategy_report.md</deliverable>
+      <deliverable>performance_analysis.yaml</deliverable>
+      <deliverable>user_journey_insights.md</deliverable>
+    </deliverables>
+  </output>
+</agent_team>
