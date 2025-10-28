@@ -1,60 +1,86 @@
 # Getting Started with Codex
 
-This guide provides the necessary steps to set up and use the Codex agent ecosystem for your project.
+Welcome to Codex! This guide will walk you through setting up your AI agent team to help you with your project. Think of it as hiring and training a team of digital experts who are tailored to your specific needs.
 
-## How to Get Started
+## How to Get Started: Training Your AI Team
 
-Follow these steps to configure the Codex for your specific project needs. The goal is to adapt the generic agent templates and tasks to your project's unique context, conventions, and technology stack.
+The goal of this setup process is to teach your AI agents about your project. You'll show them your code, your standards, and your way of working. This one-time setup makes the agents incredibly effective and efficient.
 
-### Step 1: Flatten Your Project
+### Step 0: Place the `.codex` Directory in Your Project
 
-The first step is to create a single-file representation of your project's codebase. This "flattened" file will be used as context for the setup agent.
+Before you begin, you need to place the `.codex` directory (the one containing this guide) into the root folder of your own project.
 
-Run the `flatten-project.sh` script from within the `.codex` directory, pointing it to your project's root:
+- **If your project does not have a `.codex` directory:** Simply copy or move this entire `.codex` folder into your project's main directory.
+- **If your project already has a `.codex` directory:** You will need to merge the contents. Copy all the files and folders from inside this `.codex` directory into your existing one. If any files have the same name, it is generally safe to overwrite them with the ones from this template.
+
+### Step 1: Create a Project Snapshot
+
+To understand your project, the AI needs to read it. The easiest way to do this is to combine all your relevant project files into a single text file. We call this "flattening" the project.
+
+From your terminal, inside the `.codex` directory, run the following command:
 
 ```bash
 # From inside the .codex directory
 ./utils/flatten-project.sh ../project_flatten.txt ../
 ```
 
-- The first argument (`../project_flatten.txt`) is the output file.
-- The second argument (`../`) is the root directory of your project to flatten.
+- The first part (`../project_flatten.txt`) is the name of the output file that will be created.
+- The second part (`../`) tells the script to look for your project in the parent directory.
 
-This script intelligently excludes unnecessary files (like `node_modules`, `.git`, etc.) and creates a compact text file that the AI can easily consume.
+This script is smart: it automatically ignores unnecessary files (like `node_modules`, `.git`, etc.) to create a clean, compact snapshot of your project for the AI to study.
 
-### Step 2: Prepare the Setup Agent
+### Step 2: Brief the Setup Specialist
 
-You will use a specialized "Prepper" agent to analyze your project and configure the Codex. This is best done using a powerful AI model (like GPT-4, Claude 3, or Gemini 1.5) in a chat interface that allows file uploads.
+Now you'll work with a special "Prepper" agent to configure the rest of your AI team. This is best done in a web-based AI chat platform that has a very large "context window" (like Gemini 1.5 Pro).
 
-1.  **Start a new chat** with your chosen AI model.
-2.  **Upload the `prepper.md` agent file:** Provide the AI with the contents of `.codex/agents/prepper.md`. This file contains the core instructions for the setup agent.
-3.  **Upload your flattened project file:** Upload the `project_flatten.txt` file you created in Step 1.
+**Why use a platform like this?** A large context window is like having an AI with a massive short-term memory. It can "read" all of your project files at once. This is far more efficient and cost-effective than using models with smaller context windows, which would require breaking the files up into small, expensive chunks. It leads to a much better analysis and a better-trained team of agents.
 
-Your initial prompt should look something like this:
+1. **Start a new chat** on your chosen AI platform (e.g., Google AI Studio).
 
-> You are an AI agent. Your instructions are in the `prepper.md` file. Your knowledge base for my project is the `project_flatten.txt` file. Your goal is to analyze my project and then guide me through optimizing the other agents, tasks, and checklists in the `.codex` directory to match my project's standards. Start by running your `*analyze-project` command.
+2. **Upload the necessary files.** For the Prepper agent to do its job, it needs its instructions and its tools. Upload the following files:
+    - The agent's "brain": `.codex/agents/prepper.md`
+    - The project snapshot you created: `project_flatten.txt`
+    - Its task instructions:
+        - `.codex/tasks/analyze-project-context.yaml`
+        - `.codex/tasks/optimize-agent.yaml`
+        - `.codex/tasks/optimize-task.yaml`
+        - `.codex/tasks/optimize-checklist.yaml`
+    - Its templates and knowledge:
+        - `.codex/templates/project-analysis-tmpl.yaml`
+        - `.codex/data/optimization-best-practices.md`
 
-### Step 3: Configure the Codex
+3. **Give the AI its first prompt.** Copy and paste the following into the chat:
 
-The Prepper agent will now guide you through a `stop-confirm-continue` workflow to optimize the Codex artifacts. It will:
+> You are an AI agent. Your instructions are in the `prepper.md` file. All other files I've uploaded are your dependencies and knowledge base for my project. Your goal is to analyze my project and then guide me through optimizing the other agents, tasks, and checklists in the `.codex` directory to match my project's standards. Start by running your `*analyze-project` command.
 
-1.  **Analyze the project context** from the flattened file.
-2.  **Propose changes** to agents, tasks, and checklists one by one.
-3.  **Present a `diff`** of each proposed change and ask for your approval.
+### Step 3: Configure Your AI Team
 
-This process ensures that the agents' instructions, dependencies, and tasks are tailored to your project's specific libraries, coding conventions, and file structure.
+The Prepper agent will now talk you through a step-by-step process to customize the AI team. It will:
 
-### Step 4: Index the Codex
+1. **Analyze your project** using the snapshot file.
+2. **Suggest improvements** for each agent and workflow, one by one.
+3. **Show you a `diff`** of each proposed change. A `diff` is a simple "before and after" view, highlighting what's being removed (in red) and what's being added (in green). This makes it easy to see exactly what the agent wants to do.
+4. **Ask for your approval** before making any changes.
 
-After configuring the artifacts, you need to update the central indexes so the system can find and use them.
+This interactive process ensures that your AI team is perfectly aligned with your project's specific needs and coding styles.
 
-You will need a CLI agent or a script that can parse the `.codex/utils/index-generator.xml` specification and execute its instructions. This process will:
+### Step 4: Create the Agent Directory
 
-1.  Scan the `.codex` directory for all agents, tasks, checklists, and templates.
-2.  Generate or update the `*.index.yaml` files (e.g., `agents.index.yaml`).
-3.  Update the main `AGENTS.md` file with the latest agent directory.
+Once your agents are configured, the final step is to "index" them. This creates a simple directory or "table of contents" so that the main CEO agent can easily find and delegate tasks to the right specialist.
 
-This step is crucial for the CEO orchestrator agent to discover and delegate tasks to the correct specialists.
+To do this, you'll need to run a script that is capable of parsing the `.codex/utils/index-generator.xml` file. This will automatically scan the `.codex` directory and update the `AGENTS.md` file with a list of all available agents.
+
+(If you're not sure how to do this, you may need to ask a technical colleague for a hand with this one-time step.)
+
+## Recommended Tools
+
+To make interacting with the Codex easier, we recommend installing the following command-line utility:
+
+### Context7 MCP (`mcp`)
+
+The `mcp` tool is a powerful utility that simplifies sending prompts with multiple file contexts directly to an AI model from your terminal. This is especially useful for invoking Codex agents, as it saves you from manually copying and pasting files into a web UI.
+
+*You can find installation instructions here: [INSERT LINK TO context7 mcp INSTALLATION GUIDE]*
 
 ## How to Use the Codex
 
@@ -62,19 +88,19 @@ The Codex ecosystem is designed around a "CEO-Led" orchestration model. You don'
 
 ### The Workflow
 
-1.  **Start with the CEO:** Always begin by invoking the CEO agent (`@.codex/agents/ceo.md`) with your high-level goal.
+1. **Start with the CEO:** Always begin by invoking the CEO agent (`@.codex/agents/ceo.md`) with your high-level goal.
 
-    ```
+    ```bash
     @.codex/agents/ceo.md I need to add a new feature to allow users to export their data as a CSV.
     ```
 
-2.  **Follow the Guidance:** The CEO agent will analyze your request, determine the correct specialist for the job (e.g., the Product Manager), and instruct you on how to proceed.
+2. **Follow the Guidance:** The CEO agent will analyze your request, determine the correct specialist for the job (e.g., the Product Manager), and instruct you on how to proceed.
 
     > *"Understood. For creating a new feature, you should start with the Product Manager. Please begin your next prompt with `@.codex/agents/pm.md` to create the specifications."*
 
-3.  **Invoke the Specialist:** Call the specialist agent as directed. The ecosystem is designed for this manual, conversational handoff, which ensures each agent has the minimal, most relevant context for its job.
+3. **Invoke the Specialist:** Call the specialist agent as directed. The ecosystem is designed for this manual, conversational handoff, which ensures each agent has the minimal, most relevant context for its job.
 
-    ```
+    ```bash
     @.codex/agents/pm.md Let's create a spec for the CSV export feature.
     ```
 
@@ -82,10 +108,10 @@ This process is highly token-efficient and leads to better performance by giving
 
 ### The Components
 
--   **Agents (`.codex/agents/`):** These are the AI personas that perform the work (e.g., Developer, QA, PM).
--   **Tasks (`.codex/tasks/`):** These are structured workflows that agents can execute (e.g., `create-task.yaml`).
--   **Checklists (`.codex/checklists/`):** These are validation lists used by agents to ensure quality and completeness.
--   **Templates (`.codex/templates/`):** These are boilerplate structures for documents like PRDs, tasks, and reports.
--   **AGENTS.md:** Your go-to reference for a directory of all available agents and their roles.
+- **Agents (`.codex/agents/`):** These are the AI personas that perform the work (e.g., Developer, QA, PM).
+- **Tasks (`.codex/tasks/`):** These are structured workflows that agents can execute (e.g., `create-task.yaml`).
+- **Checklists (`.codex/checklists/`):** These are validation lists used by agents to ensure quality and completeness.
+- **Templates (`.codex/templates/`):** These are boilerplate structures for documents like PRDs, tasks, and reports.
+- **AGENTS.md:** Your go-to reference for a directory of all available agents and their roles.
 
 By following this model, you can leverage a team of specialized AI agents to build, test, and manage your project with greater efficiency and quality.
