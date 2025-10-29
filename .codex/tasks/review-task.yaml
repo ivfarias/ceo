@@ -32,14 +32,19 @@ context_gathering: |
   <context_gathering>
   Goal: Get enough evidence for deterministic gate decision. Stop when confident.
 
+  Prerequisites:
+  - A test design document MUST exist at `docs/qa/test-scenarios-{{task_slug}}.md`.
+  - If the document is not found, the task MUST halt and instruct the user to run the '*test-scenarios' command first.
+
   Method:
-  - Read task file for requirements and ACs
-  - Check changed files and test coverage
-  - Assess NFR compliance (security, performance, reliability, maintainability)
+  - Read the test design document.
+  - Read task file for requirements and ACs.
+  - Check changed files and test coverage, comparing against the test design.
+  - Assess NFR compliance (security, performance, reliability, maintainability).
 
   Early stop criteria:
   - Can map PASS/CONCERNS/FAIL deterministically
-  - All ACs checked for test coverage
+  - All ACs and test design scenarios are covered
   - Top 1-3 risks identified
 
   Depth:
@@ -87,8 +92,7 @@ workflow:
       - id: code_quality
         rule: spot_check_security_duplication_performance
         standards:
-          - docs/coding-standards.md
-          - docs/testing-strategy.md
+          - checklists/code-quality-checklist.yaml
       - id: nfr_snapshot
         categories: [security, performance, reliability, maintainability]
         output: "PASS | CONCERNS | FAIL + 1-line note"
@@ -116,54 +120,91 @@ workflow:
         - any_nfr == CONCERNS
       "Ready": else
 
-  - id: append_qa_results
-    type: write
-    target: "{{task_path}}"
-    section: "## QA Results"
-    mode: append_dated_entry
-    template: |
-      ## QA Results
-
-      ### Review Date: {{YYYY-MM-DD}}
-      ### Reviewed By: Quinn (Test Architect)
-
-      ### Summary
-      - Depth: {{review_depth}}
-      - Key changes: {{1_to_3_bullets}}
-      - Overall quality: {{verdict}}
-
-      ### Traceability (AC → Test)
-      {{for each ac}}
-      - AC{{n}} → {{scenario_or_gwt}}
-      {{end}}
-      - Gaps: {{ac_numbers_lacking_tests}}
-
-      ### NFR Snapshot
-      - Security: {{status}} — {{one_line_note}}
-      - Performance: {{status}} — {{one_line_note}}
-      - Reliability: {{status}} — {{one_line_note}}
-      - Maintainability: {{status}} — {{one_line_note}}
-
-      ### Risk Summary (Top 3 max)
-      | ID | Title | P | I | Score |
-      |-|-|-|-|-|
-      {{for each risk}}
-      | {{id}} | {{title}} | {{p}} | {{i}} | {{score}} |
-      {{end}}
-
-      Totals: critical(9)={{x}}, high(6)={{y}}, medium(4)={{z}}, low(2-3)={{w}}
-
-      ### Compliance Check
-      - Coding Standards: {{pass_fail}} {{notes}}
-      - Testing Strategy: {{pass_fail}} {{notes}}
-      - All ACs Met: {{pass_fail}} {{notes}}
-
-      ### Recommendation
-      {{calculate_qa_recommendation}}
-
-      ### Suggested Next Step
-      {{ready_for_done_or_changes_required}}
-
+    - id: append_qa_results
+      type: write
+      target: "{{task_path}}"
+      section: "## QA Results"
+      mode: append_dated_entry
+      template: |+ 
+        ## QA Results
+  
+        ### Review Date: {{YYYY-MM-DD}}
+        ### Reviewed By: Quinn (Test Architect)
+  
+        ### Summary
+        - Depth: {{review_depth}}
+        - Key changes: {{1_to_3_bullets}}
+        - Overall quality: {{verdict}}
+  
+        ### Traceability (AC → Test)
+        {{for each ac}}
+        - AC{{n}} → {{scenario_or_gwt}}
+        {{end}}
+        - Gaps: {{ac_numbers_lacking_tests}}
+  
+        ### NFR Snapshot
+        - Security: {{status}} — {{one_line_note}}
+        - Performance: {{status}} — {{one_line_note}}
+        - Reliability: {{status}} — {{one_line_note}}
+        - Maintainability: {{status}} — {{one_line_note}}
+  
+        ### Risk Summary (Top 3 max)
+        | ID | Title | P | I | Score |
+        |-|-|-|-|-|
+        {{for each risk}}
+        | {{id}} | {{title}} | {{p}} | {{i}} | {{score}} |
+        {{end}}
+  
+        Totals: critical(9)={{x}}, high(6)={{y}}, medium(4)={{z}}, low(2-3)={{w}}
+  
+        ### Compliance Check
+        - Coding Standards: {{pass_fail}} {{notes}}
+        - Testing Strategy: {{pass_fail}} {{notes}}
+        - All ACs Met: {{pass_fail}} {{notes}}
+  
+        ### Recommendation
+        {{calculate_qa_recommendation}}
+  
+        ### Suggested Next Step
+        {{ready_for_done_or_changes_required}}
+  
+    - id: generate_gate_yaml
+      type: generate
+      template: |+
+        review_gate:
+          task_id: {{task_id}}
+          decision: {{calculate_qa_recommendation}}
+          review_depth: {{review_depth}}
+          summary: "{{verdict}}"
+          findings:
+            traceability_gaps: [{{ac_numbers_lacking_tests}}]
+            nfr_concerns: 
+              {{for each nfr where status != PASS}}
+              - category: {{nfr.name}}
+                status: {{nfr.status}}
+                note: "{{nfr.note}}"
+              {{end}}
+            risks:
+              {{for each risk}}
+              - id: {{risk.id}}
+                title: "{{risk.title}}"
+                score: {{risk.score}}
+              {{end}}
+  
+    - id: output_gate_file
+      type: output
+      format: |+
+        ✓ QA Review Complete
+  
+        **Gate YAML for {{task_id}}:**
+        ```yaml
+        {{gate_yaml_block}}
+        ```
+  
+        **To proceed with fixes, save the YAML above to:**
+        `docs/qa/gates/{{task_slug}}-review.yaml`
+  
+        Then, the developer can run the `*apply-fixes` command.
 
 
   - id: emit_risk_note

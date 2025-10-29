@@ -92,7 +92,7 @@ workflow:
   - id: map_existing_agents
     type: discovery
     files:
-      - .codex/agents/*.yaml
+      - .codex/agents/*.md
       - .codex/agents.index.yaml
     extract:
       - agent names and roles

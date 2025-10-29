@@ -111,7 +111,7 @@ workflow:
 
   - id: write_test_design
     type: write
-    path: "docs/qa/test-design-{{task_name}}.md"
+    path: "docs/qa/test-scenarios-{{task_name}}.md"
     content: generated_test_design
     on_complete: return_file_path
 
@@ -125,7 +125,7 @@ completion:
 
 output:
   format: markdown
-  location: "docs/qa/test-design-{{task_name}}.md"
+  location: "docs/qa/test-scenarios-{{task_name}}.md"
 
 anti_patterns:
   never:

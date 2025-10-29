@@ -107,7 +107,7 @@ workflow:
 
   - id: write_report
     type: write
-    path: "report-{{checklist_name}}-{{target_name}}.md"
+    path: "docs/qa/reports/report-{{checklist_name}}-{{target_name}}.md"
     content: generated_report
     on_complete: return_file_path
 

@@ -11,7 +11,7 @@ rules:
   name: Duplicate Logic/Utils
   severity: HIGH
   detect: "≥2 files contain functions with ≥85% token similarity or identical names; e.g., formatPhone repeated."
-  fix: "Consolidate into src/shared/utils/<name>.ts; replace call sites."
+  fix: "Consolidate into a shared utility module (e.g., <shared_utils_dir>/<name>.ts); replace call sites."
   autofix: true
   id: C2
   name: Unused Abstractions
@@ -23,7 +23,7 @@ rules:
   name: Config Drift
   severity: HIGH
   detect: "Same env key has divergent defaults or parsing across files."
-  fix: "Single source in src/shared/config/, validated at boot."
+  fix: "Single source in a shared config module (e.g., <shared_config_dir>), validated at boot."
   autofix: true
   id: C4
   name: Tool Duplication
@@ -47,7 +47,7 @@ rules:
   name: Logger Chaos
   severity: LOW
   detect: "Mixed logging libs or raw console in prod paths."
-  fix: "Use shared logger from src/shared/utils/logging.ts only."
+  fix: "Use shared logger from a shared utility module (e.g., <shared_logging_module>) only."
   autofix: true
   id: C8
   name: Date Library Mix
@@ -125,7 +125,7 @@ rules:
   name: Duplicate Types
   severity: MEDIUM
   detect: "Equivalent TS interfaces/types defined in multiple files."
-  fix: "Merge into src/shared/types/; update imports."
+  fix: "Merge into a shared types directory (e.g., <shared_types_dir>); update imports."
   autofix: true
   id: D21
   name: Unused Config Keys

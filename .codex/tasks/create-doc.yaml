@@ -49,38 +49,37 @@ workflow:
     run: pm-context-checklist.yaml
     next: process_template_sections
 
-  - id: process_template_sections
-    type: iterative
-    mode: section_by_section
-    rule: |
-      Process each section sequentially. NEVER generate full doc at once.
-
-      For each section:
-      1. Draft content based on template instruction
-      2. Present draft with rationale
-      3. STOP and ask: "Thoughts on this section?"
-      4. Wait for user feedback
-      5. Refine based on feedback
-      6. Only proceed when user approves
-
-    sections_from: "{{selected_template}}"
-
+  - id: generate_full_draft
+    type: generate
+    template: "{{selected_template}}"
+    prompt: "Generate a complete first draft of the document based on the template and all gathered context."
     draft_rules:
       - "Keep it concise (follow template max_length)"
       - "Use context7 MCP for tech stack validation"
       - "Challenge assumptions - ask if uncertain"
       - "Cut ruthlessly - what can we NOT include?"
+    store_in: document_draft
+
+  - id: review_and_refine
+    type: review
+    prompt: |
+      Here is the complete first draft. Please review it.
+
+      {{document_draft}}
+
+      You can approve it, or provide feedback for refinement.
+    actions: [approve, provide_feedback]
+    on_approve: finalize_document
+    on_feedback: regenerate_with_feedback
 
   - id: finalize_document
     type: assembly
-    condition: all_sections_approved
     actions:
-      - assemble_sections
       - apply_formatting
       - determine_output_path
 
   - id: write_file
-    type: write_to_filesystem
+    type: write
     critical: true
     rules:
       - "NEVER write to agent file (.codex/agents/product_manager.xml)"
@@ -117,16 +116,13 @@ completion:
 
 anti_patterns:
   never:
-    - "Generate entire document in one step"
-    - "Proceed without user approval on current section"
-    - "Skip the 'present and explain' step"
+    - "Proceed without user approval on the final draft"
     - "Write 20-page docs when 1 page works"
     - "Write to agent or template files"
     - "Skip context7 validation for tech references"
   always:
-    - "Work section by section"
-    - "Provide rationale for content"
-    - "Engage in collaborative refinement"
+    - "Generate a full draft for initial review"
+    - "Incorporate user feedback before finalizing"
     - "Use context7 MCP for tech validation"
     - "Ask: Could this be simpler?"
     - "Create NEW markdown file in docs/"

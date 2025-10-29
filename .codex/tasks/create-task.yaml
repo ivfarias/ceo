@@ -122,13 +122,12 @@ workflow:
           - testing_patterns
         rule: "Developer should NEVER need to read other docs"
 
-  - id: self_review
+  - id: validate_with_checklist
     type: validation
-    checks:
-      - "Can developer start immediately?"
-      - "Is tech stack validated with context7 MCP?"
-      - "Are success criteria testable?"
-      - "Could anything be cut while staying clear?"
+    task: execute-checklist
+    inputs:
+      checklist_file: .codex/checklists/task-checklist.yaml
+      target_content: "{{task_draft}}"
     action: if_fail → refine_task
 
   - id: present_to_user

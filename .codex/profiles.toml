@@ -1,0 +1,62 @@
+# ============================================================================
+# CEO Orchestration System - Agent Profiles
+# ============================================================================
+# Add these profiles to your ~/.codex/config.toml to enable agent switching
+#
+# Usage:
+#   codex --profile ceo        # Start with CEO orchestrator
+#   codex --profile developer  # Start with Developer agent
+#   codex --profile pm         # Start with Product Manager
+#   etc.
+#
+# Copy-paste this entire block into your ~/.codex/config.toml file
+# ============================================================================
+
+[profiles.analyst]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Ana - Analytics Specialist
+
+[profiles.ceo]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Cleo - Executive Orchestrator
+
+[profiles.developer]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Devon - Senior Developer & Architect
+
+[profiles.marketer]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Mark - Unified Marketing Strategist 📢
+
+[profiles.pm]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Manny - Lean Product Manager
+
+[profiles.prepper]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Pepe - Project Preparation & Optimization Specialist
+
+[profiles.qa]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Quinn - Test Architect & Quality Advisor
+
+[profiles.ux-expert]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Sally - UX Expert
+
