@@ -161,7 +161,7 @@ workflow:
     template: |
       ✅ ExecPlan created: `plans/active/{{filename}}`
 
-      **This is a living document. You must update it as you work:**
+      This is a living document. You must update it as you work:
 
       - Mark Progress checkboxes: `[x] (YYYY-MM-DD HH:MMZ) Completed milestone`
       - Add to Decision Log when making design choices
@@ -169,9 +169,9 @@ workflow:
       - Fill Outcomes & Retrospective at completion
       - Move to `plans/completed/` when done
 
-      **To update this plan:** Use the `update-execplan` task or edit directly.
+      To update this plan: Use the `update-execplan` task or edit directly.
 
-      **Next steps:**
+      Next steps:
       1. Review the plan with stakeholders if needed
       2. Begin implementation starting with first milestone
       3. Update Progress section at every stopping point

@@ -33,9 +33,9 @@ workflow:
   - id: load_dependencies
     type: read
     files:
-      - .codex/core-config.xml
-      - .codex/templates/marketing-strategy-tmpl.yaml
-      - .codex/data/marketing-frameworks.yaml
+      - .agent/core-config.xml
+      - .agent/templates/marketing-strategy-tmpl.yaml
+      - .agent/data/marketing-frameworks.yaml
     check: channel_analysis_exists
     action: if_exists → use_as_input
 

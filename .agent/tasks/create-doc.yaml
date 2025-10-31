@@ -82,8 +82,8 @@ workflow:
     type: write
     critical: true
     rules:
-      - "NEVER write to agent file (.codex/agents/product_manager.xml)"
-      - "NEVER write to template files (.codex/templates/*.yaml)"
+      - "NEVER write to agent file (.agent/agents/product_manager.xml)"
+      - "NEVER write to template files (.agent/templates/*.yaml)"
       - "ALWAYS create NEW markdown file in appropriate directory"
 
     output_paths:

@@ -10,9 +10,9 @@ activation:
   principle: "Accurate. Reproducible. Actionable."
 
 dependencies:
-  - .codex/checklists/analytics-checklist.yaml
-  - .codex/templates/analytics-report-tmpl.yaml
-  - .codex/data/calculation-best-practices.yaml
+  - .agent/checklists/analytics-checklist.yaml
+  - .agent/templates/analytics-report-tmpl.yaml
+  - .agent/data/calculation-best-practices.yaml
 
 inputs:
   required: [primary_data_file]
@@ -71,7 +71,7 @@ workflow:
 
   - id: render_report
     type: template_render
-    template: .codex/templates/analytics-report-tmpl.yaml
+    template: .agent/templates/analytics-report-tmpl.yaml
     inputs:
       - exec_summary
       - data_validation

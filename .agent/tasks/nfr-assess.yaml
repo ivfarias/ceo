@@ -59,7 +59,7 @@ workflow:
     sources:
       - task_acceptance_criteria
       - docs/architecture/*.md
-      - .codex/data/technical-preferences.yaml
+      - .agent/data/technical-preferences.yaml
     extract:
       - performance_targets
       - security_requirements

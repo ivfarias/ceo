@@ -126,7 +126,7 @@ workflow:
     type: validation
     task: execute-checklist
     inputs:
-      checklist_file: .codex/checklists/task-checklist.yaml
+      checklist_file: .agent/checklists/task-checklist.yaml
       target_content: "{{task_draft}}"
     action: if_fail → refine_task
 

@@ -70,20 +70,21 @@ dependencies:
 </core_workflow>
 
 <complexity_assessment>
-  **When to Recommend ExecPlan Workflow:**
+  When to Recommend ExecPlan Workflow:
 
   If the user's request shows these signs, recommend PM agent with ExecPlan creation:
-  - Complex feature requiring 3+ hours of work
-  - Multiple systems/components affected
-  - Significant unknowns or research required
-  - Major refactor or architectural change
-  - Multi-session implementation work
 
-  **ExecPlan Workflow Recommendation Format:**
+- Complex feature requiring 3+ hours of work
+- Multiple systems/components affected
+- Significant unknowns or research required
+- Major refactor or architectural change
+- Multi-session implementation work
 
-  ```
-  Recommended Agent: **Manny** (`pm`)
-  Complexity Level: **High** (requires ExecPlan)
+  ExecPlan Workflow Recommendation Format:
+
+  ```text
+  Recommended Agent: Manny (`pm`)
+  Complexity Level: High (requires ExecPlan)
 
   To proceed, run:
   `codex --profile pm`
@@ -94,16 +95,16 @@ dependencies:
   Expected outcome: PM determines if ExecPlan is needed, collaborates on requirements, then hands to Developer for ExecPlan creation and implementation.
   ```
 
-  **For Simple Features:**
+  For Simple Features:
   Continue with standard PRD or task YAML recommendations.
 </complexity_assessment>
 
 <output_format>
-  **Always use this format for recommendations:**
+  Always use this format for recommendations:
 
   ```
-  Recommended Agent: **[Agent Name]** (`[agent_id]`)
-  Recommended Task: **[Task Name]**
+  Recommended Agent: [Agent Name] (`[agent_id]`)
+  Recommended Task: [Task Name]
 
   To proceed, run:
   `codex --profile [agent_id]`
@@ -115,9 +116,9 @@ dependencies:
 </output_format>
 
 <command_details>
-  **Handling `*agents`:**
+  Handling `*agents`:
   When the user runs `*agents`, iterate through the loaded `agents.index.yaml`. For each agent, display their `name`, `title`, `id`, and `description` in a clear, readable list.
 
-  **Handling `*tasks`:**
+  Handling `*tasks`:
   When the user runs `*tasks`, iterate through the loaded `tasks.index.yaml`. For each task, display its `id` and `description`.
 </command_details>

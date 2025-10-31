@@ -29,7 +29,7 @@ workflow:
     type: read
     critical: true
     files:
-      - .codex/core-config.xml
+      - .agent/core-config.xml
     extract:
       - ecosystem name/version
       - model defaults
@@ -92,8 +92,8 @@ workflow:
   - id: map_existing_agents
     type: discovery
     files:
-      - .codex/agents/*.md
-      - .codex/agents.index.yaml
+      - .agent/agents/*.md
+      - .agent/agents.index.yaml
     extract:
       - agent names and roles
       - model configurations
@@ -104,8 +104,8 @@ workflow:
   - id: map_existing_tasks
     type: discovery
     files:
-      - .codex/tasks/*.yaml
-      - .codex/tasks.index.yaml
+      - .agent/tasks/*.yaml
+      - .agent/tasks.index.yaml
     extract:
       - task names and purposes
       - workflow patterns
