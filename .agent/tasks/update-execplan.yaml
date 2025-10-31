@@ -1,0 +1,174 @@
+metadata:
+  title: Update Execution Plan (ExecPlan)
+  owner: developer
+  model: gpt-5-codex
+  reasoning_effort: low
+  verbosity: low
+
+activation:
+  when: Developer completes a milestone, makes a decision, or discovers something unexpected during implementation
+  principle: "Keep plan current. Document progress, decisions, and discoveries in real-time."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: low
+  - uncertainty_tolerance: medium
+  - prefer_act_over_ask: true  # Quick updates, don't overthink
+  - termination_policy: "Update section and write file"
+  - early_exit_ok: true  # Fast, focused updates
+  </reasoning_control>
+
+inputs:
+  required:
+    - execplan_path: "Path to the ExecPlan file being updated"
+    - update_type: "progress | decision | surprise | retrospective | milestone-complete"
+  optional:
+    - update_content: "The content to add (decision, surprise, completed task, etc.)"
+
+workflow:
+  - id: read_current_plan
+    type: read
+    file: "{{execplan_path}}"
+    store_in: current_plan
+
+  - id: route_by_update_type
+    type: switch
+    variable: update_type
+    cases:
+      progress:
+        action: update_progress_section
+      decision:
+        action: update_decision_log
+      surprise:
+        action: update_surprises
+      retrospective:
+        action: update_retrospective
+      milestone-complete:
+        action: mark_milestone_and_assess
+
+  - id: update_progress_section
+    type: edit
+    when: update_type == "progress"
+    target_section: "## Progress"
+    action: |
+      1. Find the relevant checkbox item
+      2. Mark as completed: `- [x] ({{current_timestamp_iso}}) {{task_description}}`
+      3. If task partially done, split into two items:
+         - [x] (timestamp) Completed part
+         - [ ] Remaining work to do
+    rules:
+      - Always add ISO timestamp when marking complete
+      - Keep section current - it must reflect actual state
+      - If adding new granular steps, insert them in logical order
+
+  - id: update_decision_log
+    type: append
+    when: update_type == "decision"
+    target_section: "## Decision Log"
+    format: |
+      - Decision: {{decision_description}}
+        Rationale: {{why_this_choice}}
+        Date/Author: {{current_date}} / Developer Agent
+    rules:
+      - Record the "why" not just the "what"
+      - Include trade-offs considered
+      - Be concise but complete
+
+  - id: update_surprises
+    type: append
+    when: update_type == "surprise"
+    target_section: "## Surprises & Discoveries"
+    format: |
+      - Observation: {{what_was_unexpected}}
+        Evidence: {{test_output_or_behavior_observed}}
+    rules:
+      - Include concrete evidence (test output, error messages, logs)
+      - Keep it factual, not interpretive
+      - Explain impact on implementation if significant
+
+  - id: update_retrospective
+    type: append
+    when: update_type == "retrospective"
+    target_section: "## Outcomes & Retrospective"
+    format: |
+      ### {{milestone_or_completion_name}} ({{current_date}})
+
+      **Achieved:**
+      {{what_was_accomplished}}
+
+      **Lessons Learned:**
+      {{key_insights_or_discoveries}}
+
+      **Remaining Work:**
+      {{what_is_left_if_any}}
+    rules:
+      - Compare outcome to original purpose
+      - Highlight gaps between plan and reality
+      - Note what would be done differently
+
+  - id: mark_milestone_and_assess
+    type: composite
+    when: update_type == "milestone-complete"
+    steps:
+      - Mark milestone checkbox complete with timestamp
+      - Add Decision Log entry if design decisions were made
+      - Add Surprises entry if unexpected issues encountered
+      - Assess if Concrete Steps or Validation sections need updates based on what was learned
+      - Consider brief retrospective note for this milestone
+
+  - id: write_updated_plan
+    type: write
+    critical: true
+    file: "{{execplan_path}}"
+    content: updated_plan
+    backup: true
+    rules:
+      - Preserve all existing content
+      - Only modify the target section(s)
+      - Maintain markdown formatting
+      - No triple-backtick fences (use indentation for code)
+
+  - id: output_confirmation
+    type: message
+    template: |
+      ✅ ExecPlan updated: `{{execplan_path}}`
+
+      Section(s) modified: {{sections_modified}}
+
+      **Living Document Reminder:**
+      Continue updating Progress, Decision Log, and Surprises as you work.
+
+      Next: Continue with next milestone or task.
+
+completion:
+  checklist:
+    - plan_read
+    - appropriate_section_updated
+    - file_written_back
+    - developer_reminded_plan_is_living
+
+output:
+  format: markdown
+  location: "{{execplan_path}}"
+
+anti_patterns:
+  never:
+    - "Batch multiple updates - update in real-time"
+    - "Skip timestamps on completed progress items"
+    - "Record decisions without rationale"
+    - "Add surprises without evidence"
+    - "Let Progress section drift from reality"
+  always:
+    - "Update immediately after completing work"
+    - "Include ISO timestamps for all progress items"
+    - "Document the *why* in Decision Log"
+    - "Provide concrete evidence in Surprises"
+    - "Keep plan synchronized with actual state"
+
+notes:
+  - This task is meant to be called frequently (multiple times per session)
+  - Fast, focused updates - don't overthink it
+  - Progress section must ALWAYS reflect current reality
+  - Decision Log captures rationale for future developers
+  - Surprises help future implementers avoid pitfalls
+  - When work is fully complete, write retrospective and move to plans/completed/

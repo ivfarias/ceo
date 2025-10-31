@@ -1,15 +1,26 @@
 # CEO-Led Orchestration System
 
-A structured framework for coordinating specialized AI agents using Codex CLI. Think of it as building your own AI development team with a CEO (Chief Executive Orchestrator) that routes work to the right specialists.
+A streamlined framework for coordinating specialized AI agents using Codex CLI. Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a much more streamlined and lean way to orchestrate multiple agents.
+
+**Why This Exists:**
+
+The BMAD method is powerful but, I personally couldn't really get the whole benefit of it, because it felt like an  overkill for professionals like me, running things on their own. This system strips away the complexity while keeping the core orchestration benefits:
+
+- **Token-efficient**: Dramatically reduced token usage vs. full BMAD implementations
+- **OpenAI-first**: Optimized for GPT-5-Codex (most people have OpenAI accounts, not multiple AI subscriptions)
+- **Solo-friendly**: Built for one person wearing many hats, not enterprise teams
+- **Lean by default**: No heavy processes unless you actually need them
+
+Think of it as building your own AI startup team with you as the CEO that routes work to the right specialists—without the enterprise overhead.
 
 ## What Problem Does This Solve?
 
 Working with AI for complex projects often leads to:
 
-* **Inconsistent Outputs:** AI style and quality varies wildly between prompts
-* **Context Loss:** AI forgets key project details, causing errors
-* **No Structure:** Long chat histories are a poor substitute for organized workflows
-* **Quality Degradation:** Initial progress quickly devolves into unmaintainable chaos
+- **Inconsistent Outputs:** AI style and quality varies wildly between prompts
+- **Context Loss:** AI forgets key project details, causing errors
+- **No Structure:** Long chat histories are a poor substitute for organized workflows
+- **Quality Degradation:** Initial progress quickly devolves into unmaintainable chaos
 
 This system provides the structure and methodology missing from unstructured "AI coding." It establishes clear, repeatable workflows with specialized agents, turning chaos into focused productivity.
 
@@ -24,7 +35,7 @@ This system uses **profile-based agent switching** with Codex CLI:
 
 ### The CEO Workflow
 
-```
+```bash
 User → CEO Agent → Analyzes intent → Consults indexes → Prescribes workflow
 
 CEO Output:
@@ -49,7 +60,7 @@ npm install -g codex-cli
 Copy the generated profile configurations to your Codex config:
 
 ```bash
-cat .codex/profiles.toml >> ~/.codex/config.toml
+cat .agent/profiles.toml >> ~/.agent/config.toml
 ```
 
 This adds all agent profiles (`ceo`, `developer`, `pm`, `qa`, `analytics`, `marketer`, `ux-expert`, `prepper`) to your Codex CLI.
@@ -61,13 +72,14 @@ codex --profile ceo
 ```
 
 Then tell the CEO what you need:
-```
+
+```bash
 "I need to build a login feature"
 ```
 
 The CEO will analyze your request and prescribe a complete workflow:
 
-```
+```bash
 **New Feature Development Workflow**
 
 **Step 1: Product Manager (Manny)**
@@ -107,7 +119,7 @@ The specialist agent will execute with full context from its definition file.
 
 ## System Components
 
-### Agents (`.codex/agents/`)
+### Agents (`.agent/agents/`)
 
 Specialized AI personas with distinct capabilities:
 
@@ -120,9 +132,10 @@ Specialized AI personas with distinct capabilities:
 - **ux-expert** (Sally) - UI/UX design, wireframes
 - **prepper** (Pepe) - System optimization, agent tuning
 
-### Tasks (`.codex/tasks/`)
+### Tasks (`.agent/tasks/`)
 
 Structured, executable workflows:
+
 - `create-doc` - Generate documents from templates
 - `create-task` - Define developer-ready tasks
 - `review-task` - QA validation workflow
@@ -130,33 +143,37 @@ Structured, executable workflows:
 - `document-project` - Auto-generate project docs
 - ...and more
 
-### Checklists (`.codex/checklists/`)
+### Checklists (`.agent/checklists/`)
 
 Quality validation lists:
+
 - `code-quality-checklist` - Code standards validation
 - `pm-context-checklist` - Requirements completeness
 - `analytics-checklist` - Data analysis validation
 - `openai-sdk-compliance-checklist` - SDK best practices
 
-### Templates (`.codex/templates/`)
+### Templates (`.agent/templates/`)
 
 Document boilerplates:
+
 - `prd-tmpl` - Product Requirements Document
 - `architecture-tmpl` - System architecture
 - `task-tmpl` - Task specification
 - `analytics-report-tmpl` - Analytics reports
 
-### Data (`.codex/data/`)
+### Data (`.agent/data/`)
 
 Knowledge base and references:
+
 - `technical-preferences.yaml` - Tech stack and standards
 - `gpt-5-prompting-guide.md` - Prompting best practices
 - `marketing-frameworks.yaml` - Marketing strategies
 - `optimization-best-practices.md` - System optimization
 
-### Indexes (`.codex/*.index.yaml`)
+### Indexes (`.agent/*.index.yaml`)
 
 Auto-generated resource catalogs:
+
 - `agents.index.yaml` - All available agents
 - `tasks.index.yaml` - All available tasks
 - `checklists.index.yaml` - All validation checklists
@@ -172,10 +189,11 @@ These are used by the CEO agent to provide informed workflow recommendations.
 Indexes are auto-regenerated by a git pre-commit hook. To manually regenerate:
 
 ```bash
-.codex/utils/generate-indexes.sh
+.agent/utils/generate-indexes.sh
 ```
 
 This updates:
+
 - All `*.index.yaml` files
 - `profiles.toml` (for user setup)
 - `SETUP.md` (user documentation)
@@ -184,10 +202,10 @@ This updates:
 
 ### Adding New Resources
 
-1. **New Agent:** Create `.codex/agents/new-agent.md` following existing patterns
-2. **New Task:** Create `.codex/tasks/new-task.yaml` with workflow definition
-3. **New Checklist:** Create `.codex/checklists/new-checklist.yaml`
-4. **Regenerate:** Run `.codex/utils/generate-indexes.sh` (or just commit—hook runs it)
+1. **New Agent:** Create `.agent/agents/new-agent.md` following existing patterns
+2. **New Task:** Create `.agent/tasks/new-task.yaml` with workflow definition
+3. **New Checklist:** Create `.agent/checklists/new-checklist.yaml`
+4. **Regenerate:** Run `.agent/utils/generate-indexes.sh` (or just commit—hook runs it)
 
 The CEO will automatically know about new resources after regeneration.
 
@@ -272,6 +290,7 @@ codex --profile pm "Create PRD for user dashboard"
 This system uses Codex CLI's native profile mechanism instead of mid-conversation agent transformation:
 
 **Advantages:**
+
 - ✅ Native Codex CLI feature (no extra setup)
 - ✅ Each agent gets full context from its definition file
 - ✅ Clean separation between agent contexts
@@ -279,10 +298,12 @@ This system uses Codex CLI's native profile mechanism instead of mid-conversatio
 - ✅ Simple for users to understand
 
 **Trade-off:**
+
 - Manual profile switching (can't auto-invoke)
 - Context doesn't automatically transfer between agents
 
 **Solution:**
+
 - CEO provides complete guidance with exact commands
 - Agents coordinate via file-based artifacts (specs, reports, etc.)
 - Users maintain context by following prescribed workflows
@@ -292,10 +313,10 @@ This system uses Codex CLI's native profile mechanism instead of mid-conversatio
 ### Adapt to Your Project
 
 1. **Update `technical-preferences.yaml`** with your tech stack
-2. **Customize agent instructions** in `.codex/agents/*.md`
-3. **Add project-specific tasks** in `.codex/tasks/`
-4. **Define custom checklists** in `.codex/checklists/`
-5. **Regenerate indexes** with `.codex/utils/generate-indexes.sh`
+2. **Customize agent instructions** in `.agent/agents/*.md`
+3. **Add project-specific tasks** in `.agent/tasks/`
+4. **Define custom checklists** in `.agent/checklists/`
+5. **Regenerate indexes** with `.agent/utils/generate-indexes.sh`
 
 ### Extend the System
 
@@ -310,28 +331,46 @@ Everything is file-based and version-controlled.
 
 ## Architecture Philosophy
 
-This system is inspired by BMAD-METHOD's orchestration patterns but adapted for Codex CLI constraints:
+This system is inspired by BMAD-METHOD's orchestration patterns but **radically simplified** for solo entrepreneurs:
+
+### What We Kept from BMAD
+
+- **Agent specialization:** Different roles for different tasks
+- **Structured workflows:** Repeatable processes via tasks and checklists
+- **Knowledge bases:** Centralized data and templates
+
+### What We Simplified
+
+- **No heavy orchestration layer:** CEO prescribes workflows instead of executing them
+- **No multi-model complexity:** Optimized for GPT-5-Codex (OpenAI-first)
+- **No enterprise ceremony:** Lightweight PRDs and optional ExecPlans instead of mandatory bureaucracy
+- **Massive token reduction:** File-based coordination and bash-generated indexes (not LLM calls)
+
+### Core Design Principles
 
 - **File-based coordination:** Agents communicate through artifacts (PRDs, reports, etc.)
 - **Index-driven discovery:** CEO knows available resources via auto-generated catalogs
 - **Profile-based isolation:** Each agent operates in its own context
 - **Workflow prescription:** CEO provides complete guidance, not just routing
 - **Zero-token maintenance:** Indexes generated via bash, not LLM calls
+- **Lean by default:** Simple workflows for simple tasks, complexity only when needed
 
 ## Troubleshooting
 
 ### CEO doesn't know about new resource
 
 **Solution:** Regenerate indexes
+
 ```bash
-.codex/utils/generate-indexes.sh
+.agent/utils/generate-indexes.sh
 ```
 
 ### Profile not found
 
 **Solution:** Add profiles to your config
+
 ```bash
-cat .codex/profiles.toml >> ~/.codex/config.toml
+cat .agent/profiles.toml >> ~/.agent/config.toml
 ```
 
 ### Agent gives generic responses
@@ -341,9 +380,10 @@ cat .codex/profiles.toml >> ~/.codex/config.toml
 ### Indexes out of date
 
 **Solution:** The git pre-commit hook should auto-update. If not:
+
 ```bash
 chmod +x .git/hooks/pre-commit
-chmod +x .codex/utils/generate-indexes.sh
+chmod +x .agent/utils/generate-indexes.sh
 ```
 
 ## Contributing

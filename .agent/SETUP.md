@@ -10,13 +10,13 @@ npm install -g codex-cli
 
 ### 2. Add Agent Profiles
 
-Copy the contents of `.codex/profiles.toml` into your `~/.codex/config.toml`:
+Copy the contents of `.agent/profiles.toml` into your `~/.agent/config.toml`:
 
 ```bash
-cat .codex/profiles.toml >> ~/.codex/config.toml
+cat .agent/profiles.toml >> ~/.agent/config.toml
 ```
 
-Or manually copy-paste the profiles section from `.codex/profiles.toml` into your config.
+Or manually copy-paste the profiles section from `.agent/profiles.toml` into your config.
 
 ### 3. Start Using Agents
 
@@ -74,7 +74,7 @@ codex --profile developer "Implement user authentication"
 ## Advanced: MCP Sub-Agents (Optional)
 
 For automatic orchestration where the CEO can invoke agents directly, see:
-- `.codex/docs/MCP_SETUP.md` (coming soon)
+- `.agent/docs/MCP_SETUP.md` (coming soon)
 
 This requires installing an MCP server and is optional for power users.
 
@@ -83,7 +83,7 @@ This requires installing an MCP server and is optional for power users.
 If you add new agents, tasks, or checklists, regenerate the indexes:
 
 ```bash
-.codex/utils/generate-indexes.sh
+.agent/utils/generate-indexes.sh
 ```
 
 This updates:
@@ -97,7 +97,7 @@ This updates:
 ## Project Structure
 
 ```
-.codex/
+.agent/
 ├── agents/           # Agent definitions
 ├── tasks/            # Task templates
 ├── checklists/       # Quality checklists
@@ -111,6 +111,6 @@ This updates:
 
 ## Need Help?
 
-- Check agent documentation: `.codex/agents/*.md`
-- View available tasks: `.codex/tasks.index.yaml`
+- Check agent documentation: `.agent/agents/*.md`
+- View available tasks: `.agent/tasks.index.yaml`
 - See README.md for system overview

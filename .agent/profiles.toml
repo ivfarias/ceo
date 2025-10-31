@@ -1,7 +1,7 @@
 # ============================================================================
 # CEO Orchestration System - Agent Profiles
 # ============================================================================
-# Add these profiles to your ~/.codex/config.toml to enable agent switching
+# Add these profiles to your ~/.agent/config.toml to enable agent switching
 #
 # Usage:
 #   codex --profile ceo        # Start with CEO orchestrator
@@ -9,7 +9,7 @@
 #   codex --profile pm         # Start with Product Manager
 #   etc.
 #
-# Copy-paste this entire block into your ~/.codex/config.toml file
+# Copy-paste this entire block into your ~/.agent/config.toml file
 # ============================================================================
 
 [profiles.analyst]
