@@ -1,0 +1,299 @@
+template:
+  id: execplan-template-v1
+  name: Execution Plan (ExecPlan)
+  version: 1.0
+  description: "Comprehensive living document for multi-hour/multi-day implementation work"
+  max_length: "As long as needed for complete self-containment"
+  output:
+    format: markdown
+    filename: plans/active/{{feature_name}}-execplan.md
+    title: "[{{feature_name}}] — Execution Plan"
+
+workflow:
+  mode: comprehensive
+  living_document: true
+  self_contained: true
+  bias: "Complete context over brevity. A novice should be able to implement from this plan alone."
+
+when_to_use:
+  use_for:
+    - "Complex features requiring 3+ hours of implementation"
+    - "Significant refactors touching multiple systems"
+    - "Features with unclear requirements needing validation"
+    - "Multi-step implementations spanning multiple sessions"
+    - "Work requiring extensive research or prototyping"
+
+  do_not_use_for:
+    - "Simple bug fixes"
+    - "Trivial feature additions"
+    - "One-file changes"
+    - "Clear, straightforward implementations"
+
+requirements:
+  critical:
+    - "Must be fully self-contained with all knowledge needed"
+    - "Living document: update continuously as work progresses"
+    - "Enable complete novice to implement end-to-end"
+    - "Produce demonstrably working behavior, not just code changes"
+    - "Define every term of art in plain language"
+
+  formatting:
+    - "Single markdown file (no nested code fences when in YAML context)"
+    - "Use indentation for code examples, not triple backticks"
+    - "Two newlines after every heading"
+    - "Prefer prose over lists in narrative sections"
+    - "Checklists allowed only in Progress section"
+
+sections:
+  - id: header
+    title: "[Short, action-oriented description]"
+    type: text
+    instruction: "Title that describes what this ExecPlan accomplishes"
+
+  - id: metadata
+    title: Metadata
+    type: structured
+    instruction: "Living document notice and compliance reference"
+    template: |
+      This ExecPlan is a living document. The sections `Progress`, `Surprises & Discoveries`,
+      `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work proceeds.
+
+      This document must be maintained in accordance with `.agent/PLANS.md`.
+
+  - id: purpose
+    title: Purpose / Big Picture
+    type: paragraph
+    instruction: |
+      Explain in a few sentences what someone gains after this change and how they can see it working.
+      State the user-visible behavior you will enable.
+
+      Focus on:
+      - What can users do after this change that they couldn't before?
+      - How can they see it working?
+      - Why does this matter?
+    max_length: "3-5 sentences"
+    required: true
+
+  - id: progress
+    title: Progress
+    type: checklist
+    instruction: |
+      Use a list with checkboxes to summarize granular steps. Every stopping point must be
+      documented here, even if it requires splitting a partially completed task into two
+      ("done" vs. "remaining"). This section must always reflect the actual current state of the work.
+
+      Use timestamps to measure rates of progress.
+      Format: `- [x] (YYYY-MM-DD HH:MMZ) Example completed step`
+    template: |
+      - [ ] Example incomplete step
+      - [ ] Example incomplete step
+    required: true
+    living: true
+    owner: developer
+    update_frequency: "Every stopping point"
+
+  - id: surprises
+    title: Surprises & Discoveries
+    type: structured-list
+    instruction: |
+      Document unexpected behaviors, bugs, optimizations, or insights discovered during implementation.
+      Provide concise evidence.
+
+      This helps future developers understand why certain decisions were made.
+    template: |
+      - Observation: …
+        Evidence: …
+    required: true
+    living: true
+    owner: developer
+
+  - id: decision_log
+    title: Decision Log
+    type: structured-list
+    instruction: |
+      Record every decision made while working on the plan.
+      Include rationale and date/author for each decision.
+    template: |
+      - Decision: …
+        Rationale: …
+        Date/Author: …
+    required: true
+    living: true
+    owner: developer
+
+  - id: outcomes
+    title: Outcomes & Retrospective
+    type: paragraph
+    instruction: |
+      Summarize outcomes, gaps, and lessons learned at major milestones or at completion.
+      Compare the result against the original purpose.
+
+      Questions to answer:
+      - Did we achieve the original purpose?
+      - What worked well?
+      - What would we do differently?
+      - What remains to be done?
+    required: true
+    living: true
+    owner: developer
+    fill_when: "Upon completion or major milestones"
+
+  - id: context
+    title: Context and Orientation
+    type: paragraph
+    instruction: |
+      Describe the current state relevant to this task as if the reader knows nothing.
+
+      Must include:
+      - Key files and modules by full path
+      - Definition of any non-obvious terms you will use
+      - How different parts of the system fit together
+      - Current architecture relevant to this change
+
+      Do NOT refer to prior plans. Be self-contained.
+    required: true
+
+  - id: plan
+    title: Plan of Work
+    type: paragraph
+    instruction: |
+      Describe, in prose, the sequence of edits and additions.
+
+      For each edit:
+      - Name the file and location (function, module)
+      - What to insert or change
+      - Why this change is necessary
+
+      Keep it concrete and minimal. Write as a narrative, not a list.
+    required: true
+
+  - id: steps
+    title: Concrete Steps
+    type: structured
+    instruction: |
+      State the exact commands to run and where to run them (working directory).
+
+      When a command generates output, show a short expected transcript so the reader can compare.
+
+      Format:
+      1. Command to run
+      2. Expected output
+      3. What success looks like
+
+      This section must be updated as work proceeds.
+    required: true
+    living: true
+
+  - id: validation
+    title: Validation and Acceptance
+    type: structured
+    instruction: |
+      Describe how to start or exercise the system and what to observe.
+
+      Phrase acceptance as behavior, with specific inputs and outputs.
+
+      Example: "Run [project's test command] and expect [N] passed;
+      the new test [name] fails before the change and passes after."
+
+      Include:
+      - How to start/exercise the system
+      - What to observe
+      - Expected inputs and outputs
+      - How to prove the change is effective
+    required: true
+
+  - id: idempotence
+    title: Idempotence and Recovery
+    type: paragraph
+    instruction: |
+      If steps can be repeated safely, say so.
+      If a step is risky, provide a safe retry or rollback path.
+      Keep the environment clean after completion.
+
+      This section helps developers recover from failures.
+    required: true
+
+  - id: artifacts
+    title: Artifacts and Notes
+    type: text
+    instruction: |
+      Include the most important transcripts, diffs, or snippets as indented examples.
+      Keep them concise and focused on what proves success.
+
+      Use indentation, not code fences, to avoid nesting issues.
+    required: false
+
+  - id: interfaces
+    title: Interfaces and Dependencies
+    type: structured
+    instruction: |
+      Be prescriptive. Name the libraries, modules, and services to use and why.
+
+      Specify:
+      - Types, traits/interfaces that must exist
+      - Function signatures
+      - Stable names and paths (e.g., `package.module.function`)
+
+      Example:
+
+      In src/foo/planner.ts, define:
+
+          export interface Planner {
+              plan(observed: Observed): Action[];
+          }
+    required: true
+
+guidelines:
+  self_containment:
+    - "Define every term of art immediately"
+    - "Include needed explanations inline (don't reference external docs)"
+    - "Embed knowledge in the plan itself"
+    - "Repeat assumptions rather than referring to earlier sections"
+
+  observable_outcomes:
+    - "State what user can do after implementation"
+    - "Provide commands to run and expected outputs"
+    - "Phrase acceptance as verifiable behavior"
+    - "Show how impact can be demonstrated"
+
+  repository_context:
+    - "Use full repository-relative paths"
+    - "Name functions and modules precisely"
+    - "Describe where new files should be created"
+    - "Include orientation for multi-area changes"
+
+  safety:
+    - "Make steps idempotent where possible"
+    - "Include retry/adaptation instructions"
+    - "Spell out backups or safe fallbacks"
+    - "Prefer additive, testable changes"
+
+  validation:
+    - "Include test commands and expected results"
+    - "Show end-to-end scenarios"
+    - "Provide expected outputs and error messages"
+    - "Prove effectiveness beyond compilation"
+
+agent_responsibilities:
+  developer:
+    - "Creates and maintains ExecPlans during implementation"
+    - "Updates Progress, Decision Log, and Surprises in real-time"
+    - "Ensures plan remains self-contained and current"
+
+  pm:
+    - "Determines when ExecPlan is needed vs lean PRD"
+    - "Collaborates on requirements and success criteria"
+    - "Validates user problem and success criteria are clear"
+
+  qa:
+    - "Reviews ExecPlans for testability"
+    - "Validates outcomes match acceptance criteria"
+
+archive:
+  on_completion:
+    from: "plans/active/{{feature_name}}-execplan.md"
+    to: "plans/completed/{{feature_name}}-execplan.md"
+  retain:
+    - "All sections including retrospective"
+    - "Full decision log and surprises"
+    - "Final validation results"

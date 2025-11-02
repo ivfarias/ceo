@@ -1,0 +1,114 @@
+<core_config model="gpt-5-codex" version="2.0">
+  <ecosystem name="CEO-Orchestration" framework="BMAD">
+    <orchestrator_agent>ceo</orchestrator_agent>
+  </ecosystem>
+
+  <indexes>
+    <agents>.agent/agents.index.yaml</agents>
+    <tasks>.agent/tasks.index.yaml</tasks>
+    <checklists>.agent/checklists.index.yaml</checklists>
+    <templates>.agent/templates.index.yaml</templates>
+    <data>.agent/data.index.yaml</data>
+    <utils>.agent/utils.index.yaml</utils>
+  </indexes>
+
+  <paths>
+    <agent_root>.agent</agent_root>
+    <docs_root>docs</docs_root>
+    <tasks>docs/tasks</tasks>
+    <qa>docs/qa</qa>
+    <reports>docs/reports</reports>
+    <marketing>docs/marketing</marketing>
+    <debug_log>.ai/debug-log.md</debug_log>
+    <backup>.agent/.backup</backup>
+    <execplans>plans</execplans>
+    <execplans_active>plans/active</execplans_active>
+    <execplans_completed>plans/completed</execplans_completed>
+  </paths>
+
+  <models default="gpt-5-codex" reasoning_effort="medium" verbosity="low" />
+
+  <orchestration>
+    <mode>stop-confirm-continue</mode>
+    <allow_parallel>false</allow_parallel>
+    <require_approval>true</require_approval>
+    <maintain_audit_log>true</maintain_audit_log>
+  </orchestration>
+
+  <workflow_stages>
+    <stage id="define">PM: Requirements → Task</stage>
+    <stage id="build">Dev: Implementation</stage>
+    <stage id="validate">QA: Quality Gate</stage>
+    <stage id="coordinate">CEO: Handoffs & Delivery</stage>
+  </workflow_stages>
+
+  <task_states>
+    <state>Draft</state>
+    <state>Approved</state>
+    <state>InProgress</state>
+    <state>Review</state>
+    <state>Done</state>
+  </task_states>
+
+  <qa>
+    <location>docs/qa</location>
+    <gate_values>
+      <value>PASS</value>
+      <value>CONCERNS</value>
+      <value>FAIL</value>
+      <value>WAIVED</value>
+    </gate_values>
+    <nfr_defaults>
+      <item>security</item>
+      <item>performance</item>
+      <item>reliability</item>
+      <item>maintainability</item>
+    </nfr_defaults>
+    <thresholds>
+      <test_coverage_min>80</test_coverage_min>
+      <code_quality_min>70</code_quality_min>
+    </thresholds>
+  </qa>
+
+  <safety>
+    <forbidden_tools>
+      <tool>codex exec</tool>
+      <tool>codex list</tool>
+    </forbidden_tools>
+    <isolation>
+      <prevent_agent_file_modification>true</prevent_agent_file_modification>
+      <allow_qa_section_only>true</allow_qa_section_only>
+      <prevent_cross_agent_loading>true</prevent_cross_agent_loading>
+    </isolation>
+    <backup enabled="true" format="YYYYMMDD-HHMMSS">
+      <location>.agent/.backup</location>
+    </backup>
+  </safety>
+
+  <activation>
+    <slash_prefix>ceo</slash_prefix>
+    <auto_help>true</auto_help>
+    <greeting_template>Hi, I'm {name} {icon} — your {role}.</greeting_template>
+  </activation>
+
+  <elicitation>
+    <mode>advanced</mode>
+    <max_questions_per_round>2</max_questions_per_round>
+    <use_numbered_options>true</use_numbered_options>
+  </elicitation>
+
+  <output>
+    <format>markdown</format>
+    <require_citations>true</require_citations>
+    <end_with_next_actions>true</end_with_next_actions>
+  </output>
+
+  <features>
+    <markdown_exploder>true</markdown_exploder>
+    <auto_index_refresh>false</auto_index_refresh>
+    <parallel_execution>false</parallel_execution>
+    <context_window_management>true</context_window_management>
+    <adaptive_reasoning_effort>true</adaptive_reasoning_effort>
+    <verbosity_control>true</verbosity_control>
+  </features>
+</core_config>

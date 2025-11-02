@@ -1,0 +1,155 @@
+checklist:
+  id: pm-context-validation
+  name: PM Context Validation Checklist
+  version: 1.0
+  owner: pm
+  purpose: |
+    Ensure Product Manager has sufficient context before creating any deliverable.
+    Prevents assumptions and ensures evidence-based decision making.
+
+principle: "Never assume. Always ask. No context = gather context first."
+
+categories:
+    id: product_vision
+    title: Product Vision & Strategy
+    required: true
+    items:
+        id: vision_documented
+        check: "Is the product vision clearly documented?"
+        sources: ["README.md", "vision doc", "user input"]
+        if_missing: "Ask user to share vision or point to relevant docs"
+
+        id: target_users
+        check: "Do we know who the target users are?"
+        if_missing: "Ask: Who is this for? What's their current pain?"
+
+        id: success_definition
+        check: "How will we measure success?"
+        if_missing: "Ask: What metrics prove this is working?"
+
+    id: validation
+    title: Customer Discovery & Validation
+    required: true
+    critical: true
+    items:
+        id: user_problem_validated
+        check: "Do we have evidence users actually have this problem?"
+        evidence_types: ["user interviews", "support tickets", "usage data", "market research"]
+        if_missing: "STOP. Ask: How do we know users want this?"
+
+        id: solution_validated
+        check: "Have users confirmed this solution would help them?"
+        evidence_types: ["user feedback", "prototype testing", "competitive analysis"]
+        if_missing: "Flag risk: Unvalidated assumption"
+
+        id: willingness_to_pay
+        check: "Would users pay for this / use this?"
+        if_missing: "Consider: Is this a real problem or a nice-to-have?"
+
+    id: scope
+    title: Scope & Prioritization
+    required: true
+    items:
+        id: impact_assessed
+        check: "What's the expected impact (user value, business value)?"
+        if_missing: "Ask: Why this, why now?"
+
+        id: effort_estimated
+        check: "What's the rough effort (small/medium/large)?"
+        if_missing: "Ask: How complex is this?"
+
+        id: scope_challenged
+        check: "Have we challenged the scope? What can we NOT build?"
+        if_missing: "Ask: What's the simplest version that validates the hypothesis?"
+
+        id: v1_defined
+        check: "Is v1 clearly scoped (not overbuilt)?"
+        rule: "Default to small experiments over full features"
+
+    id: technical
+    title: Technical Context
+    required: true
+    items:
+        id: tech_stack_known
+        check: "Do we know the tech stack?"
+        sources: ["package.json", "README.md", "architecture docs"]
+        action: "Use context7 MCP to validate frameworks/libraries"
+
+        id: constraints_identified
+        check: "Are there technical constraints? (performance, security, compatibility)"
+        if_missing: "Ask: Any technical limitations we should know about?"
+
+        id: dependencies_mapped
+        check: "Are there dependencies on other systems/teams?"
+        if_missing: "Ask: What does this depend on?"
+
+    id: execution
+    title: Execution Context
+    required: true
+    items:
+        id: file_paths_known
+        check: "Do we know where code changes will happen?"
+        if_missing: "Explore codebase or ask developer"
+
+        id: testing_requirements
+        check: "What testing is required?"
+        if_missing: "Check testing standards or ask QA"
+
+        id: rollout_plan
+        check: "How will we release this? (feature flag, phased rollout, etc.)"
+        if_missing: "Consider: Ship small, learn fast"
+
+scoring:
+  pass_threshold: 80
+  critical_items_must_pass: true
+
+  levels:
+      score: 90-100
+      label: "Excellent   Strong context"
+      action: "Proceed confidently"
+
+      score: 70-89
+      label: "Good   Minor gaps"
+      action: "Document unknowns and proceed"
+
+      score: 50-69
+      label: "Insufficient   Major gaps"
+      action: "STOP. Gather more context before proceeding"
+
+      score: 0-49
+      label: "Blocked   Critical gaps"
+      action: "STOP. Cannot proceed without context"
+
+actions:
+  on_pass:
+      "Proceed with deliverable creation"
+      "Document context sources in output"
+
+  on_fail:
+      "Present checklist results to user"
+      "List specific missing items"
+      "Ask: 'Can you provide [missing item] or point me to relevant docs?'"
+      "If no sources available, conduct research (web search, context7 MCP)"
+      "Re-run checklist after gathering context"
+
+usage:
+  trigger_before:
+      create-spec
+      create-task
+      create-prd
+      prioritize
+      validate
+
+  output_format: |
+    ## Context Validation Results
+
+    **Score**: X/100
+    **Status**: [Pass/Fail]
+
+    ### Missing Context:
+      [Item 1]
+      [Item 2]
+
+    ### Next Actions:
+      [Action 1]
+      [Action 2]

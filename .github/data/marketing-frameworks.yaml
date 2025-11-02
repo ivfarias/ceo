@@ -1,0 +1,275 @@
+kb: marketing_frameworks
+version: 1.0
+description: >
+  Provide up-to-date, expert-grade, vendor-agnostic marketing guidance for planning, execution,
+  measurement, and optimization. Optimized for agent reasoning (low verbosity, deterministic parsing).
+
+principles:
+  - Outcomes over activities: optimize for incremental profit and payback, not vanity.
+  - Measure causally: prefer experiments and quasi-experiments over platform-reported ROAS.
+  - Creative is the algorithm: systematic concept testing beats micro-targeting.
+  - First-party data first: consented, durable identity beats third-party enrichment.
+  - Fewer, better bets: test portfolios, not fragments; kill fast, scale hard.
+  - Loops beat funnels: build compounding acquisition/retention loops, not single-pass journeys.
+  - Privacy by design: consent, minimization, and server-side telemetry as defaults.
+north_star:
+  definition: >
+    One metric that best captures delivered customer value and predicts revenue (e.g., "Weekly Active
+    'Core Action' Users", "Qualified Pipeline Created", "Orders Shipped").
+  guardrails:
+    - Maintain channel-level payback <= target_months (default: 12).
+    - Maintain blended churn <= ceiling.
+    - Maintain brand safety + compliance thresholds
+metrics:
+  definitions:
+    cac: "total_acq_costs / new_customers"
+    ltv_subscriptions: "arpu_monthly / churn_rate_monthly"
+    ltv_txn: "avg_order_value * orders_per_customer * gross_margin"
+    ltv_cac_ratio: "ltv / cac"
+    payback_months: "cac / arpu_monthly"
+    mroas: "incremental_revenue / incremental_spend"
+    lift_pct: "(treatment - control) / control"
+    ctr: "clicks / impressions"
+    cvr: "conversions / clicks"
+    hook_rate: "plays_3s / impressions"
+    hold_rate_25: "plays_25pct / impressions"
+  targets:
+    ltv_cac_min: 3.0
+    payback_max_months: 12
+    mroas_min: 1.0
+  reporting_rules:
+    - Always show absolute values + deltas + CI (if experimental).
+    - Never mix modeled and observed metrics without labeling.
+    - Separate platform-reported from causal estimates.
+data_model:
+  identity:
+    - first_party_id: required
+    - consent_state: required
+    - hashed_contact: optional
+  events_minimum:
+    - view
+    - click
+    - session_start
+    - signup
+    - core_action
+    - purchase
+    - churn_event
+  tracking:
+    - use_server_side_events: true
+    - deduplicate_client_server: true
+    - enforce_schema_in_ci: true
+measurement:
+  methods:
+    - id: rct_online
+      name: Online A/B (randomized)
+      when: "UI/flow changes, pricing tests, creatives at scale"
+      requirements:
+        ["traffic_sufficient", "randomization", "power_calc", "srm_check"]
+    - id: geo_experiment
+      name: Geo holdout / switchback
+      when: "Media incrementality for paid channels at regional level"
+      requirements: ["geo_pairing", "stable_baseline", "no_spillover"]
+    - id: uplift_holdout
+      name: Audience holdout / PSA
+      when: "Incrementality of platform campaigns with audience-level control"
+      requirements:
+        ["consistent_delivery", "brand_safety", "sufficient_audience"]
+    - id: synthetic_control
+      name: Synthetic control / diff-in-diff
+      when: "Causal impact with observational data where randomization impractical"
+      requirements: ["parallel_trends", "good_controls"]
+    - id: mmm_bayesian
+      name: Bayesian MMM
+      when: "Long-horizon budget allocation across channels"
+      requirements:
+        [
+          "2y_history_preferable",
+          "carryover_saturation",
+          "brand_terms_controls",
+        ]
+  policies:
+    - Pre-register hypothesis, success metric, horizon, and decision rule.
+    - Compute power upfront; avoid underpowered tests.
+    - Detect SRM (sample ratio mismatch) before reading results.
+    - Report point estimate + 95% CI; prefer uplift and mROAS over platform ROAS.
+    - Archive all experiments with ID, data sources, and code refs.
+experimentation:
+  decision_rules:
+    - if: "mroas >= target AND payback_months <= payback_max_months"
+      then: "scale_by: 50% (cap weekly); retest at new spend to check saturation"
+    - if: "mroas < 1.0 OR payback_months > payback_max_months"
+      then: "pause_and_postmortem"
+  concept_testing:
+    - cluster_creatives_by: ["hook", "promise", "proof", "format"]
+    - success_leading_indicators: ["hook_rate", "hold_rate_25", "click_quality"]
+    - graduate_on: "uplift in conversion or cost-per-core_action"
+  saturation:
+    signals:
+      [
+        "rising_cac",
+        "declining_marginal_conversions",
+        "frequency>cap",
+        "creative_fatigue",
+      ]
+creative_system:
+  taxonomy:
+    hooks:
+      [
+        "pattern_interrupt",
+        "problem_agitation",
+        "demo_first",
+        "social_proof",
+        "counterintuitive_fact",
+      ]
+    promises:
+      ["save_time", "save_money", "gain_status", "reduce_risk", "mastery"]
+    proofs:
+      [
+        "before_after",
+        "testimonial",
+        "quantified_claim",
+        "live_demo",
+        "third_party_validation",
+      ]
+    formats:
+      [
+        "short_vertical_video",
+        "carousel",
+        "static",
+        "ugc",
+        "long_form_demo",
+        "livestream_clip",
+      ]
+  metrics:
+    leading: ["hook_rate", "hold_rate_25", "hold_rate_50", "click_quality"]
+    lagging: ["cvr", "cac", "mroas", "payback_months"]
+  operations:
+    - Maintain creative backlog with hypotheses and tags.
+    - Batch-produce variants per concept (3-5) instead of minor edits (20+).
+    - Refresh winners weekly; kill losers fast; archive learnings with tags.
+channels:
+  - id: short_form_social
+    role: "Primary creative discovery + scaled acquisition"
+    kpis: ["cac", "mroas", "payback_months", "hook_rate", "hold_rate_25"]
+    notes:
+      - Broad targeting OK; let creative do the filtering.
+      - Frequent fatigue → refresh cadence weekly.
+  - id: creator_affiliate
+    role: "Trust transfer + lower CAC with rev-share"
+    kpis: ["cost_per_core_action", "mroas", "creator_replication_rate"]
+    notes:
+      - Use unique landing + offer to estimate incrementality.
+  - id: search
+    role: "Harvest intent; protect brand"
+    kpis: ["non_brand_cac", "brand_leakage_rate", "incremental_click_share"]
+    notes:
+      - Separate brand/non-brand; model cannibalization in MMM.
+  - id: retail_media
+    role: "High-intent marketplaces; downstream sales lift"
+    kpis: ["mroas", "share_of_shelf", "conversion_rate"]
+    notes:
+      - Optimize product detail page content supply chain.
+  - id: ctv_ott
+    role: "Reach + demand creation with measurable geo holdouts"
+    kpis: ["incremental_site_visits", "incremental_orders", "mroas_geo"]
+  - id: lifecycle_crm
+    role: "Activation, expansion, retention"
+    kpis: ["activation_rate", "winback_rate", "arpu", "churn"]
+    notes:
+      - Trigger on behavior + value moments; respect consent and fatigue.
+  - id: seo_programmatic
+    role: "Compounding, query-mapped surfaces using templates/data"
+    kpis: ["non_brand_clicks", "indexation_rate", "content_to_click_latency"]
+    notes:
+      - Human-in-the-loop quality gates; avoid thin AI pages.
+  - id: community_dark_social
+    role: "Credibility + word-of-mouth in private networks"
+    kpis: ["referral_rate", "invite_accept_rate", "nps_topic_volume"]
+    notes:
+      - Instrument invitations, not impressions.
+
+growth_loops:
+  - id: referral_loop
+    equation: "invites_per_user * accept_rate * activation_rate"
+    unlocks: ["in-product_rewards", "social_proof"]
+    guardrails: ["fraud_checks", "payback_enforced"]
+  - id: creator_content_loop
+    equation: "creator_posts -> views -> trials -> revenue_share -> more_creators"
+    leading_indicators: ["creator_signup_rate", "avg_views_per_post"]
+  - id: usage_retention_loop
+    equation: "core_action_frequency -> habit -> retention -> LTV -> higher_bids"
+
+privacy_compliance:
+  defaults:
+    - collect_minimum_required: true
+    - consent_required_for_personalization: true
+    - honor_donotsell_and_gdpr_delete: true
+    - store_pii_encrypted_at_rest: true
+  telemetry:
+    - prefer_server_side_events: true
+    - avoid_fingerprinting: true
+    - document_data_flows_in_repo: true
+
+budget_allocation:
+  objective: "Maximize incremental_profit subject to payback_months <= target and NSM growth."
+  weekly_process:
+    - Update MMM/experiments; estimate channel mROAS + payback.
+    - Reallocate toward highest marginal returns within guardrails.
+    - Cap growth per channel to avoid delivery instability (suggested: <=50% WoW).
+  pause_rules:
+    - "if payback_months > payback_max_months for 2 consecutive reads → pause"
+    - "if mroas < 1.0 and creative refresh already attempted → pause"
+
+playbooks:
+  briefs:
+    experiment_brief:
+      fields:
+        [
+          "hypothesis",
+          "primary_metric",
+          "method",
+          "power",
+          "horizon",
+          "decision_rule",
+        ]
+    creative_brief:
+      fields:
+        [
+          "audience_truth",
+          "problem",
+          "promise",
+          "proof_assets",
+          "format",
+          "cta",
+        ]
+    channel_brief:
+      fields:
+        [
+          "objective",
+          "budget",
+          "kpis",
+          "measurement_plan",
+          "creative_plan",
+          "risks",
+        ]
+  anti_patterns:
+    - "Relying on last-click to scale top-of-funnel"
+    - "Declaring winners on underpowered tests"
+    - "Optimizing to CTR/CPM instead of CAC/mROAS"
+    - "Endless micro-audiences instead of creative hypotheses"
+    - "Copy-pasting platform ROAS into board decks as causal impact"
+
+deprecations:
+  - guidance: "Do not reference deprecated or sunset tools in KBs."
+  - examples:
+      [
+        "avoid naming defunct A/B tools; specify 'experimentation platform' capability category",
+      ]
+  - action: "If a vendor is required, define via capability tags and resolve at runtime via config."
+
+agent_contract:
+  expectations:
+    - Always propose a measurement plan with chosen method and decision rule.
+    - For channel plans, include creative taxonomy, leading + lagging metrics.
+    - When recommending scale/pause, show mROAS, payback, confidence (CI or power).
+    - Cite data sources and show math for any derived metric.

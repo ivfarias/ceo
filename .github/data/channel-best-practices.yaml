@@ -1,0 +1,254 @@
+kb: marketing_channel_best_practices
+version: 1.0
+description: "Structured marketing channel best practices. Covers ASO, SEO, Paid Search, Social, Email, Influencer, and General principles."
+
+channels:
+  - name: app_store_optimization
+    alias: ASO
+    best_practices:
+      keyword_research:
+        - target_5_10_primary_keywords
+        - include_10_20_long_tail_keywords
+        - perform_competitor_analysis
+        - tools: [AppAnnie, SensorTower, AppRadar]
+      app_title:
+        ios: { max_chars: 30, include_primary_keyword: true }
+        android: { max_chars: 50, front_load_keyword: true }
+        brand_keyword_balance: "Maintain balance between brand visibility and keyword inclusion."
+        ab_test_titles: true
+      subtitle_short_description:
+        ios: { max_chars: 30, complementary_keywords: true }
+        android: { max_chars: 80, compelling_hook: true }
+        value_proposition: "Clearly communicate app function and value."
+      description:
+        - hook_first_3_lines
+        - maintain_natural_keyword_density
+        - use_feature_bullets
+        - include_social_proof
+        - end_with_cta
+      visuals:
+        - app_icon_simple_and_distinct
+        - screenshots: 5-10
+        - text_overlays_for_value
+        - preview_video: { length: "15-30s" }
+        - localize_visual_assets
+      ratings_reviews:
+        - prompt_after_positive_experience
+        - use_native_review_prompts
+        - respond_professionally_to_negatives
+        - turn_feedback_into_feature_requests
+      ab_testing:
+        - test_one_element_at_a_time
+        - run_7_14_days_minimum
+        - track_conversion_rate_primary
+  - name: search_engine_optimization
+    alias: SEO
+    best_practices:
+      keyword_research:
+        - understand_search_intent: [informational, navigational, transactional]
+        - balance_volume_vs_difficulty
+        - target_long_tail_keywords
+        - tools: [GoogleKeywordPlanner, Ahrefs, SEMrush, Moz]
+      on_page:
+        title_tags: { length: "50-60", include_primary_keyword_start: true }
+        meta_description: { length: "150-160", compelling_with_keyword: true }
+        header_tags: [H1_once, H2, H3_structure]
+        url_structure: clean_and_keyword_rich
+        internal_links_per_page: 3-5
+        image_optimization: [alt_text, descriptive_filename, compression]
+      technical:
+        - page_speed_under_3s
+        - mobile_first_responsive_design
+        - enforce_https
+        - submit_xml_sitemap
+        - configure_robots_txt_correctly
+        - apply_schema_markup
+      content_strategy:
+        - prioritize_quality_over_quantity
+        - pillar_content_length: "1500-2500_words"
+        - update_regularly
+        - follow_EAT: [Expertise, Authority, Trust]
+        - include_multimedia
+      link_building:
+        - prioritize_quality_links
+        - ensure_relevance
+        - maintain_anchor_text_variation
+        - tactics: [guest_posting, digital_pr, broken_link_building, resource_pages]
+        - avoid: [PBNs, link_farms, paid_links]
+      local_seo:
+        - complete_google_business_profile
+        - ensure_NAP_consistency
+        - list_in_local_directories
+        - manage_reviews
+        - create_local_content
+  - name: paid_search
+    alias: sem
+    platforms: [GoogleAds, BingAds]
+    best_practices:
+      campaign_structure:
+        - organize_by_product_or_goal
+        - 10_20_keywords_per_adgroup
+        - mix_match_types: [exact, phrase, broad_modifier]
+        - include_negative_keywords
+      keyword_strategy:
+        - focus_on_high_intent_terms
+        - start_with_exact_and_phrase
+        - begin_manual_CPC_then_automate
+        - aim_quality_score_over_7
+      ad_copy:
+        - three_headlines_with_keyword_in_one
+        - clear_value_prop_and_CTA
+        - use_all_extensions: [sitelink, callout, snippets]
+        - maintain_2_3_variations
+        - ensure_mobile_optimization
+      landing_page:
+        - message_match_with_ad_copy
+        - single_clear_CTA
+        - load_speed_under_3s
+        - responsive_design
+        - include_trust_signals
+      bid_management:
+        - start_conservative
+        - adjust_by_device_and_location
+        - time_based_bid_modifiers
+        - enable_automated_bidding: { strategies: [TargetCPA, TargetROAS], precondition: "≥30_conversions" }
+  - name: social_media_ads
+    platforms: [Facebook, Instagram, LinkedIn, TikTok]
+    best_practices:
+      audience_targeting:
+        - saved_audiences_by_demographics_interests
+        - use_custom_audiences_from_visitors_or_lists
+        - create_1_3_percent_lookalikes
+        - exclude_existing_customers_for_acquisition
+      creative:
+        - design_mobile_first
+        - hook_in_first_3s
+        - always_add_captions
+        - prefer_vertical_or_square_aspect_ratios
+        - test_3_5_creatives_per_campaign
+        - use_UGC_when_possible
+      campaign_structure:
+        - one_objective_per_campaign
+        - separate_adsets_by_audience
+        - 3_5_ads_per_adset
+        - min_budget_per_adset: "$20-50_per_day"
+      platform_specific:
+        facebook_instagram:
+          - use_advantage_plus_shopping_for_ecom
+          - carousel_for_multi_product
+          - stories_and_reels_for_engagement
+        linkedin:
+          - expect_higher_cpm_but_better_leads
+          - sponsored_content_best
+          - conversation_ads_for_leads
+          - video_ads_5x_engagement
+        tiktok:
+          - favor_organic_style_content
+          - use_trending_sounds_formats
+          - ideal_video_length_9_15s
+          - spark_ads_perform_best
+  - name: social_media_organic
+    best_practices:
+      content_strategy:
+        - define_3_5_content_pillars
+        - apply_80_20_value_promo_rule
+        - maintain_consistent_posting
+        - create_platform_native_content
+        - participate_in_trends
+      engagement:
+        - respond_within_1_2h
+        - ask_questions_to_engage
+        - share_user_generated_content
+        - foster_community_groups
+        - collaborate_with_micro_influencers
+      platform_specific:
+        instagram:
+          - mix_feed_stories_reels
+          - use_3_5_relevant_hashtags
+          - post_during_peak_times
+        tiktok:
+          - post_1_3_times_daily
+          - hook_in_first_3s
+          - engage_with_comments
+        linkedin:
+          - post_2_5_times_weekly
+          - use_long_form_content
+          - encourage_employee_advocacy
+        twitter:
+          - tweet_3_5_times_daily
+          - use_threads
+          - join_conversations
+          - max_hashtags_per_tweet: 2
+  - name: email_marketing
+    best_practices:
+      list_building:
+        - offer_lead_magnets
+        - use_popups_for_capture
+        - create_dedicated_landing_pages
+        - ensure_gdpr_can_spam_compliance
+      segmentation:
+        - behavioral_based
+        - demographic_based
+        - engagement_based
+        - lifecycle_stage_based
+      email_types:
+        - welcome_series: 3-5_emails
+        - nurture_sequence
+        - promotional_emails
+        - re_engagement_campaigns
+        - transactional_emails
+      general_practices:
+        - subject_line_length: "40-50_chars"
+        - personalized_subjects
+        - optimized_preview_text
+        - mobile_first_design
+        - single_CTA_per_email
+        - run_A_B_tests
+        - send_frequency: "1-4_emails_per_week"
+  - name: influencer_marketing
+    best_practices:
+      selection:
+        - prioritize_audience_relevance
+        - aim_for_2_5_percent_engagement
+        - verify_authenticity
+        - align_content_style_with_brand
+        - review_past_partnerships
+      tiers:
+        - nano: "1K-10K_followers"
+        - micro: "10K-100K"
+        - macro: "100K-1M"
+        - mega: ">1M"
+      campaign_types:
+        - gifting
+        - sponsored_posts
+        - ambassadorships
+        - affiliate_programs
+      general_practices:
+        - provide_clear_brief_but_allow_creativity
+        - require_authentic_integration
+        - enforce_disclosure_hashtags: ["#ad", "#sponsored"]
+        - track_with_unique_links
+        - favor_long_term_partnerships
+  - name: general_marketing_principles
+    best_practices:
+      testing_optimization:
+        - always_be_testing
+        - test_one_variable_at_a_time
+        - ensure_statistical_significance
+        - document_learnings
+      attribution_measurement:
+        - implement_multi_touch_attribution
+        - run_incrementality_tests
+        - perform_cohort_analysis
+        - report_weekly_or_monthly
+      budget_allocation:
+        - apply_70_20_10_rule
+        - maintain_flexible_budgeting
+        - define_cac_targets
+        - aim_ltv_to_cac_ratio: "≥3:1"
+      creative_excellence:
+        - platform_native_content
+        - mobile_first_design
+        - deliver_value_within_3s
+        - strong_clear_ctas
+        - maintain_brand_consistency

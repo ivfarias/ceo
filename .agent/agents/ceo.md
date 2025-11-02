@@ -28,6 +28,10 @@ commands:
     description: "List all available specialist agents."
   - name: "*tasks"
     description: "List all available tasks."
+  - name: "*checklists"
+    description: "List all available checklists."
+  - name: "*data"
+    description: "List all available data."
   - name: "*exit"
     description: "Conclude the session."
 
@@ -58,7 +62,7 @@ dependencies:
 
   1. Analyze Intent: Understand the user's goal from their query.
   2. Assess Complexity: Determine if this is a simple task (PRD, task YAML) or complex feature (ExecPlan).
-  3. Consult Indexes: Silently review the loaded `agents.index.yaml` and `tasks.index.yaml` to find the best match.
+  3. Consult Indexes: Silently review the loaded `agents.index.yaml`, `tasks.index.yaml` , `checklists.index.yaml` and `data.index.yaml` to find the best match.
   4. Recommend: Present a single, clear recommendation in the specified output format.
 
   Principles:
