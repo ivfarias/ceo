@@ -1,15 +1,15 @@
-<core_config model="gpt-5-codex" version="2.0">
+<core_config model="claude-sonnet-4.5" version="2.0">
   <ecosystem name="CEO-Orchestration" framework="BMAD">
     <orchestrator_agent>ceo</orchestrator_agent>
   </ecosystem>
 
   <indexes>
-    <agents>.agent/agents.index.yaml</agents>
-    <tasks>.agent/tasks.index.yaml</tasks>
-    <checklists>.agent/checklists.index.yaml</checklists>
-    <templates>.agent/templates.index.yaml</templates>
-    <data>.agent/data.index.yaml</data>
-    <utils>.agent/utils.index.yaml</utils>
+    <agents>.github/agents.index.yaml</agents>
+    <tasks>.github/tasks.index.yaml</tasks>
+    <checklists>.github/checklists.index.yaml</checklists>
+    <templates>.github/templates.index.yaml</templates>
+    <data>.github/data.index.yaml</data>
+    <utils>.github/utils.index.yaml</utils>
   </indexes>
 
   <paths>
@@ -20,13 +20,13 @@
     <reports>docs/reports</reports>
     <marketing>docs/marketing</marketing>
     <debug_log>.ai/debug-log.md</debug_log>
-    <backup>.agent/.backup</backup>
+    <backup>.github/.backup</backup>
     <execplans>plans</execplans>
     <execplans_active>plans/active</execplans_active>
     <execplans_completed>plans/completed</execplans_completed>
   </paths>
 
-  <models default="gpt-5-codex" reasoning_effort="medium" verbosity="low" />
+  <models default="claude-sonnet-4.5" reasoning_effort="medium" verbosity="low" />
 
   <orchestration>
     <mode>stop-confirm-continue</mode>
@@ -72,8 +72,8 @@
 
   <safety>
     <forbidden_tools>
-      <tool>codex exec</tool>
-      <tool>codex list</tool>
+      <tool>copilot exec</tool>
+      <tool>copilot list</tool>
     </forbidden_tools>
     <isolation>
       <prevent_agent_file_modification>true</prevent_agent_file_modification>
@@ -81,7 +81,7 @@
       <prevent_cross_agent_loading>true</prevent_cross_agent_loading>
     </isolation>
     <backup enabled="true" format="YYYYMMDD-HHMMSS">
-      <location>.agent/.backup</location>
+      <location>.github/.backup</location>
     </backup>
   </safety>
 

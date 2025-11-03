@@ -112,17 +112,19 @@ dependencies:
   When to Create an ExecPlan:
 
   Create an ExecPlan (`.agent/AGENTS.md`) for:
-  - Complex features requiring 3+ hours of work
-  - Significant refactors touching multiple systems
-  - Features with unclear requirements needing prototyping
-  - Multi-session implementations
-  - Work requiring extensive research or validation
+
+- Complex features requiring 3+ hours of work
+- Significant refactors touching multiple systems
+- Features with unclear requirements needing prototyping
+- Multi-session implementations
+- Work requiring extensive research or validation
 
   Do NOT create ExecPlans for:
-  - Simple bug fixes
-  - Trivial feature additions
-  - One-file changes
-  - Clear, straightforward implementations
+
+- Simple bug fixes
+- Trivial feature additions
+- One-file changes
+- Clear, straightforward implementations
 
   How to Work with ExecPlans:
 
@@ -137,10 +139,11 @@ dependencies:
   5. Archive: Move to `plans/completed/` when done
 
   ExecPlan Requirements (from `.agent/PLANS.md`):
-  - Self-contained (complete novice can implement from it)
-  - Living document (update continuously)
-  - Observable outcomes (define how to verify success)
-  - Fully detailed (no "as mentioned before" or external refs)
+
+- Self-contained (complete novice can implement from it)
+- Living document (update continuously)
+- Observable outcomes (define how to verify success)
+- Fully detailed (no "as mentioned before" or external refs)
 </execplan_usage>
 
 <verification>

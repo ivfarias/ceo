@@ -1,0 +1,202 @@
+metadata:
+  title: Optimize Single Checklist
+  owner: prepper
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Prepper processes one checklist during optimize-checklists or optimize-all sequence
+  principle: "One checklist at a time. Ensure completeness and project relevance. Stop for confirmation."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Get user confirmation for each change
+  - termination_policy: "Stop after user confirms completion or skips"
+  - early_exit_ok: true  # User can skip optimization
+  </reasoning_control>
+
+workflow:
+  - id: validate_prerequisites
+    type: validation
+    checks:
+      - "analysis_report exists and is populated"
+      - "target checklist file path provided"
+    action: if_fail → halt_and_request_analysis
+
+  - id: read_checklist_file
+    type: read
+    target: "{{checklist_file_path}}"
+    announce: |
+      Reading checklist file: {{checklist_file_path}}
+      Purpose: Ensure items align with project standards and workflows
+
+  - id: analyze_checklist_gaps
+    type: analysis
+    inputs:
+      - analysis_report.project_structure
+      - analysis_report.tech_stack
+      - analysis_report.code_standards
+      - analysis_report.workflow_stages
+      - current_checklist_content
+    identify:
+      - missing_critical_items_for_project
+      - outdated_tool_references
+      - incorrect_file_path_patterns
+      - tech_stack_specific_validations_missing
+      - workflow_alignment_issues
+      - redundant_or_obsolete_items
+    cross_reference:
+      - core_config.workflow_stages
+      - core_config.qa.nfr_defaults
+      - analysis_report.code_standards
+    store_in: checklist_optimization_plan
+
+  - id: identify_project_specific_additions
+    type: synthesis
+    inputs:
+      - analysis_report.tech_stack
+      - analysis_report.code_standards
+    generate:
+      - tech_specific_checklist_items (e.g., "Run TypeScript type check" if TS project)
+      - standard_enforcement_items (e.g., "Verify ESLint passes" if .eslintrc exists)
+      - framework_specific_items (e.g., "Check React hooks dependencies" if React project)
+    validation:
+      - 
+    store_in: recommended_additions
+
+  - id: prioritize_improvements
+    type: ranking
+    inputs:
+      - checklist_optimization_plan
+      - recommended_additions
+    criteria:
+      - critical: missing_safety_or_quality_checks
+      - high: project_standard_misalignment
+      - medium: clarity_or_completeness_improvements
+      - low: formatting_or_style_tweaks
+    output: ranked_improvements
+    rule: propose_one_improvement_at_a_time
+
+  - id: prepare_improvement_proposal
+    type: generate
+    template: |
+      ## Checklist Optimization: {{checklist_name}}
+
+      **Gap or Issue:**
+      {{description_of_gap_with_evidence}}
+
+      **Project Context:**
+      {{cite_analysis_report_section}}
+
+      **Proposed Change:**
+      ```diff
+      {{before_after_diff}}
+      ```
+
+      **Rationale:**
+      {{why_this_matters_for_quality_or_workflow}}
+
+      **Context7 Evidence (if applicable):**
+      {{framework_best_practice_citation}}
+
+      **Impact:**
+      - Workflow coverage: {{coverage_impact}}
+      - Quality assurance: {{qa_impact}}
+      - Standards compliance: {{standards_impact}}
+
+      **Options:**
+      [1] Apply this improvement
+      [2] Modify the proposal
+      [3] Skip this item
+      [4] Show next priority improvement
+
+  - id: await_user_decision
+    type: elicit
+    prompt: "Choose option [1-4]:"
+    validation:
+      - check: valid_choice
+        action: if_invalid → re_prompt
+
+  - id: apply_improvement
+    type: conditional
+    condition: user_choice == 1
+    action:
+      - edit_checklist_file
+      - update_audit_log
+      - update_progress_table
+      - store_rollback_notes
+    next: announce_completion
+
+  - id: modify_proposal
+    type: conditional
+    condition: user_choice == 2
+    prompt: "What changes would you like to the proposal?"
+    action:
+      - adjust_based_on_feedback
+      - regenerate_proposal
+    next: prepare_improvement_proposal
+
+  - id: skip_item
+    type: conditional
+    condition: user_choice == 3
+    action:
+      - log_skip_decision
+      - update_progress_table
+      - mark_checklist_reviewed
+    next: announce_completion
+
+  - id: show_next_improvement
+    type: conditional
+    condition: user_choice == 4
+    action:
+      - remove_current_from_ranked_improvements
+      - select_next_priority
+    next: prepare_improvement_proposal
+
+  - id: announce_completion
+    type: output
+    format: |
+      ✓ Checklist optimization step complete: {{checklist_name}}
+
+      **Progress Update:**
+      {{progress_table}}
+
+      **Next Steps:**
+      [1] Continue to next checklist
+      [2] Show full optimization progress
+      [3] Pause optimization sequence
+      [4] Return to Prepper menu
+
+completion:
+  criteria:
+    - user_confirmed_completion_or_skip
+    - progress_table_updated
+    - audit_log_maintained
+    - rollback_notes_stored
+
+anti_patterns:
+  never:
+    - "Optimize multiple checklists in one step"
+    - "Apply changes without user confirmation"
+    - "Add generic items without project context"
+    - "Remove items without understanding workflow impact"
+  always:
+    - "One checklist at a time, one change at a time"
+    - "Use codebase search tools for framework best practices"
+    - "Cross-reference core-config.workflow_stages"
+    - "Add project-specific items from analysis_report"
+    - "Maintain audit_log with rationale"
+
+notes:
+  - NEVER optimize multiple checklists in one step
+  - Use codebase search tools to validate framework-specific best practices
+  - Cross-reference core-config.workflow_stages for workflow alignment
+  - Ensure QA checklists include core-config.qa.nfr_defaults
+  - Preserve checklist structure and formatting
+  - Add project-specific items based on analysis_report.tech_stack
+  - Remove obsolete items (e.g., references to tools not in use)
+  - Maintain audit_log with timestamp and rationale
+  - Check that file paths referenced in checklist items match project structure

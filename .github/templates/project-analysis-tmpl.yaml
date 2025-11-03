@@ -77,7 +77,7 @@ sections:
     title: Current State Assessment
     type: structured
     instruction: |
-      Snapshot of existing Codex artifacts and their alignment.
+      Snapshot of existing Copilot artifacts and their alignment.
     required: true
     subsections:
       - id: agents_state
@@ -135,7 +135,7 @@ sections:
       2. {{action_description}} (via *{{command_name}})
     required: true
     examples:
-      - "Update all agents to use gpt-5-codex (via *optimize-agents)"
+      - "Update all agents to use claude-sonnet-4.5 (via *optimize-agents)"
       - "Validate tech stack references with context7 (via *optimize-tasks)"
 
   - id: evidence_log

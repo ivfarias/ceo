@@ -1,0 +1,140 @@
+metadata:
+  title: Create Developer Task
+  owner: product_manager
+  model: claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+
+reasoning_control: |
+<reasoning_control>
+For strategic decisions about task structure and validation, use extended thinking
+(10-15 seconds). For tactical refinements, use focused thinking (5 seconds).
+Terminate when task is written, validated, and user confirms completeness.
+</reasoning_control>
+
+context_gathering: |
+  <context_gathering>
+  Goal: Gather enough context to write comprehensive, self-contained task. Stop when complete.
+
+  Method:
+  - Elicit user problem and success criteria first
+  - Check codebase for file paths and patterns (grep/glob)
+  - Ask max 2-3 clarifying questions per round
+
+  Early stop criteria:
+  - User problem clearly articulated
+  - Success criteria defined and testable
+  - Tech stack validated
+  - File paths identified
+  - Testing requirements known
+
+  Depth:
+  - Focus on immediate task scope, not entire architecture
+  - Research only tech relevant to this specific task
+  - Identify affected files, not entire codebase
+
+  Tool budget: max 3-5 searches/reads for context gathering
+  </context_gathering>
+
+activation:
+  when: user runs `create-task` command
+  principle: "Context first. Never assume. Ship simple, actionable tasks."
+
+workflow:
+  - id: validate_input
+    type: elicit
+    prompt: |
+      What needs to be built and why does it matter to users?
+    validation:
+      - check: user_problem_clear
+        action: if_false → ask_clarifying_questions
+      - check: has_validation_evidence
+        action: if_false → flag_assumption_risk
+
+  - id: ask_clarifying_questions
+    type: conditional
+    condition: input_unclear
+    questions:
+      - "What specific user problem does this solve?"
+      - "How will we know this is successful?"
+      - "What's the simplest version that delivers value?"
+    max_questions: 3
+    next: gather_context
+
+  - id: gather_context
+    type: checklist
+    critical: true
+    stop_if_incomplete: true
+    items:
+      - label: "User problem this solves"
+        required: true
+      - label: "Success criteria (testable)"
+        required: true
+      - label: "File paths for changes"
+        required: true
+      - label: "Tech stack + versions"
+        required: true
+      - label: "API specs or data models"
+        required: true
+      - label: "Testing requirements"
+        required: true
+
+    if_missing:
+      - step: "Check if user can provide context"
+      - step: "Check README or project docs"
+      - step: "Search codebase for tech stack patterns"
+      - step: "Document unknowns and present to user"
+
+  - id: create_task_from_template
+    type: generate
+    template: task-tmpl.yaml
+    sections:
+      - id: what_why
+        max_length: "2-3 sentences"
+        focus: "User value, not implementation details"
+
+      - id: done_when
+        type: list
+        max_items: 5
+        rule: "Each must be testable and unambiguous"
+
+      - id: subtasks
+        type: checklist
+        rule: "Step-by-step implementation plan"
+
+      - id: context_for_developer
+        critical: true
+        must_include:
+          - file_paths
+          - tech_stack
+          - api_specs
+          - testing_patterns
+        rule: "Developer should NEVER need to read other docs"
+
+  - id: validate_with_checklist
+    type: validation
+    task: execute-checklist
+    inputs:
+      checklist_file: .claude/checklists/task-checklist.yaml
+      target_content: "{{task_draft}}"
+    action: if_fail → refine_task
+
+  - id: present_to_user
+    type: output
+    format:
+      - "Show task summary"
+      - "Highlight assumptions or unknowns"
+      - "Ask: 'Does this give the developer everything they need?'"
+
+  - id: save_task
+    type: write
+    path: docs/tasks/
+    filename: "{{task_name}}.md"
+    on_approve: write_file
+
+notes:
+  - Never proceed without required context
+  - Verify tech stack with codebase search tools
+  - Keep tasks simple: < 5 min read time
+  - Self-contained: no "see architecture doc" references
+  - Challenge scope: what can we NOT build?

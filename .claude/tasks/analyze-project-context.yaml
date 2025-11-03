@@ -1,0 +1,185 @@
+metadata:
+  title: Analyze Project Context
+  owner: prepper
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Prepper agent runs `*analyze-project` command
+  principle: "Deep context understanding before any optimization. Evidence-based analysis."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: true  # Analyze autonomously with discovery budgets
+  - termination_policy: "Complete analysis report and present options"
+  - early_exit_ok: false  # Must complete full analysis
+  </reasoning_control>
+
+workflow:
+  - id: initialize_analysis
+    type: setup
+    prompt: |
+      Initialize analysis_report structure to persist findings across discovery steps.
+      Set discovery_budget: max_tool_calls=2 per category.
+
+  - id: read_core_config
+    type: read
+    critical: true
+    files:
+      - .claude/core-config.xml
+    extract:
+      - ecosystem name/version
+      - model defaults
+      - orchestration mode
+      - workflow stages
+      - paths configuration
+      - safety constraints
+    store_in: analysis_report.ecosystem_config
+
+  - id: discover_project_structure
+    type: discovery
+    budget: max_tool_calls=2
+    targets:
+      - README.md (root level)
+      - package.json
+      - src/ directory structure
+      - docs/ directory structure
+    extract:
+      - project name and purpose
+      - primary tech stack
+      - directory layout patterns
+      - naming conventions
+    store_in: analysis_report.project_structure
+    on_missing: document_unknown
+
+  - id: analyze_tech_stack
+    type: analysis
+    budget: max_tool_calls=2
+    sources:
+      - package.json dependencies
+      - import statements in representative source files
+      - README tech stack section
+    extract:
+      - runtime environment (Node.js, browser, etc.)
+      - frameworks (React, Express, Next.js, etc.)
+      - key libraries with versions
+      - build tools (webpack, vite, etc.)
+      - testing frameworks
+    validation:
+      - 
+      - verify_versions: true
+    store_in: analysis_report.tech_stack
+
+  - id: identify_standards
+    type: analysis
+    budget: max_tool_calls=2
+    sources:
+      - .eslintrc* files
+      - .prettierrc* files
+      - tsconfig.json
+      - Representative source files (2-3 examples)
+    extract:
+      - code style (tabs vs spaces, quotes, etc.)
+      - linting rules
+      - TypeScript/JavaScript preference
+      - import/export patterns
+      - file organization patterns
+    store_in: analysis_report.code_standards
+
+  - id: map_existing_agents
+    type: discovery
+    files:
+      - .claude/agents/*.md
+      - .claude/agents.index.yaml
+    extract:
+      - agent names and roles
+      - model configurations
+      - dependencies between agents
+      - workflow integration points
+    store_in: analysis_report.existing_agents
+
+  - id: map_existing_tasks
+    type: discovery
+    files:
+      - .claude/tasks/*.yaml
+      - .claude/tasks.index.yaml
+    extract:
+      - task names and purposes
+      - workflow patterns
+      - template dependencies
+      - elicitation patterns
+    store_in: analysis_report.existing_tasks
+
+  - id: identify_gaps_and_risks
+    type: synthesis
+    inputs:
+      - analysis_report.ecosystem_config
+      - analysis_report.project_structure
+      - analysis_report.tech_stack
+      - analysis_report.code_standards
+      - analysis_report.existing_agents
+      - analysis_report.existing_tasks
+    analyze:
+      - "Are agent models aligned with core-config defaults?"
+      - "Do tasks reference correct tech stack with codebase search?"
+      - "Are file paths in tasks consistent with actual structure?"
+      - "Do workflows match core-config orchestration mode?"
+      - "Are there missing integrations or tool references?"
+    output:
+      - list of alignment issues
+      - missing context gaps
+      - optimization opportunities
+      - risk areas
+    store_in: analysis_report.gaps_and_risks
+
+  - id: generate_analysis_summary
+    type: generate
+    template: project-analysis-tmpl.yaml
+    inputs: analysis_report
+    output_format: structured_markdown
+    include:
+      - Executive Summary (3-5 bullets)
+      - Project Profile (goals, constraints, tech stack)
+      - Current State Assessment (agents, tasks, standards)
+      - Optimization Opportunities (prioritized list)
+      - Risk Areas (what could break)
+      - Recommended Actions (numbered list)
+
+  - id: present_to_user
+    type: output
+    format:
+      - "Display structured analysis summary"
+      - "Highlight top 3 optimization priorities"
+      - "Present numbered options for next steps"
+    options:
+      - "[1] Proceed with optimize-agents"
+      - "[2] Proceed with optimize-tasks"
+      - "[3] Start optimize-all sequence"
+      - "[4] Review specific section of analysis"
+      - "[5] Re-run analysis with different focus"
+
+anti_patterns:
+  never:
+    - "Proceed if core-config.xml not found (critical dependency)"
+    - "Guess at tech stack or versions"
+    - "Over-discover beyond 70% evidence threshold"
+    - "Skip tech stack validation validation for tech stack"
+    - "Analyze without respecting discovery budgets"
+  always:
+    - "Read core-config.xml first (critical)"
+    - "Use codebase search tools for all tech validation"
+    - "Document unknowns rather than guessing"
+    - "Respect max_tool_calls=2 per category"
+    - "Converge at ~70% evidence"
+    - "Persist analysis_report for optimization tasks"
+
+notes:
+  - Stop if core-config.xml is not found (critical dependency)
+  - Document unknowns rather than guessing
+  - Converge at ~70% evidence to avoid over-discovery
+  - Use codebase search tools for all tech stack validation
+  - Persist analysis_report for use by optimization tasks
+  - Evidence threshold: prefer concrete examples over assumptions

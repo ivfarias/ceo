@@ -1,7 +1,7 @@
 metadata:
   title: Document Existing Project
   owner: developer
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: medium
   verbosity: low
   description: "Generate lean, AI-agent-optimized documentation for existing projects"

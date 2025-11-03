@@ -106,7 +106,7 @@ dependencies:
 <output_format>
   Always use this format for recommendations:
 
-  ```
+  ```text
   Recommended Agent: [Agent Name] (`[agent_id]`)
   Recommended Task: [Task Name]
 

@@ -33,7 +33,7 @@ EXCLUDES=(
   "$ROOT/node_modules" "$ROOT/.venv" "$ROOT/venv" "$ROOT/public"
   "$ROOT/.mypy_cache" "$ROOT/.pytest_cache" "$ROOT/.cache" "$ROOT/.gitignore"
   "$ROOT/.next" "$ROOT/.turbo" "$ROOT/.pnpm-store" "$ROOT/.env"
-  "$ROOT/.codex" "$ROOT/.claude" "$ROOT/.vscode" "$ROOT/README.md"
+  "$ROOT/.github" "$ROOT/.github" "$ROOT/.vscode" "$ROOT/README.md"
   "$ROOT/dist" "$ROOT/build" "$ROOT/target" "$ROOT/out" "$ROOT/coverage"
 )
 

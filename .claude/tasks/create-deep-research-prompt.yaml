@@ -1,0 +1,119 @@
+metadata:
+  title: Deep Research Task
+  owner: product_manager
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: user runs `create-deep-research-prompt`
+  principle: "Lean research prompts. Clarify objective first. Context7 for tech validation."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: medium  # Can elicit missing context
+  - prefer_act_over_ask: false  # Clarify research objective first
+  - termination_policy: "Complete prompt generation and export"
+  - early_exit_ok: false  # Must complete full prompt
+  </reasoning_control>
+
+workflow:
+  - id: classify_research
+    prompt: |
+      Select the research category:
+      1. Product Validation
+      2. Market Opportunity
+      3. User Insights
+      4. Competitive Intelligence
+      5. Technology Review
+      6. Industry Trends
+      7. Strategic Options
+      8. Risk Assessment
+      9. Bug or Issue Diagnosis
+      0. Custom
+    type: single-choice
+    var: research_type
+    next: input_capture
+
+  - id: input_capture
+    type: branching
+    cases:
+      - if: input_type == "brief" → parse_brief
+      - if: input_type == "market" → parse_market
+      - if: input_type == "bug" → bug_analysis
+      - default → gather_min_context
+
+  - id: parse_brief
+    extract: [goals, users, constraints, unknowns]
+
+  - id: parse_market
+    extract: [opportunities, adjacent_areas]
+
+  - id: bug_analysis
+    extract: [error_description, environment, logs, reproduction_steps]
+    ask_if_missing:
+      - "Can you describe the bug?"
+      - "What is the environment or setup?"
+      - "Any logs or stack traces?"
+      - "Steps to reproduce?"
+
+  - id: gather_min_context
+    ask:
+      - "What's the primary goal?"
+      - "What assumptions or risks exist?"
+      - "What would a successful result look like?"
+
+  - id: build_prompt
+    type: synthesize
+    sections:
+      - title: Research Objective
+        value: from context
+      - title: Key Questions
+        format: bulleted
+      - title: Sources
+        items:
+          -  (default)
+          - user_sources (if given)
+      - title: Methodology
+        value: brief plan or framework
+      - title: Deliverables
+        items: [executive_summary, detailed_findings, supporting_data]
+      - title: Success Criteria
+        value: measurable outcomes or decisions enabled
+
+  - id: confirm_or_edit
+    type: review
+    actions: [edit, approve]
+    on_approve: export_prompt
+
+  - id: export_prompt
+    type: save
+    format: markdown
+    path: outputs/research_prompts/
+
+completion:
+  checklist:
+    - research_objective_clear
+    - key_questions_defined
+    - methodology_specified
+    - deliverables_defined
+    - prompt_exported
+
+anti_patterns:
+  never:
+    - "Generate research prompt without clarifying objective"
+    - "Skip tech stack validation validation for tech-related research"
+    - "Create overly broad research scope"
+    - "Proceed without user approval on prompt draft"
+  always:
+    - "Start by classifying research type"
+    - "Extract clear research goals from user input"
+    - "Use codebase search tools for tech validation"
+    - "Present draft for review before exporting"
+
+notes:
+  - Lean-first: skip unnecessary depth unless prompted
+  - Bug flow supports diagnostics + root cause research
+  - Always prefer actionable clarity over generic detail
+  - Use codebase search tools for all tech stack references

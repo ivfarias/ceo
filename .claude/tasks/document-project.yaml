@@ -1,0 +1,189 @@
+metadata:
+  title: Document Existing Project
+  owner: developer
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+  description: "Generate lean, AI-agent-optimized documentation for existing projects"
+
+activation:
+  when: Need to document existing codebase for AI agent development
+  principle: "Document reality, not theory. Focus on what exists. Lean and actionable."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Clarify scope before extensive analysis
+  - termination_policy: "Complete documentation generation"
+  </reasoning_control>
+
+
+workflow:
+  - id: check_for_prd
+    type: validation
+    check: prd_or_requirements_exists
+    branches:
+      if_exists:
+        action: focus_docs_on_prd_areas
+        output: "Document only relevant modules for planned enhancement"
+      if_not_exists:
+        action: elicit_scope
+
+  - id: elicit_scope
+    type: elicit
+    prompt: |
+      No PRD found. Choose documentation scope:
+      [1] Create PRD first (recommended for focused docs)
+      [2] Provide existing requirements
+      [3] Describe planned enhancement/feature
+      [4] Document entire codebase
+    validation: store_choice_and_proceed
+
+  - id: initial_discovery
+    type: discovery
+    targets:
+      - project_structure
+      - tech_stack_files (package.json, requirements.txt, etc.)
+      - build_system (scripts, CI/CD)
+      - existing_docs (README, /docs)
+      - code_patterns (sample 3-5 key files)
+    # Validate frameworks and versions
+    store_in: project_analysis
+
+  - id: elicit_context
+    type: elicit
+    questions:
+      - "Primary purpose of this project?"
+      - "Complex/important areas for agents to understand?"
+      - "Expected AI agent tasks? (bugs, features, refactoring, testing)"
+      - "Technical detail level? (junior, senior, mixed)"
+      - "Specific feature/enhancement planned?"
+    max_questions: 3
+
+  - id: deep_analysis
+    type: analysis
+    focus: project_analysis.focus_areas
+    examine:
+      - entry_points
+      - config_and_env
+      - dependencies_and_versions
+      - build_and_deployment
+      - test_suites
+      - integration_points
+      - technical_debt
+      - workarounds
+    
+    map_reality_not_theory: true
+
+  - id: generate_architecture_doc
+    type: generate
+    template: |
+      # {{project_name}} Architecture Document
+
+      ## Document Scope
+      {{if prd}}Focused on: {{enhancement_description}}{{else}}Comprehensive system documentation{{end}}
+
+      ### Change Log
+      | Date | Version | Description | Author |
+      |-|-|-|-|
+      | {{date}} | 1.0 | Initial analysis | {{agent}} |
+
+      ## Quick Reference
+
+      ### Critical Files
+      - **Entry**: {{entry_point}}
+      - **Config**: {{config_files}}
+      - **Core Logic**: {{business_logic_paths}}
+      - **API**: {{api_definitions}}
+      - **Models**: {{data_models}}
+      - **Tests**: {{test_locations}}
+
+      {{if prd}}
+      ### Enhancement Impact Areas
+      {{affected_modules_and_files}}
+      {{end}}
+
+      ## Tech Stack (Verified via grep/glob)
+      | Category | Technology | Version | Notes |
+      |-|-|-|-|
+      {{for each tech}}
+      | {{category}} | {{name}} | {{version}} | {{constraints_or_patterns}} |
+      {{end}}
+
+      ## Architecture Overview
+      {{actual_patterns_used}}
+      - NOT theoretical best practices
+      - Includes technical debt and workarounds
+      - Real integration points
+      - Performance considerations
+
+      ## Key Conventions
+      - File organization: {{actual_patterns}}
+      - Naming: {{conventions}}
+      - Code style: {{style}}
+      - Testing: {{test_patterns}}
+
+      ## Integration Points
+      {{external_systems_and_apis}}
+
+      ## Technical Debt & Workarounds
+      {{documented_reality}}
+      - Legacy code constraints
+      - Performance bottlenecks
+      - Known issues
+
+      ## Development Guide
+      - Setup: {{steps}}
+      - Build: {{commands}}
+      - Test: {{commands}}
+      - Deploy: {{process}}
+
+      ## AI Agent Tips
+      {{areas_requiring_special_attention}}
+
+  - id: validate_with_tech stack validation
+    type: validation
+    for_each: tech_stack_item
+    action: verify_version_and_patterns_via_tech stack validation
+    update: doc_with_authoritative_info
+
+  - id: write_documentation
+    type: write
+    path: "docs/architecture/{{project_name}}-architecture.md"
+    content: generated_doc
+
+completion:
+  outputs:
+    - architecture_document
+    - tech_stack_inventory
+    - ai_agent_guide
+
+anti_patterns:
+  never:
+    - "Document theoretical architecture vs reality"
+    - "Skip technical debt and workarounds"
+    - "Proceed without clarifying scope"
+    - "Skip tech stack validation validation for tech stack"
+    - "Document entire codebase when PRD exists"
+  always:
+    - "Document what exists, not what should exist"
+    - "Include technical debt and workarounds"
+    - "Focus on areas relevant to planned work"
+    - "Use codebase search tools for all tech validation"
+    - "If PRD exists, focus docs on those areas only"
+    - "Capture tribal knowledge and patterns"
+
+lean_rules:
+  - document_what_exists_not_what_should_exist
+  - include_technical_debt_and_workarounds
+  - focus_on_areas_relevant_to_planned_work
+  - skip_theoretical_best_practices
+  - use_
+  - keep_actionable_and_concise
+
+notes:
+  - Always use codebase search tools to validate tech stack
+  - Document reality including workarounds
+  - If PRD exists, focus docs on relevant areas only
+  - Capture tribal knowledge and undocumented patterns

@@ -1,7 +1,7 @@
 # Codex Optimization Best Practices
 
 **Version:** 1.0
-**Optimized for:** gpt-5-codex with reasoning_effort: medium, verbosity: low
+**Optimized for:** gemini-2.5-pro with reasoning_effort: medium, verbosity: low
 **Purpose:** Reference guide for Prepper agent when optimizing agents, tasks, and checklists
 
 ---
@@ -28,7 +28,7 @@
 
 ---
 
-## gpt-5-codex Optimization Strategies
+## Gemini Optimization Strategies
 
 ### Reasoning Control Patterns
 ```yaml
@@ -48,7 +48,7 @@ reasoning_control: |
 - `prefer_act_over_ask: false` prevents premature modifications
 - Explicit termination policy enforces one-at-a-time orchestration
 
-### Session Memory for gpt-5-codex
+### Session Memory for Gemini
 ```yaml
 session_memory: |
   <session_memory>
@@ -76,7 +76,7 @@ tool_preambles: |
 ```
 
 **Why this works:**
-- gpt-5-codex performs better with explicit step announcements
+- Gemini performs better with explicit step announcements
 - Pre-stating goals improves reasoning trace quality
 - Post-summaries reduce user confusion in long sequences
 
@@ -88,7 +88,7 @@ tool_preambles: |
 ✅ **DO:**
 ```yaml
 metadata:
-  model: gpt-5-codex
+  model: gemini-2.5-pro
   model_controls:
     reasoning_effort: medium
     verbosity: low
@@ -97,7 +97,7 @@ metadata:
 ❌ **DON'T:**
 ```yaml
 metadata:
-  model: gpt-4-turbo  # Outdated
+  model: gemini-2.5-flash  # Outdated
   temperature: 0.7    # Use model_controls instead
 ```
 
@@ -286,8 +286,8 @@ sections:
 
 ### Issue: Outdated Model References
 ```diff
-- model: gpt-4-turbo
-+ model: gpt-5-codex
+- model: gemini-2.5-flash
++ model: gemini-2.5-pro
 + model_controls:
 +   reasoning_effort: medium
 +   verbosity: low
@@ -386,7 +386,7 @@ Track these for each optimization session:
 
 ---
 
-## gpt-5-codex Token Optimization
+## Gemini Token Optimization
 
 ### High-Impact Techniques
 1. **Reuse analysis_report** — Don't re-read project files

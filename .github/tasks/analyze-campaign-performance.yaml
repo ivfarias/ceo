@@ -1,7 +1,7 @@
 metadata:
   title: Analyze Campaign Performance
   owner: analyst
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: medium
   verbosity: low
 
@@ -10,9 +10,9 @@ activation:
   principle: "Accurate. Reproducible. Actionable."
 
 dependencies:
-  - .agent/checklists/analytics-checklist.yaml
-  - .agent/templates/analytics-report-tmpl.yaml
-  - .agent/data/calculation-best-practices.yaml
+  - .github/checklists/analytics-checklist.yaml
+  - .github/templates/analytics-report-tmpl.yaml
+  - .github/data/calculation-best-practices.yaml
 
 inputs:
   required: [primary_data_file]
@@ -71,7 +71,7 @@ workflow:
 
   - id: render_report
     type: template_render
-    template: .agent/templates/analytics-report-tmpl.yaml
+    template: .github/templates/analytics-report-tmpl.yaml
     inputs:
       - exec_summary
       - data_validation

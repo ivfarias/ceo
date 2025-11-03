@@ -1,0 +1,168 @@
+template:
+  id: project-analysis-template-v1
+  name: Project Context Analysis Report
+  version: 1.0
+  purpose: Structured output for Prepper's project analysis
+  max_length: "Comprehensive but concise. Include only actionable insights."
+  output:
+    format: markdown
+    storage: analysis_report (session memory)
+    display: structured_markdown_to_user
+
+workflow:
+  mode: generate
+  context_required: true
+  validation: evidence_based
+
+sections:
+  - id: executive_summary
+    title: Executive Summary
+    type: bullet-list
+    max_items: 5
+    instruction: |
+      High-level findings from the project analysis.
+      Focus on key insights that drive optimization priorities.
+    required: true
+    examples:
+      - "Project uses React 18.2 + TypeScript with strict mode enabled"
+      - "Current agents reference outdated Next.js v12 patterns (project is on v14)"
+      - "Missing context7 validation in 80% of existing tasks"
+
+  - id: project_profile
+    title: Project Profile
+    type: structured
+    instruction: |
+      Core project characteristics extracted from analysis.
+    required: true
+    subsections:
+      - id: identity
+        title: Identity
+        fields:
+          - name: "Project Name"
+          - purpose: "Primary Purpose"
+          - domain: "Domain/Industry"
+
+      - id: tech_stack
+        title: Tech Stack
+        instruction: "List frameworks, libraries, runtime with versions"
+        validation: verified_with_context7
+        format: |
+          - Runtime: {{runtime}} {{version}}
+          - Framework: {{framework}} {{version}}
+          - Key Libraries:
+            - {{library1}}: {{version1}} (validated via context7)
+            - {{library2}}: {{version2}} (validated via context7)
+          - Build Tools: {{build_tools}}
+          - Testing: {{test_frameworks}}
+
+      - id: structure
+        title: Directory Structure
+        instruction: "Key directories and organizational patterns"
+        format: |
+          - Source: {{src_path}}
+          - Docs: {{docs_path}}
+          - Tests: {{test_path}}
+          - Config: {{config_locations}}
+
+      - id: standards
+        title: Code Standards
+        instruction: "Style, linting, formatting conventions"
+        fields:
+          - Linting: "{{linter}} with {{config_file}}"
+          - Formatting: "{{formatter}} settings"
+          - Language: "{{ts_or_js}} ({{strict_mode_status}})"
+          - Conventions: "{{naming_and_org_patterns}}"
+
+  - id: current_state
+    title: Current State Assessment
+    type: structured
+    instruction: |
+      Snapshot of existing Codex artifacts and their alignment.
+    required: true
+    subsections:
+      - id: agents_state
+        title: Agents
+        format: table
+        columns: [Agent, Model, Status, Issues]
+        instruction: "List each agent with alignment status"
+
+      - id: tasks_state
+        title: Tasks
+        format: table
+        columns: [Task, Template, Context7, Issues]
+        instruction: "List each task with validation status"
+
+      - id: checklists_state
+        title: Checklists
+        format: table
+        columns: [Checklist, Coverage, Issues]
+        instruction: "List each checklist with completeness assessment"
+
+  - id: optimization_opportunities
+    title: Optimization Opportunities
+    type: numbered-list
+    instruction: |
+      Prioritized list of improvements with evidence from analysis.
+      Each item should be actionable and specific.
+    priority_order: [critical, high, medium, low]
+    format: |
+      {{priority_level}} — {{artifact_type}}: {{artifact_name}}
+      - Issue: {{specific_problem}}
+      - Evidence: {{cite_analysis_finding}}
+      - Fix: {{proposed_action}}
+    required: true
+
+  - id: risk_areas
+    title: Risk Areas
+    type: bullet-list
+    instruction: |
+      Potential issues that could cause problems during optimization.
+      Flag dependencies, missing context, or unclear standards.
+    examples:
+      - "Task X references utils/helper.ts but file not found in project"
+      - "Agent Y assumes PostgreSQL but package.json shows MongoDB"
+      - "Template Z requires context7 but library not in project dependencies"
+
+  - id: recommended_actions
+    title: Recommended Next Steps
+    type: numbered-list
+    max_items: 5
+    instruction: |
+      Clear action items for the user, in priority order.
+      Map to Prepper commands where applicable.
+    format: |
+      1. {{action_description}} (via *{{command_name}})
+      2. {{action_description}} (via *{{command_name}})
+    required: true
+    examples:
+      - "Update all agents to use gpt-5-codex (via *optimize-agents)"
+      - "Validate tech stack references with context7 (via *optimize-tasks)"
+
+  - id: evidence_log
+    title: Evidence & Sources
+    type: appendix
+    instruction: |
+      Detailed citations for all findings.
+      Reference specific files, line numbers, and analysis steps.
+    format: |
+      - Finding: {{claim}}
+        Source: {{file_path:line_number or discovery_step}}
+        Confidence: {{high|medium|low}}
+
+  - id: metadata
+    title: Analysis Metadata
+    type: footer
+    fields:
+      - Timestamp: "{{analysis_timestamp}}"
+      - Prepper Version: "{{prepper_version}}"
+      - Analysis Depth: "{{discovery_budget_used}}"
+      - Context7 Validations: "{{count_validations}}"
+
+notes:
+  - All claims must be evidence-based
+  - Use context7 citations for tech stack information
+  - Include file paths with line numbers where applicable
+  - Flag unknowns explicitly rather than guessing
+  - Keep language concise and action-oriented
+  - Cross-reference core-config.xml settings
+  - Store in analysis_report session memory for use by optimization tasks

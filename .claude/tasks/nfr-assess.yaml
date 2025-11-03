@@ -1,0 +1,184 @@
+metadata:
+  title: NFR Assessment
+  owner: qa
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+  description: "Quick NFR validation for security, performance, reliability, maintainability"
+
+activation:
+  when: QA needs to assess non-functional requirements
+  principle: "Fast, focused, actionable. Core four by default. Gate-ready output."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: medium  # Can mark CONCERNS if unclear
+  - prefer_act_over_ask: false  # Elicit scope and targets first
+  - termination_policy: "Complete assessment and generate all outputs"
+  - early_exit_ok: false  # Must complete assessment, gate YAML, and report
+  </reasoning_control>
+
+inputs:
+  required:
+    - task_id: "Task identifier (e.g., 1.3)"
+  optional:
+    - task_path: "Path to task file (from core-config devTaskLocation)"
+    - nfr_selection: "Which NFRs to assess (default: core four)"
+
+defaults:
+  core_nfrs: [security, performance, reliability, maintainability]
+  all_nfrs: [security, performance, reliability, maintainability, usability, compatibility, portability, functional_suitability]
+
+workflow:
+  - id: handle_missing_inputs
+    type: validation
+    condition: task_file_not_found
+    action:
+      - create_assessment_with_note: "Source task not found"
+      - set_all_nfrs_to_concerns: "Target unknown / evidence missing"
+      - continue_assessment  # Still provide value
+
+  - id: elicit_scope
+    type: elicit
+    prompt: |
+      Which NFRs to assess? (Enter numbers or press Enter for default)
+      [1] Security (default)
+      [2] Performance (default)
+      [3] Reliability (default)
+      [4] Maintainability (default)
+      [5] Usability
+      [6] Compatibility
+      [7] Portability
+      [8] Functional Suitability
+    default: [1, 2, 3, 4]
+    store_in: selected_nfrs
+
+  - id: check_thresholds
+    type: discovery
+    sources:
+      - task_acceptance_criteria
+      - docs/architecture/*.md
+      - .claude/data/technical-preferences.yaml
+    extract:
+      - performance_targets
+      - security_requirements
+      - reliability_slas
+      - maintainability_standards
+    on_missing: elicit_or_mark_concerns
+
+  - id: assess_nfrs
+    type: analysis
+    for_each: selected_nfrs
+    rules:
+      security:
+        pass: [auth_implemented, authz_enforced, input_validated, no_hardcoded_secrets]
+        concerns: [missing_rate_limiting, weak_encryption, incomplete_authz]
+        fail: [no_auth, hardcoded_creds, sql_injection]
+      performance:
+        pass: [meets_response_time, no_bottlenecks, reasonable_resources]
+        concerns: [close_to_limits, missing_indexes, no_caching]
+        fail: [exceeds_limits, memory_leaks, unoptimized_queries]
+      reliability:
+        pass: [error_handling, graceful_degradation, retry_logic]
+        concerns: [some_errors_unhandled, no_circuit_breakers, missing_health_checks]
+        fail: [no_error_handling, crashes_on_errors, no_recovery]
+      maintainability:
+        pass: [meets_coverage_target, well_structured, documented]
+        concerns: [below_coverage_target, some_duplication, missing_docs]
+        fail: [no_tests, highly_coupled, no_docs]
+    unknown_targets_policy: mark_as_concerns
+
+  - id: calculate_quality_score
+    type: calculation
+    formula: |
+      quality_score = 100
+      - 20 for each FAIL
+      - 10 for each CONCERNS
+      floor: 0, ceiling: 100
+    override: use_custom_weights_from_technical_preferences_if_defined
+
+  - id: generate_gate_yaml
+    type: generate
+    output_only_assessed: true  # No placeholders
+    template: |
+      nfr_validation:
+        _assessed: {{selected_nfrs}}
+        {{for each nfr}}
+        {{nfr_name}}:
+          status: {{status}}
+          notes: '{{notes}}'
+        {{end for}}
+
+  - id: generate_assessment_report
+    type: generate
+    template: |
+      # NFR Assessment: {{task_id}}
+
+      Date: {{date}}
+      Reviewer: Quinn (QA Agent)
+      {{if task_not_found}}<!-- Note: Source task not found -->{{end}}
+
+      ## Summary
+      {{for each assessed_nfr}}
+      - {{nfr_name}}: {{status}} - {{brief_note}}
+      {{end for}}
+
+      ## Critical Issues
+      {{for each fail_or_concern}}
+      {{seq}}. **{{issue_title}}** ({{nfr_category}})
+         - Risk: {{risk_description}}
+         - Fix: {{recommended_fix}}
+      {{end for}}
+
+      ## Quick Wins
+      {{for each fix with effort < 4h}}
+      - {{fix_description}}: ~{{hours}} hours
+      {{end for}}
+
+  - id: write_assessment
+    type: write
+    path: "{{qa_location}}/assessments/{{task_id}}-nfr-{{YYYYMMDD}}.md"
+    content: assessment_report
+
+  - id: output_to_user
+    type: output
+    format: |
+      ✓ NFR Assessment Complete
+
+      **Gate YAML (copy/paste):**
+      ```yaml
+      {{gate_yaml_block}}
+      ```
+
+      **Assessment saved:** {{qa_location}}/assessments/{{task_id}}-nfr-{{YYYYMMDD}}.md
+
+      **For review task:** NFR assessment: {{assessment_file_path}}
+
+      **Gate integration:** Paste YAML block into {{qa_location}}/gates/{{task_id}}-{{slug}}.yml under nfr_validation
+
+completion:
+  outputs:
+    - gate_yaml_block
+    - assessment_markdown_file
+    - quality_score
+
+anti_patterns:
+  never:
+    - "Mark NFR as PASS without concrete evidence"
+    - "Guess at performance/security targets"
+    - "Skip gate YAML generation"
+    - "Create assessment without checking thresholds"
+  always:
+    - "Default to core four NFRs (security, performance, reliability, maintainability)"
+    - "Mark CONCERNS when targets unknown (never guess)"
+    - "Generate copy-paste ready gate YAML"
+    - "Create assessment file even if task missing"
+    - "Keep assessment brief and actionable"
+
+notes:
+  - Default to core four NFRs for speed
+  - Unknown targets → CONCERNS, never guess
+  - Always create assessment file even if task missing
+  - Gate YAML must be copy-paste ready
+  - Keep assessment brief and actionable

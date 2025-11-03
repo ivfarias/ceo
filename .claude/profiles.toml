@@ -1,0 +1,62 @@
+# ============================================================================
+# CEO Orchestration System - Agent Profiles
+# ============================================================================
+# Add these profiles to your ~/.claude/config.toml to enable agent switching
+#
+# Usage:
+#   claude --profile ceo        # Start with CEO orchestrator
+#   claude --profile developer  # Start with Developer agent
+#   claude --profile pm         # Start with Product Manager
+#   etc.
+#
+# Copy-paste this entire block into your ~/.claude/config.toml file
+# ============================================================================
+
+[profiles.analytics]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Analytics - Analytics
+
+[profiles.ceo]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Ceo - Ceo
+
+[profiles.developer]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Developer - Developer
+
+[profiles.marketer]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Marketer - Marketer
+
+[profiles.pm]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Pm - Pm
+
+[profiles.prepper]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Prepper - Prepper
+
+[profiles.qa]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Qa - Qa
+
+[profiles.ux-expert]
+model = "claude-sonnet-4.5"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Ux Expert - Ux Expert
+

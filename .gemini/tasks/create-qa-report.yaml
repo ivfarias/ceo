@@ -1,0 +1,184 @@
+metadata:
+  title: Lean QA Test Report
+  owner: qa
+  model: gemini-2.5-pro
+  reasoning_effort: medium
+  verbosity: low
+  description: "Quick validation of agent flow, behavior, and tool/API orchestration"
+
+activation:
+  when: QA or Dev needs to validate AI agent behavior, tool delegation, or response quality
+  principle: "Fast, factual, focused. Lean report with clear verdicts and next actions."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: medium
+  - prefer_act_over_ask: false
+  - termination_policy: "Complete test summary, classification, and gate YAML"
+  - early_exit_ok: false
+  </reasoning_control>
+
+inputs:
+  required:
+    - test_id: "Unique test identifier (e.g., 2025-11-01-A01)"
+    - target_flow: "Agent / Tool / Chain being tested"
+  optional:
+    - test_context: "Prompt, event, or API call"
+    - expected_behavior: "Intended outcome or condition"
+    - environment: "Local / Dev / Staging / Prod"
+
+defaults:
+  dimensions: [intent, tool_delegation, data_handling, context_memory, response_quality]
+
+workflow:
+  - id: validate_inputs
+    type: validation
+    condition: missing_required_fields
+    action:
+      - set_status: "FAILED_INPUT_VALIDATION"
+      - output_note: "Required fields missing, cannot proceed"
+      - terminate_workflow
+
+  - id: elicit_scope
+    type: elicit
+    prompt: |
+      What are we testing?
+      1. Agent Behavior
+      2. Tool Delegation
+      3. API Response
+      4. Multi-Agent Handoff
+      5. End-to-End Flow
+    store_in: test_scope
+
+  - id: collect_signals
+    type: discovery
+    sources:
+      - runtime_logs
+      - api_traces
+      - user_prompt
+      - agent_response
+    extract:
+      - latency
+      - error_rate
+      - tool_calls
+      - fallback_triggers
+      - response_tokens
+    on_missing: "note_missing_signals"
+
+  - id: assess_behavior
+    type: analysis
+    for_each: dimensions
+    rules:
+      intent:
+        pass: [intent_matched, correct_routing]
+        concerns: [misunderstood_intent, missing_fallback]
+        fail: [wrong_intent, unrelated_response]
+      tool_delegation:
+        pass: [tool_used_correctly, api_success]
+        concerns: [retry_needed, extra_call, incomplete_data]
+        fail: [wrong_tool, api_error, no_execution]
+      data_handling:
+        pass: [validated_inputs, correct_format]
+        concerns: [missing_validation, partial_output]
+        fail: [wrong_format, unsafe_data, silent_failure]
+      context_memory:
+        pass: [context_retained, state_consistent]
+        concerns: [partial_recall, context_drift]
+        fail: [lost_context, conflicting_state]
+      response_quality:
+        pass: [clear, accurate, concise]
+        concerns: [ambiguous, verbose, low_signal]
+        fail: [hallucination, incoherent, misleading]
+    unknown_targets_policy: mark_as_concerns
+
+  - id: calculate_quality_score
+    type: calculation
+    formula: |
+      quality_score = 100
+      - 20 for each FAIL
+      - 10 for each CONCERNS
+      floor: 0, ceiling: 100
+
+  - id: generate_gate_yaml
+    type: generate
+    template: |
+      qa_validation:
+        test_id: {{test_id}}
+        target_flow: {{target_flow}}
+        dimensions: {{dimensions}}
+        quality_score: {{quality_score}}
+        {{for each dimension}}
+        {{dimension}}:
+          status: {{status}}
+          notes: '{{notes}}'
+        {{end for}}
+
+  - id: generate_test_report
+    type: generate
+    template: |
+      # Lean QA Test Report — {{test_id}}
+
+      Date: {{date}}
+      Target Flow: {{target_flow}}
+      Environment: {{environment}}
+      Scope: {{test_scope}}
+
+      ## Summary
+      {{for each dimension}}
+      - {{dimension}}: {{status}} — {{brief_note}}
+      {{end for}}
+
+      **Overall Quality:** {{quality_score}} / 100
+
+      ## Issues
+      {{for each fail_or_concern}}
+      - **{{dimension}}:** {{issue_detail}}
+         - Severity: {{severity}}
+         - Suggested Fix: {{recommended_fix}}
+      {{end for}}
+
+      ## Next Actions
+      {{for each fix}}
+      - {{owner}} → {{action}} ({{priority}})
+      {{end for}}
+
+  - id: write_report
+    type: write
+    path: "{{qa_location}}/tests/{{test_id}}-leanqa-{{YYYYMMDD}}.md"
+    content: test_report
+
+  - id: output_to_user
+    type: output
+    format: |
+      ✅ Lean QA Test Complete
+
+      **Gate YAML (copy/paste):**
+      ```yaml
+      {{gate_yaml_block}}
+      ```
+
+      **Report saved:** {{qa_location}}/tests/{{test_id}}-leanqa-{{YYYYMMDD}}.md
+      Quality Score: {{quality_score}} / 100
+
+completion:
+  outputs:
+    - gate_yaml_block
+    - test_report
+    - quality_score
+
+anti_patterns:
+  never:
+    - "Mark pass without evidence"
+    - "Ignore partial success or fallback triggers"
+    - "Skip gate YAML or report"
+  always:
+    - "Flag uncertainty as CONCERN"
+    - "Summarize clearly with quality score"
+    - "Produce copy-paste ready gate YAML"
+    - "Write concise markdown report"
+
+notes:
+  - Use this as the standard QA gate for multi-agent orchestration and flow behavior.
+  - Keep reports lean and actionable.
+  - Mark CONCERNS when unsure — never guess.

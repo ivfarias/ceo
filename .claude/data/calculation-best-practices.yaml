@@ -1,0 +1,66 @@
+kb: analytics_calculation_best_practices
+version: 1.1
+
+principles:
+  - NEVER manually aggregate raw or secondary data for totals.
+  - ALWAYS cite file and row/column for every numeric value.
+  - USE the user-specified [Primary Data File] as the single source of truth for key metrics.
+  - SHOW the formula chain for every derived metric.
+
+sources:
+  - id: primary_data
+    file: "[Primary Data File]"
+    role: primary
+    description: "User-specified file for aggregated data (e.g., weekly totals)."
+    allowed_operations:
+      - period_over_period
+      - ranking
+      - trend
+      - conversion
+  - id: secondary_data
+    file: "[Secondary Data File]"
+    role: secondary
+    description: "User-specified file for granular data (e.g., daily results)."
+    allowed_operations:
+      - pattern_detection
+      - anomaly_spotting
+  - id: changelog
+    file: "[Changelog File]"
+    role: correlation
+    description: "User-specified file for tracking changes and events."
+    allowed_operations:
+      - root_cause_mapping
+      - temporal_alignment
+
+formulas:
+  wow_change: "(new - old) / old"
+  conversion_rate: "conversions / opportunities"
+  share: "segment_value / total_value"
+  percentage_points: "rate2 - rate1"
+
+rules:
+  - id: SRC-1
+    desc: "Key metrics MUST originate from the [Primary Data File] only."
+    severity: HIGH
+  - id: CIT-1
+    desc: "Every value MUST cite its source file, row, and time period."
+    severity: HIGH
+  - id: CALC-1
+    desc: "All derived metrics MUST display the full computation chain."
+    severity: HIGH
+  - id: DLY-1
+    desc: "Secondary data MAY be referenced only for patterns; NEVER aggregated for totals."
+    severity: HIGH
+  - id: CHG-1
+    desc: "All significant metric changes MUST map to changelog entries or be flagged as unexplained."
+    severity: MEDIUM
+
+anti_patterns:
+  - vague_percentages
+  - manual_aggregation_of_secondary_data
+  - unsourced_comparisons
+  - hidden_calculations
+  - speculative_changelog_links
+
+temporal_priority:
+  order: [latest_period, period_over_period, multi_period_trend, historical_baseline]

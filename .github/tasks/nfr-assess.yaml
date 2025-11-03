@@ -1,7 +1,7 @@
 metadata:
   title: NFR Assessment
   owner: qa
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: medium
   verbosity: low
   description: "Quick NFR validation for security, performance, reliability, maintainability"
@@ -59,7 +59,7 @@ workflow:
     sources:
       - task_acceptance_criteria
       - docs/architecture/*.md
-      - .agent/data/technical-preferences.yaml
+      - .github/data/technical-preferences.yaml
     extract:
       - performance_targets
       - security_requirements

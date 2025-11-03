@@ -1,0 +1,134 @@
+metadata:
+  title: Create Document from Template
+  owner: product_manager
+  model: gemini-2.5-pro
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: user runs `create-spec` or `create-prd` command
+  principle: "Lean specs. 1-pagers beat 20-page PRDs. Context first, always."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Elicit context before generating
+  - termination_policy: "Complete document generation and write file"
+  - early_exit_ok: false  # Must complete all sections
+  </reasoning_control>
+
+workflow:
+  - id: select_template
+    type: choice
+    prompt: "Which template?"
+    options:
+      - label: "Lean Product Spec"
+        value: prd-tmpl.yaml
+        description: "1-2 page product spec (recommended)"
+      - label: "Developer Task"
+        value: task-tmpl.yaml
+        description: "Use create-task instead"
+    default: prd-tmpl.yaml
+
+  - id: validate_context
+    type: checklist
+    critical: true
+    prompt: "Before creating any doc, verify context:"
+    items:
+      - label: "Product vision clear"
+        required: true
+      - label: "User problem validated (evidence exists)"
+        required: true
+      - label: "Success criteria defined"
+        required: true
+    if_missing: gather_context_first
+
+  - id: gather_context_first
+    type: conditional
+    run: pm-context-checklist.yaml
+    next: process_template_sections
+
+  - id: generate_full_draft
+    type: generate
+    template: "{{selected_template}}"
+    prompt: "Generate a complete first draft of the document based on the template and all gathered context."
+    draft_rules:
+      - "Keep it concise (follow template max_length)"
+      - "Use context7 MCP for tech stack validation"
+      - "Challenge assumptions - ask if uncertain"
+      - "Cut ruthlessly - what can we NOT include?"
+    store_in: document_draft
+
+  - id: review_and_refine
+    type: review
+    prompt: |
+      Here is the complete first draft. Please review it.
+
+      {{document_draft}}
+
+      You can approve it, or provide feedback for refinement.
+    actions: [approve, provide_feedback]
+    on_approve: finalize_document
+    on_feedback: regenerate_with_feedback
+
+  - id: finalize_document
+    type: assembly
+    actions:
+      - apply_formatting
+      - determine_output_path
+
+  - id: write_file
+    type: write
+    critical: true
+    rules:
+      - "NEVER write to agent file (.agent/agents/product_manager.xml)"
+      - "NEVER write to template files (.agent/templates/*.yaml)"
+      - "ALWAYS create NEW markdown file in appropriate directory"
+
+    output_paths:
+      prd-tmpl.yaml: "docs/specs/{{project_name}}-spec.md"
+      task-tmpl.yaml: "docs/tasks/{{task_name}}.md"
+      default: "docs/{{filename}}.md"
+
+    tool: Write
+    confirm: true
+
+  - id: output_summary
+    type: message
+    template: |
+      ✔ Document created: {{full_output_path}}
+
+      Next steps:
+      - Review for clarity
+      - Share with stakeholders
+      - Challenge scope one more time
+
+      File location: {{full_output_path}}
+
+completion:
+  checklist:
+    - template_selected
+    - context_validated
+    - all_sections_approved
+    - document_written_to_filesystem
+    - output_path_confirmed
+
+anti_patterns:
+  never:
+    - "Proceed without user approval on the final draft"
+    - "Write 20-page docs when 1 page works"
+    - "Write to agent or template files"
+    - "Skip context7 validation for tech references"
+  always:
+    - "Generate a full draft for initial review"
+    - "Incorporate user feedback before finalizing"
+    - "Use context7 MCP for tech validation"
+    - "Ask: Could this be simpler?"
+    - "Create NEW markdown file in docs/"
+
+notes:
+  - Section-by-section workflow prevents rework
+  - Always use context7 MCP for tech stack references
+  - Challenge scope at every step
+  - Keep read time under 5 minutes

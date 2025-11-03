@@ -1,13 +1,13 @@
 # CEO-Led Orchestration System
 
-A streamlined framework for coordinating specialized AI agents using Codex CLI. Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a much more streamlined and lean way to orchestrate multiple agents.
+A streamlined framework for coordinating specialized AI agents using GitHub Copilot CLI. Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a much more streamlined and lean way to orchestrate multiple agents.
 
 **Why This Exists:**
 
 The BMAD method is powerful but, I personally couldn't really get the whole benefit of it, because it felt like an  overkill for professionals like me, running things on their own. This system strips away the complexity while keeping the core orchestration benefits:
 
 - **Token-efficient**: Dramatically reduced token usage vs. full BMAD implementations
-- **OpenAI-first**: Optimized for GPT-5-Codex (most people have OpenAI accounts, not multiple AI subscriptions)
+- **Claude Sonnet 4.5**: Optimized for Claude with official prompting best practices
 - **Solo-friendly**: Built for one person wearing many hats, not enterprise teams
 - **Lean by default**: No heavy processes unless you actually need them
 
@@ -26,12 +26,12 @@ This system provides the structure and methodology missing from unstructured "AI
 
 ## How It Works
 
-This system uses **profile-based agent switching** with Codex CLI:
+This system uses **profile-based agent switching** with GitHub Copilot CLI:
 
 1. **CEO Agent (Cleo)** - Workflow consultant that analyzes your request and prescribes complete workflows
 2. **Specialist Agents** - Focused experts (Developer, PM, QA, etc.) that execute specific tasks
 3. **Resource Indexes** - Auto-generated catalogs of available tasks, checklists, and data
-4. **Profile Switching** - Native Codex CLI mechanism to switch between agent contexts
+4. **Profile Switching** - Native GitHub Copilot CLI mechanism to switch between agent contexts
 
 ### The CEO Workflow
 
@@ -49,26 +49,26 @@ The CEO doesn't execute work—it provides **complete, actionable guidance** so 
 
 ## Quick Start
 
-### 1. Install Codex CLI
+### 1. Install GitHub Copilot CLI
 
 ```bash
-npm install -g codex-cli
+npm install -g @github/copilot
 ```
 
 ### 2. Add Agent Profiles
 
-Copy the generated profile configurations to your Codex config:
+Copy the generated profile configurations to your GitHub Copilot config:
 
 ```bash
-cat .agent/profiles.toml >> ~/.agent/config.toml
+cat .github/profiles.toml >> ~/.github/config.toml
 ```
 
-This adds all agent profiles (`ceo`, `developer`, `pm`, `qa`, `analytics`, `marketer`, `ux-expert`, `prepper`) to your Codex CLI.
+This adds all agent profiles (`ceo`, `developer`, `pm`, `qa`, `analytics`, `marketer`, `ux-expert`, `prepper`) to your GitHub Copilot CLI.
 
 ### 3. Start with the CEO
 
 ```bash
-codex --profile ceo
+copilot --profile ceo
 ```
 
 Then tell the CEO what you need:
@@ -83,34 +83,34 @@ The CEO will analyze your request and prescribe a complete workflow:
 **New Feature Development Workflow**
 
 **Step 1: Product Manager (Manny)**
-Command: `codex --profile pm`
+Command: `copilot --profile pm`
 Task: Execute task create-doc with prd-tmpl template
 Checklist: pm-context-checklist
 Reference: technical-preferences.yaml
 Expected Output: PRD document
 
 **Step 2: Developer (Devon)**
-Command: `codex --profile developer`
+Command: `copilot --profile developer`
 Task: Implement feature based on PRD
 Checklist: code-quality-checklist, openai-sdk-compliance-checklist
 Reference: technical-preferences.yaml
 Expected Output: Working implementation with tests
 
 **Step 3: QA (Quinn)**
-Command: `codex --profile qa`
+Command: `copilot --profile qa`
 Task: review-task
 Checklist: Test coverage validation
 Expected Output: QA report
 
 ---
 Quick Start:
-codex --profile pm
+copilot --profile pm
 ```
 
 ### 4. Follow the Prescribed Workflow
 
 ```bash
-codex --profile pm
+copilot --profile pm
 ```
 
 Then: "Execute task create-doc with prd-tmpl template for login feature"
@@ -119,7 +119,7 @@ The specialist agent will execute with full context from its definition file.
 
 ## System Components
 
-### Agents (`.agent/agents/`)
+### Agents (`.github/agents/`)
 
 Specialized AI personas with distinct capabilities:
 
@@ -132,7 +132,7 @@ Specialized AI personas with distinct capabilities:
 - **ux-expert** (Sally) - UI/UX design, wireframes
 - **prepper** (Pepe) - System optimization, agent tuning
 
-### Tasks (`.agent/tasks/`)
+### Tasks (`.github/tasks/`)
 
 Structured, executable workflows:
 
@@ -143,7 +143,7 @@ Structured, executable workflows:
 - `document-project` - Auto-generate project docs
 - ...and more
 
-### Checklists (`.agent/checklists/`)
+### Checklists (`.github/checklists/`)
 
 Quality validation lists:
 
@@ -152,7 +152,7 @@ Quality validation lists:
 - `analytics-checklist` - Data analysis validation
 - `openai-sdk-compliance-checklist` - SDK best practices
 
-### Templates (`.agent/templates/`)
+### Templates (`.github/templates/`)
 
 Document boilerplates:
 
@@ -161,16 +161,15 @@ Document boilerplates:
 - `task-tmpl` - Task specification
 - `analytics-report-tmpl` - Analytics reports
 
-### Data (`.agent/data/`)
+### Data (`.github/data/`)
 
 Knowledge base and references:
 
 - `technical-preferences.yaml` - Tech stack and standards
-- `gpt-5-prompting-guide.md` - Prompting best practices
 - `marketing-frameworks.yaml` - Marketing strategies
 - `optimization-best-practices.md` - System optimization
 
-### Indexes (`.agent/*.index.yaml`)
+### Indexes (`.github/*.index.yaml`)
 
 Auto-generated resource catalogs:
 
@@ -189,7 +188,7 @@ These are used by the CEO agent to provide informed workflow recommendations.
 Indexes are auto-regenerated by a git pre-commit hook. To manually regenerate:
 
 ```bash
-.agent/utils/generate-indexes.sh
+.github/utils/generate-indexes.sh
 ```
 
 This updates:
@@ -202,10 +201,10 @@ This updates:
 
 ### Adding New Resources
 
-1. **New Agent:** Create `.agent/agents/new-agent.md` following existing patterns
-2. **New Task:** Create `.agent/tasks/new-task.yaml` with workflow definition
-3. **New Checklist:** Create `.agent/checklists/new-checklist.yaml`
-4. **Regenerate:** Run `.agent/utils/generate-indexes.sh` (or just commit—hook runs it)
+1. **New Agent:** Create `.github/agents/new-agent.md` following existing patterns
+2. **New Task:** Create `.github/tasks/new-task.yaml` with workflow definition
+3. **New Checklist:** Create `.github/checklists/new-checklist.yaml`
+4. **Regenerate:** Run `.github/utils/generate-indexes.sh` (or just commit—hook runs it)
 
 The CEO will automatically know about new resources after regeneration.
 
@@ -227,7 +226,7 @@ The CEO agent is a **Workflow Consultant**, not a simple router.
 
 ### What CEO Cannot Do
 
-❌ Invoke agents automatically (Codex CLI doesn't support this)
+❌ Invoke agents automatically (GitHub Copilot CLI doesn't support this)
 ❌ Execute code or create files
 ❌ Transform into other agents mid-conversation
 ❌ Run multi-agent workflows automatically
@@ -246,7 +245,7 @@ The CEO agent is a **Workflow Consultant**, not a simple router.
 ### New Feature Development
 
 ```bash
-codex --profile ceo "I want to add [feature]"
+copilot --profile ceo "I want to add [feature]"
 ```
 
 CEO prescribes: **PM → Developer → QA**
@@ -254,7 +253,7 @@ CEO prescribes: **PM → Developer → QA**
 ### Bug Fix
 
 ```bash
-codex --profile ceo "Fix bug in [component]"
+copilot --profile ceo "Fix bug in [component]"
 ```
 
 CEO prescribes: **Developer → QA**
@@ -262,7 +261,7 @@ CEO prescribes: **Developer → QA**
 ### Requirements/Planning
 
 ```bash
-codex --profile ceo "Create spec for [feature]"
+copilot --profile ceo "Create spec for [feature]"
 ```
 
 CEO prescribes: **PM** (single agent)
@@ -270,7 +269,7 @@ CEO prescribes: **PM** (single agent)
 ### Marketing Campaign
 
 ```bash
-codex --profile ceo "Plan campaign for [product]"
+copilot --profile ceo "Plan campaign for [product]"
 ```
 
 CEO prescribes: **Marketer → Analytics**
@@ -280,18 +279,18 @@ CEO prescribes: **Marketer → Analytics**
 Once familiar with the system, bypass CEO and go directly to specialists:
 
 ```bash
-codex --profile developer "Implement authentication"
-codex --profile qa "Review recent changes"
-codex --profile pm "Create PRD for user dashboard"
+copilot --profile developer "Implement authentication"
+copilot --profile qa "Review recent changes"
+copilot --profile pm "Create PRD for user dashboard"
 ```
 
 ## Why Profile-Based Switching?
 
-This system uses Codex CLI's native profile mechanism instead of mid-conversation agent transformation:
+This system uses GitHub Copilot CLI's native profile mechanism instead of mid-conversation agent transformation:
 
 **Advantages:**
 
-- ✅ Native Codex CLI feature (no extra setup)
+- ✅ Native GitHub Copilot CLI feature (no extra setup)
 - ✅ Each agent gets full context from its definition file
 - ✅ Clean separation between agent contexts
 - ✅ No MCP server required
@@ -313,10 +312,10 @@ This system uses Codex CLI's native profile mechanism instead of mid-conversatio
 ### Adapt to Your Project
 
 1. **Update `technical-preferences.yaml`** with your tech stack
-2. **Customize agent instructions** in `.agent/agents/*.md`
-3. **Add project-specific tasks** in `.agent/tasks/`
-4. **Define custom checklists** in `.agent/checklists/`
-5. **Regenerate indexes** with `.agent/utils/generate-indexes.sh`
+2. **Customize agent instructions** in `.github/agents/*.md`
+3. **Add project-specific tasks** in `.github/tasks/`
+4. **Define custom checklists** in `.github/checklists/`
+5. **Regenerate indexes** with `.github/utils/generate-indexes.sh`
 
 ### Extend the System
 
@@ -342,7 +341,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 ### What We Simplified
 
 - **No heavy orchestration layer:** CEO prescribes workflows instead of executing them
-- **No multi-model complexity:** Optimized for GPT-5-Codex (OpenAI-first)
+- **Optimized for Claude Sonnet 4.5:** Single model with official prompting best practices
 - **No enterprise ceremony:** Lightweight PRDs and optional ExecPlans instead of mandatory bureaucracy
 - **Massive token reduction:** File-based coordination and bash-generated indexes (not LLM calls)
 
@@ -362,7 +361,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 **Solution:** Regenerate indexes
 
 ```bash
-.agent/utils/generate-indexes.sh
+.github/utils/generate-indexes.sh
 ```
 
 ### Profile not found
@@ -370,7 +369,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 **Solution:** Add profiles to your config
 
 ```bash
-cat .agent/profiles.toml >> ~/.agent/config.toml
+cat .github/profiles.toml >> ~/.github/config.toml
 ```
 
 ### Agent gives generic responses
@@ -383,7 +382,7 @@ cat .agent/profiles.toml >> ~/.agent/config.toml
 
 ```bash
 chmod +x .git/hooks/pre-commit
-chmod +x .agent/utils/generate-indexes.sh
+chmod +x .github/utils/generate-indexes.sh
 ```
 
 ## Contributing

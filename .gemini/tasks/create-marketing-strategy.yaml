@@ -1,0 +1,199 @@
+metadata:
+  title: Create Marketing Strategy
+  owner: marketer
+  model: gemini-2.5-pro
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Marketer needs to create comprehensive marketing strategy
+  principle: "Data-driven. Channel-focused. Budget-conscious. Measurable outcomes."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Elicit context before strategy
+  - termination_policy: "Complete strategy document generation"
+  - early_exit_ok: false  # Must complete full strategy
+  </reasoning_control>
+
+dependencies:
+  templates:
+    - marketing-strategy-tmpl.yaml
+  data:
+    - marketing-frameworks.yaml
+    - channel-best-practices.yaml
+
+inputs:
+  optional:
+    - channel_analysis: "docs/marketing/channel-analysis.md"
+
+workflow:
+  - id: load_dependencies
+    type: read
+    files:
+      - .agent/core-config.xml
+      - .agent/templates/marketing-strategy-tmpl.yaml
+      - .agent/data/marketing-frameworks.yaml
+    check: channel_analysis_exists
+    action: if_exists → use_as_input
+
+  - id: gather_product_context
+    type: elicit
+    categories:
+      product:
+        - name
+        - description
+        - value_proposition
+        - unique_selling_points
+        - category_industry
+        - stage (pre-launch, launch, growth, scale)
+        - platforms
+      business:
+        - model (B2C, B2B, B2B2C)
+        - monetization_strategy
+        - competitive_landscape
+        - current_traction
+      resources:
+        - marketing_budget (total, monthly)
+        - team_size_and_skills
+        - content_creation_capability
+        - timeline_constraints
+    store_in: product_context
+
+  - id: define_target_audience
+    type: elicit_structured
+    for: [primary_segment, secondary_segments]
+    extract:
+      demographics: [age, gender, location, income, education, occupation]
+      psychographics: [interests, values, lifestyle, personality]
+      behavioral: [tech_adoption, media_consumption, purchase_behavior]
+      pain_points: user_problems
+      goals_motivations: what_trying_to_achieve
+      online_presence: platforms_communities_media
+
+  - id: create_personas
+    type: generate
+    count: 2-3
+    per_persona:
+      - name_and_backstory
+      - discovery_journey
+      - preferred_channels
+      - content_preferences
+
+  - id: set_smart_objectives
+    type: elicit
+    count: 3-5
+    format: SMART
+    criteria:
+      - specific: clearly_defined_outcome
+      - measurable: quantifiable_metric
+      - achievable: realistic_given_resources
+      - relevant: aligned_with_business
+      - time_bound: specific_deadline
+    examples:
+      - "Acquire 10,000 active users by end of Q2"
+      - "Achieve 50,000 app downloads in first 6 months"
+      - "Generate 1,000 qualified leads/month by Q3"
+
+  - id: channel_strategy
+    type: conditional
+    branches:
+      if_channel_analysis_exists:
+        - import_recommendations
+        - refine_based_on_budget
+        - prioritize_channels
+      else:
+        - quick_evaluate_top_3_to_5_channels
+        - score_by: [audience_fit, budget_fit, resource_availability, timeline]
+
+  - id: define_channel_details
+    type: structured
+    for_each: selected_channel
+    extract:
+      - name
+      - priority_level (Primary, Secondary, Experimental)
+      - selection_rationale
+      - audience_alignment
+      - budget_allocation ($ and %)
+      - expected_outcomes
+      - tactics
+      - success_metrics
+
+  - id: content_strategy
+    type: planning
+    reference: marketing_frameworks.content_systems
+    define:
+      - content_pillars (3-5 themes)
+      - content_types_per_channel
+      - content_calendar_frequency
+      - repurposing_strategy
+      - production_workflow
+
+  - id: budget_allocation
+    type: calculation
+    input: total_budget
+    allocate_across:
+      - channels (by priority)
+      - content_creation
+      - tools_and_software
+      - paid_advertising
+      - experimentation_buffer (10-20%)
+    output: budget_breakdown_table
+
+  - id: metrics_and_kpis
+    type: definition
+    levels:
+      north_star: primary_success_metric
+      channel_specific: per_channel_kpis
+      leading_indicators: early_signals
+      lagging_indicators: outcome_metrics
+    tracking: measurement_cadence
+
+  - id: generate_strategy_document
+    type: generate
+    template: marketing-strategy-tmpl.yaml
+    inputs:
+      - product_context
+      - target_audience
+      - personas
+      - objectives
+      - channel_strategy
+      - content_strategy
+      - budget_allocation
+      - metrics_kpis
+
+  - id: write_strategy
+    type: write
+    path: "docs/marketing/strategy-{{project_name}}.md"
+    content: generated_strategy
+
+completion:
+  outputs:
+    - marketing_strategy_document
+    - budget_breakdown
+    - channel_plan
+    - metrics_framework
+
+anti_patterns:
+  never:
+    - "Create strategy without product context"
+    - "Skip target audience definition"
+    - "Allocate budget without channel validation"
+    - "Set goals without SMART criteria"
+    - "Ignore existing channel analysis"
+  always:
+    - "Start with product and business context"
+    - "Define clear target audience with evidence"
+    - "Validate channels against audience fit"
+    - "Set measurable, time-bound objectives"
+    - "Include experimentation budget (10-20%)"
+    - "Use channel-analysis.md if available"
+
+notes:
+  - Use channel-analysis.md if available
+  - Reference marketing-frameworks.yaml for best practices
+  - Keep strategy actionable for lean startup
+  - Focus on measurable outcomes
+  - Include experimentation budget for learning

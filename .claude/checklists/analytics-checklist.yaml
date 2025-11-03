@@ -1,0 +1,76 @@
+data_integrity:
+  Verify that [Primary Data File], [Secondary Data File], and [Changelog File] are loaded and complete.
+  Confirm the latest time period (e.g., week) and previous period exist for comparison.
+  Do not manually aggregate daily or raw data for totals; use the primary data file.
+  Use [Primary Data File] for all totals and trends.
+  Use [Secondary Data File] only for anomaly detection or secondary analysis.
+  Ensure consistent time period labels (e.g., W4→W5→W6).
+calculation_accuracy:
+  Show formula for every percentage change: (new-old)/old = Δ%.
+  Include both absolute and relative changes.
+  Cite file and row for every metric value.
+  NEVER round intermediate values; round only at display.
+  NEVER report unsourced or “approximate” metrics.
+  ENSURE formula validity for all key metric calculations (e.g., [Key Metric 1]/[Key Metric 2]).
+primary_metrics:
+  metric_requirements:
+    For each [Key Metric]:
+    Show historical trend with labeled time periods and sources.
+    Rank top 3-5 campaigns/segments by volume.
+    Calculate period-over-period deltas and efficiency rates.
+    ENSURE >10% deviations are correlated with changelog or flagged ⚠️.
+trend_and_correlation:
+  Link every major change (>10%) to a changelog entry with file and line reference.
+  Identify lag between change and impact.
+  Flag unexplained variances explicitly.
+  NEVER infer missing causes or fabricate explanations.
+funnel_analysis:
+  If a funnel is defined by the user (e.g., [Stage 1] -> [Stage 2] -> [Stage 3]):
+  Display the full funnel for the top 2 campaigns/segments.
+  Compute conversion rates for each stage.
+  Calculate leak points between stages.
+  Compare against portfolio or historical averages (cite sources).
+temporal_priority:
+  focus analysis primarily on the latest time period.
+  include period-over-period (e.g., week-over-week) and multi-period trends.
+  distinguish trends from anomalies or outliers.
+recommendations:
+  EACH recommendation contain:
+    Priority: HIGH / MEDIUM / LOW
+    Problem with metric + source citation
+    Root cause hypothesis (from changelog or pattern)
+    Specific action (executable ≤48h)
+    Expected impact (% or Δmetric)
+    Owner (@team or @person)
+  classify by impact:
+    HIGH = >30% change
+    MEDIUM = 10-30%
+    LOW = <10%
+executive_summary:
+  1. Biggest win (+[Key Metric], with source)
+  2. Biggest concern (−[Key Metric], with source)
+  3. Required action (owner + expected impact)
+  keep each bullet ≤2 lines.
+  include metric sources in all claims.
+anti_patterns:
+  NEVER use vague language (“improved”, “better”, “approximately”).
+  NEVER manually sum daily or raw data for totals.
+  NEVER analyze secondary metrics before primary [Key Metrics].
+  flag missing or inconsistent data immediately.
+data_quality:
+  confirm aligned date ranges across all sources.
+  flag gaps or missing data.
+  state any analysis limitations due to data quality.
+validation_result:
+  OUTPUT format:
+    validation_status: [READY | NEEDS_REVISION | BLOCKED]
+    summary: [1-line explanation]
+    error_protocol: IF any FAIL → include section + reason list.
+activation_hint:
+  Validate sequentially from <data_integrity> → <validation_result>.
+  Output PASS or FAIL → reason per section.
+  Compute final VALIDATION_STATUS:
+    READY → all PASS
+    NEEDS_REVISION → minor issues
+    BLOCKED → missing or invalid data
+  Conclude with single SUMMARY line.

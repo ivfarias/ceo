@@ -1,0 +1,214 @@
+metadata:
+  title: Create Execution Plan (ExecPlan)
+  owner: developer
+  model: gemini-2.5-pro
+  reasoning_effort: high
+  verbosity: medium
+
+activation:
+  when: Developer needs to create an ExecPlan for a complex feature
+  principle: "Self-contained, living documents. Novice-executable. Observable outcomes."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: high
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Gather all context before creating plan
+  - termination_policy: "Complete ExecPlan creation and write to file"
+  - early_exit_ok: false  # Must complete full plan
+  </reasoning_control>
+
+inputs:
+  required:
+    - feature_name: "Name of the feature/refactor being planned"
+    - feature_description: "High-level description of what needs to be built"
+  optional:
+    - prd_path: "Path to existing PRD if available"
+    - requirements_source: "Any existing requirements doc or user story"
+
+workflow:
+  - id: read_guidelines
+    type: read
+    critical: true
+    files:
+      - .agent/PLANS.md
+      - .agent/AGENTS.md
+    purpose: "Internalize ExecPlan requirements and standards"
+
+  - id: gather_context
+    type: research
+    prompt: |
+      Before creating the ExecPlan, gather comprehensive context:
+      1. Read any existing PRD, requirements doc, or user stories
+      2. Search codebase for relevant files, functions, and patterns
+      3. Identify dependencies, APIs, and libraries that will be affected
+      4. Research external docs if using new libraries or frameworks
+      5. Understand current architecture and how this feature fits
+
+    stop_criteria:
+      - Clear understanding of user problem and desired outcome
+      - Identified all major technical components involved
+      - Understand data flows and system interactions
+      - Know what success looks like (observable behavior)
+
+    store_in: context_bundle
+
+  - id: identify_unknowns
+    type: analysis
+    inputs: context_bundle
+    extract:
+      - technical_unknowns
+      - required_prototypes
+      - research_areas
+      - risky_assumptions
+    store_in: unknowns_list
+
+  - id: define_milestones
+    type: planning
+    inputs:
+      - context_bundle
+      - unknowns_list
+    generate:
+      - milestone_sequence
+      - validation_criteria_per_milestone
+      - commands_to_run_per_milestone
+    rules:
+      - Each milestone must be independently verifiable
+      - Include prototyping milestones for major unknowns
+      - Prefer additive changes (build up, not tear down)
+      - Keep milestones small and testable
+    store_in: milestone_plan
+
+  - id: draft_execplan
+    type: generate
+    template: .agent/templates/execplan-tmpl.yaml
+    inputs:
+      - context_bundle
+      - milestone_plan
+      - unknowns_list
+    sections_to_fill:
+      purpose:
+        instruction: "Explain what user can do after this change. How to see it working. 3-5 sentences max."
+        focus: User-visible behavior, observable outcomes
+
+      progress:
+        instruction: "Create initial checklist from milestones. Use [ ] for incomplete. Add timestamps when marking [x]."
+        format: "- [ ] Milestone description (estimated: X hours)"
+
+      context_and_orientation:
+        instruction: "Describe current state as if reader knows nothing. Name files with full paths. Define all terms."
+        focus: Novice can understand and navigate the codebase
+
+      plan_of_work:
+        instruction: "Prose description of the sequence. Name files, functions, what to change. Be concrete."
+        avoid: Vague statements like 'refactor as needed' or 'update components'
+
+      concrete_steps:
+        instruction: "Exact commands to run with working directories. Show expected output examples."
+        format: |
+          Step 1: [Action]
+          Command: `command here`
+          Working directory: path/to/dir
+          Expected output:
+              [truncated example output]
+
+      validation_and_acceptance:
+        instruction: "How to prove it works. Specific inputs, expected outputs. Test commands."
+        focus: Observable behavior, not just 'code compiles'
+
+      interfaces_and_dependencies:
+        instruction: "Be prescriptive. Name exact libraries, versions, interfaces to create. Show function signatures."
+
+    validation:
+      - Every section is self-contained (no 'as mentioned' references)
+      - All jargon is defined in plain language
+      - Success criteria are observable and testable
+      - A novice could implement from this plan alone
+
+    store_in: execplan_draft
+
+  - id: self_review
+    type: validation
+    inputs: execplan_draft
+    checklist:
+      - Self-contained? (Novice can execute without prior context)
+      - Observable outcomes? (Clear how to verify success)
+      - All terms defined? (No undefined jargon)
+      - Milestones independently verifiable?
+      - Commands exact and reproducible?
+      - No external links? (All knowledge embedded)
+    action: if_fail → revise_sections
+
+  - id: determine_filename
+    type: computation
+    formula: "{{feature_name | slugify}}-execplan.md"
+    store_in: filename
+
+  - id: write_execplan
+    type: write
+    critical: true
+    path: "plans/active/{{filename}}"
+    content: execplan_draft
+    rules:
+      - NEVER write to .agent/ directory
+      - ALWAYS write to plans/active/ for new ExecPlans
+      - File must be valid markdown
+      - No triple-backtick fences inside the plan (use indentation for code examples)
+    on_success: return_file_path
+
+  - id: create_progress_reminder
+    type: message
+    template: |
+      ✅ ExecPlan created: `plans/active/{{filename}}`
+
+      This is a living document. You must update it as you work:
+
+      - Mark Progress checkboxes: `[x] (YYYY-MM-DD HH:MMZ) Completed milestone`
+      - Add to Decision Log when making design choices
+      - Record in Surprises & Discoveries when finding unexpected behavior
+      - Fill Outcomes & Retrospective at completion
+      - Move to `plans/completed/` when done
+
+      To update this plan: Use the `update-execplan` task or edit directly.
+
+      Next steps:
+      1. Review the plan with stakeholders if needed
+      2. Begin implementation starting with first milestone
+      3. Update Progress section at every stopping point
+
+      Ready to start implementation? Begin with milestone 1.
+
+completion:
+  checklist:
+    - guidelines_read
+    - context_comprehensively_gathered
+    - all_sections_filled_and_validated
+    - self_contained_check_passed
+    - file_written_to_plans_active
+    - developer_reminded_to_update_as_they_work
+
+output:
+  format: markdown
+  location: "plans/active/{{feature_name}}-execplan.md"
+
+anti_patterns:
+  never:
+    - "Create plan without reading .agent/PLANS.md first"
+    - "Skip context gathering phase"
+    - "Write vague milestones like 'implement feature'"
+    - "Reference external docs instead of embedding knowledge"
+    - "Forget to remind developer this is a living document"
+    - "Write plan that only author can understand"
+  always:
+    - "Make plan self-contained for complete novice"
+    - "Define all jargon and technical terms"
+    - "Specify observable outcomes for every milestone"
+    - "Include exact commands with expected outputs"
+    - "Validate plan can stand alone without any prior context"
+
+notes:
+  - ExecPlans are for complex, multi-hour work only
+  - Review .agent/PLANS.md skeleton carefully before starting
+  - Progress section must be updated continuously during work
+  - Decision Log captures *why* choices were made, not just what
+  - Plan must enable a future novice to restart work from scratch

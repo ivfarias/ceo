@@ -1,7 +1,7 @@
 metadata:
   title: Create Marketing Strategy
   owner: marketer
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: medium
   verbosity: low
 
@@ -33,9 +33,9 @@ workflow:
   - id: load_dependencies
     type: read
     files:
-      - .agent/core-config.xml
-      - .agent/templates/marketing-strategy-tmpl.yaml
-      - .agent/data/marketing-frameworks.yaml
+      - .github/core-config.xml
+      - .github/templates/marketing-strategy-tmpl.yaml
+      - .github/data/marketing-frameworks.yaml
     check: channel_analysis_exists
     action: if_exists → use_as_input
 

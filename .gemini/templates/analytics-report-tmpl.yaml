@@ -1,0 +1,54 @@
+template:
+  id: analytics-report-template-v3-generic
+  name: Generic Campaign Analytics Report
+  version: 3.0
+  output:
+    format: markdown
+    filename: "docs/reports/analytics-report-{{current_date}}.md"
+    title: "Campaign Performance Analysis: Period ending {{period_end_date}}"
+
+sections:
+  - id: executive_summary
+    title: "Executive Summary"
+    type: text
+    instruction: "Provide exactly 3 bullets: 1) Biggest win with a key metric, numbers, and source. 2) Biggest concern/risk with a key metric, numbers, and source. 3) Highest priority action with owner, action, and expected outcome."
+
+  - id: data_validation
+    title: "Data Source Validation"
+    type: text
+    instruction: "Confirm that the user-specified files ([Primary Data File], [Secondary Data File], [Changelog File]) were loaded and validated. Note any data quality issues, such as incomplete data ranges or missing files."
+
+  - id: pop_trend_analysis
+    title: "Period-over-Period Performance Trends"
+    type: table
+    columns: [Metric, Previous Period Value, Latest Period Value, Absolute Change, Percent Change]
+    instruction: "Report on the period-over-period change for the user-specified [Key Metrics]. All values must be sourced from the [Primary Data File] and include citations. Show the calculation for percent change."
+
+  - id: campaign_ranking
+    title: "Top Campaign Rankings (Latest Period)"
+    type: table
+    columns: [Metric, Rank, Campaign, Value, "% of Total"]
+    instruction: "List the top 3-5 campaigns by volume for the user-specified [Key Metrics] for the most recent complete period."
+
+  - id: funnel_analysis
+    title: "Funnel Analysis"
+    type: text
+    instruction: "If a funnel is defined, display the full conversion funnel for the top 2 campaigns using the user-specified stages (e.g., [Stage 1] -> [Stage 2] -> [Stage 3]). Show conversion rates at each step and compare them to the portfolio average to identify leak points. All data must be sourced from the [Primary Data File] with citations."
+
+  - id: changelog_correlation
+    title: "Changelog Correlation & Root Cause Analysis"
+    type: text
+    instruction: "For every significant metric change, link it to a specific entry in the [Changelog File] or flag it as '⚠️ Unexplained'. State the cause-and-effect relationship."
+
+  - id: recommendations
+    title: "Actionable Recommendations"
+    type: list
+    instruction: |
+      List prioritized recommendations. Each recommendation MUST follow this structure:
+      - **Priority**: [HIGH/MEDIUM/LOW]
+      - **Problem**: [Problem statement with specific metrics and source citations]
+      - **Root Cause**: [Hypothesis from changelog or patterns]
+      - **Action**: [Specific, executable action]
+      - **Expected Impact**: [Quantified expected outcome]
+      - **Success Metric**: [How success will be measured]
+      - **Owner**: [@team or @person]

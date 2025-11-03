@@ -1,0 +1,172 @@
+metadata:
+  title: Optimize Single Agent
+  owner: prepper
+  claude-sonnet-4.5
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Prepper processes one agent during optimize-agents or optimize-all sequence
+  principle: "One agent at a time. Evidence-based changes. Stop for confirmation."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Get user confirmation for each change
+  - termination_policy: "Stop after user confirms completion or skips"
+  - early_exit_ok: true  # User can skip optimization
+  </reasoning_control>
+
+workflow:
+  - id: validate_prerequisites
+    type: validation
+    checks:
+      - "analysis_report exists and is populated"
+      - "target agent file path provided"
+    action: if_fail → halt_and_request_analysis
+
+  - id: read_agent_file
+    type: read
+    target: "{{agent_file_path}}"
+    announce: |
+      Reading agent file: {{agent_file_path}}
+      Purpose: Compare against project standards from analysis_report
+
+  - id: extract_optimization_context
+    type: analysis
+    inputs:
+      - analysis_report.ecosystem_config
+      - analysis_report.tech_stack
+      - analysis_report.code_standards
+      - analysis_report.gaps_and_risks
+      - current_agent_content
+    identify:
+      - model alignment issues
+      - missing project-specific context
+      - incorrect file path references
+      - outdated tech stack references
+      - workflow misalignments
+      - missing tool integrations
+    filter: only_actionable_changes
+    store_in: agent_optimization_plan
+
+  - id: prioritize_changes
+    type: ranking
+    inputs: agent_optimization_plan
+    criteria:
+      - impact: high → correctness fixes (wrong paths, outdated versions)
+      - impact: medium → enhancements (missing tech stack validation, better prompts)
+      - impact: low → style/consistency improvements
+    output: ranked_changes
+    rule: only_propose_top_priority_change
+
+  - id: prepare_change_proposal
+    type: generate
+    template: |
+      ## Agent Optimization: {{agent_name}}
+
+      **Why this change is needed:**
+      {{reason_linked_to_analysis_report}}
+
+      **Proposed Change:**
+      ```diff
+      {{before_after_diff}}
+      ```
+
+      **Impact:**
+      - Routing: {{routing_impact}}
+      - Workflow: {{workflow_impact}}
+      - Standards: {{standards_impact}}
+
+      **Evidence from analysis:**
+      {{cite_analysis_report_section}}
+
+      **Options:**
+      [1] Apply this change
+      [2] Revise the proposal
+      [3] Skip this optimization
+      [4] Show me the next priority change instead
+
+  - id: await_user_decision
+    type: elicit
+    prompt: "Please select an option [1-4]:"
+    validation:
+      - check: valid_choice
+        action: if_invalid → re_prompt
+
+  - id: apply_change
+    type: conditional
+    condition: user_choice == 1
+    action:
+      - edit_agent_file
+      - update_audit_log
+      - update_progress_table
+      - store_rollback_notes
+    next: announce_completion
+
+  - id: revise_proposal
+    type: conditional
+    condition: user_choice == 2
+    prompt: "What would you like me to adjust in the proposal?"
+    action: return_to → prepare_change_proposal
+
+  - id: skip_optimization
+    type: conditional
+    condition: user_choice == 3
+    action:
+      - log_skip_reason
+      - update_progress_table
+      - mark_agent_reviewed
+    next: announce_completion
+
+  - id: show_next_priority
+    type: conditional
+    condition: user_choice == 4
+    action:
+      - remove_current_from_ranked_changes
+      - select_next_priority
+    next: prepare_change_proposal
+
+  - id: announce_completion
+    type: output
+    format: |
+      ✓ Agent optimization step complete: {{agent_name}}
+
+      **Progress Update:**
+      {{progress_table}}
+
+      **Next Steps:**
+      [1] Continue to next agent
+      [2] Show full optimization progress
+      [3] Pause optimization sequence
+      [4] Exit to Prepper menu
+
+completion:
+  criteria:
+    - user_confirmed_completion_or_skip
+    - progress_table_updated
+    - audit_log_maintained
+    - rollback_notes_stored
+
+anti_patterns:
+  never:
+    - "Optimize multiple agents in one step"
+    - "Apply changes without user confirmation"
+    - "Skip linking changes to analysis_report evidence"
+    - "Modify agent without reading analysis_report first"
+  always:
+    - "One agent at a time, one change at a time"
+    - "Present change proposal with evidence"
+    - "Await user decision before applying"
+    - "Maintain audit_log and rollback_notes"
+    - "Use codebase search tools for tech validation"
+
+notes:
+  - NEVER optimize multiple agents in one step
+  - Always link changes to analysis_report evidence
+  - Maintain audit_log with timestamp, agent, change, rationale
+  - Store rollback_notes for each applied change
+  - If no changes needed, still confirm with user before marking complete
+  - Use codebase search tools when validating tech stack references
+  - Preserve original formatting and style unless fixing errors

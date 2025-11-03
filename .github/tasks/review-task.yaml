@@ -1,7 +1,7 @@
 metadata:
   title: Review Task (Lean)
   owner: qa
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: low
   verbosity: low
   description: "Adaptive QA review with Quality Gate and Risk Summary in single operation"

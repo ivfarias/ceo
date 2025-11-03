@@ -1,7 +1,7 @@
 metadata:
   title: Create Execution Plan (ExecPlan)
   owner: developer
-  model: gpt-5-codex
+  claude-sonnet-4.5
   reasoning_effort: high
   verbosity: medium
 
@@ -31,8 +31,8 @@ workflow:
     type: read
     critical: true
     files:
-      - .agent/PLANS.md
-      - .agent/AGENTS.md
+      - .github/PLANS.md
+      - .github/copilot-instructions.md
     purpose: "Internalize ExecPlan requirements and standards"
 
   - id: gather_context
@@ -81,7 +81,7 @@ workflow:
 
   - id: draft_execplan
     type: generate
-    template: .agent/templates/execplan-tmpl.yaml
+    template: .github/templates/execplan-tmpl.yaml
     inputs:
       - context_bundle
       - milestone_plan
@@ -150,7 +150,7 @@ workflow:
     path: "plans/active/{{filename}}"
     content: execplan_draft
     rules:
-      - NEVER write to .agent/ directory
+      - NEVER write to .github/ directory
       - ALWAYS write to plans/active/ for new ExecPlans
       - File must be valid markdown
       - No triple-backtick fences inside the plan (use indentation for code examples)
@@ -193,7 +193,7 @@ output:
 
 anti_patterns:
   never:
-    - "Create plan without reading .agent/PLANS.md first"
+    - "Create plan without reading .github/PLANS.md first"
     - "Skip context gathering phase"
     - "Write vague milestones like 'implement feature'"
     - "Reference external docs instead of embedding knowledge"
@@ -208,7 +208,7 @@ anti_patterns:
 
 notes:
   - ExecPlans are for complex, multi-hour work only
-  - Review .agent/PLANS.md skeleton carefully before starting
+  - Review .github/PLANS.md skeleton carefully before starting
   - Progress section must be updated continuously during work
   - Decision Log captures *why* choices were made, not just what
   - Plan must enable a future novice to restart work from scratch

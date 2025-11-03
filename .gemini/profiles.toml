@@ -1,0 +1,62 @@
+# ============================================================================
+# CEO Orchestration System - Agent Profiles
+# ============================================================================
+# Add these profiles to your ~/.agent/config.toml to enable agent switching
+#
+# Usage:
+#   codex --profile ceo        # Start with CEO orchestrator
+#   codex --profile developer  # Start with Developer agent
+#   codex --profile pm         # Start with Product Manager
+#   etc.
+#
+# Copy-paste this entire block into your ~/.agent/config.toml file
+# ============================================================================
+
+[profiles.analyst]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Ana - Analytics Specialist
+
+[profiles.ceo]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Cleo - Executive Orchestrator
+
+[profiles.developer]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Devon - Senior Developer & Architect
+
+[profiles.marketer]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Mark - Unified Marketing Strategist 📢
+
+[profiles.pm]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Manny - Lean Product Manager
+
+[profiles.prepper]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Pepe - Project Preparation & Optimization Specialist
+
+[profiles.qa]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+# Agent: Quinn - Test Architect & Quality Advisor
+
+[profiles.ux-expert]
+model = "gemini-2.5-pro"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+# Agent: Sally - UX Expert
+

@@ -2,32 +2,32 @@
 
 ## Quick Start
 
-### 1. Install Codex CLI
+### 1. Install Github Copilot CLI
 
 ```bash
-npm install -g codex-cli
+npm install -g @github/copilot
 ```
 
 ### 2. Add Agent Profiles
 
-Copy the contents of `.agent/profiles.toml` into your `~/.agent/config.toml`:
+Copy the contents of `.github/profiles.toml` into your `~/.github/config.toml`:
 
 ```bash
-cat .agent/profiles.toml >> ~/.agent/config.toml
+cat .github/profiles.toml >> ~/.github/config.toml
 ```
 
-Or manually copy-paste the profiles section from `.agent/profiles.toml` into your config.
+Or manually copy-paste the profiles section from `.github/profiles.toml` into your config.
 
 ### 3. Start Using Agents
 
 ```bash
 # Start with the CEO orchestrator
-codex --profile ceo
+copilot --profile ceo
 
 # Or start directly with a specialist agent
-codex --profile developer
-codex --profile pm
-codex --profile qa
+copilot --profile developer
+copilot --profile pm
+copilot --profile qa
 ```
 
 ## Agent Profiles
@@ -49,18 +49,18 @@ This system includes the following agent profiles:
 
 1. Start with CEO:
    ```bash
-   codex --profile ceo
+   copilot --profile ceo
    ```
 
 2. CEO analyzes your request and recommends an agent:
    ```
    You: "I need to implement a login feature"
-   CEO: "This requires the developer agent. Exit and run: codex --profile developer"
+   CEO: "This requires the developer agent. Exit and run: copilot --profile developer"
    ```
 
 3. Switch to the recommended agent:
    ```bash
-   codex --profile developer
+   copilot --profile developer
    ```
 
 ### Direct Agent Access
@@ -68,13 +68,13 @@ This system includes the following agent profiles:
 If you know which agent you need, skip the CEO and go directly:
 
 ```bash
-codex --profile developer "Implement user authentication"
+copilot --profile developer "Implement user authentication"
 ```
 
 ## Advanced: MCP Sub-Agents (Optional)
 
 For automatic orchestration where the CEO can invoke agents directly, see:
-- `.agent/docs/MCP_SETUP.md` (coming soon)
+- `.github/docs/MCP_SETUP.md` (coming soon)
 
 This requires installing an MCP server and is optional for power users.
 
@@ -83,7 +83,7 @@ This requires installing an MCP server and is optional for power users.
 If you add new agents, tasks, or checklists, regenerate the indexes:
 
 ```bash
-.agent/utils/generate-indexes.sh
+.github/utils/generate-indexes.sh
 ```
 
 This updates:
@@ -97,7 +97,7 @@ This updates:
 ## Project Structure
 
 ```
-.agent/
+.github/
 ├── agents/           # Agent definitions
 ├── tasks/            # Task templates
 ├── checklists/       # Quality checklists
@@ -111,6 +111,6 @@ This updates:
 
 ## Need Help?
 
-- Check agent documentation: `.agent/agents/*.md`
-- View available tasks: `.agent/tasks.index.yaml`
+- Check agent documentation: `.github/agents/*.md`
+- View available tasks: `.github/tasks.index.yaml`
 - See README.md for system overview

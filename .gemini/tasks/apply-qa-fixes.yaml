@@ -1,0 +1,158 @@
+metadata:
+  title: Apply QA Fixes
+  owner: developer
+  model: gemini-2.5-pro
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Developer agent needs to implement fixes from QA gate file
+  principle: "Systematic, priority-based fixes. No shortcuts. Validate thoroughly."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: true  # Dev knows what to fix from gate file
+  - termination_policy: "Complete all critical/major fixes before stopping"
+  </reasoning_control>
+
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - include_previous_response_id: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["fix_plan", "completed_fixes", "test_results", "verification_status"]
+  </session_memory>
+
+context_gathering: |
+  <context_gathering>
+  Goal: Understand QA findings and locate code to fix. Stop when fix approach is clear.
+
+  Early stop criteria:
+  - All critical/major issues mapped to file:line
+  - Fix approach clear for each issue
+  - Test coverage gaps identified
+
+  Depth:
+  - Read only files mentioned in QA gate findings
+  - Check test files for coverage gaps
+  - Don't explore unrelated code
+
+  Tool budget: max 5-7 file reads for typical QA fixes
+  </context_gathering>
+
+exploration: |
+  <exploration>
+  Before fixing:
+  - Read gate file and extract priority-ordered issues
+  - Map each issue to specific file and line number
+  - Identify recommended fix approach from QA notes
+  - Plan test additions for coverage gaps
+  - Formulate fix order: critical → major → minor
+  </exploration>
+
+verification: |
+  <verification>
+  After each fix:
+  - Run linter on changed file
+  - Run related unit tests
+  - Verify issue actually resolved
+
+  Before completion:
+  - Run full test suite
+  - Verify no regressions introduced
+  - Check all critical/major issues resolved
+  </verification>
+
+efficiency: |
+  <efficiency>
+  - Fix one issue at a time with immediate verification
+  - Don't batch fixes without testing
+  - Parallelize test file reads when checking coverage
+  - Use targeted file reads based on gate findings
+  </efficiency>
+
+inputs:
+  required:
+    - task_file: "Path to task file that was reviewed"
+    - gate_file: "Path to YAML gate file with QA findings"
+
+workflow:
+  - id: parse_gate_file
+    type: read
+    target: "{{gate_file}}"
+    extract:
+      - findings_by_severity
+      - critical_issues
+      - major_issues
+      - minor_issues
+      - test_coverage_gaps
+    store_in: qa_findings
+
+  - id: build_fix_plan
+    type: prioritize
+    inputs: qa_findings
+    priority_order: [critical, major, minor]
+    output: |
+      Prioritized fix list with:
+      - Location (file:line)
+      - Problem description
+      - Recommended fix
+      - Estimated complexity
+
+  - id: apply_fixes
+    type: implementation
+    rule: one_issue_at_a_time
+    for_each: fix_plan_item
+    steps:
+      - locate_code_in_file
+      - apply_recommended_fix
+      - follow_project_conventions
+      - verify_fix_addresses_issue
+    validation:
+      - no_new_issues_introduced
+      - existing_tests_still_pass
+
+  - id: add_missing_tests
+    type: implementation
+    condition: test_coverage_gaps_exist
+    action:
+      - identify_untested_code_paths
+      - write_tests_for_each_gap
+      - ensure_tests_pass
+    coverage_target: "From gate_file or project default"
+
+  - id: validate_changes
+    type: validation
+    critical: true
+    checks:
+      - run_linter
+      - run_unit_tests
+      - run_integration_tests
+      - verify_no_regressions
+    action: if_fail → iterate_until_clean
+
+  - id: update_task_file
+    type: write
+    target: "{{task_file}}"
+    updates:
+      - check_off_completed_subtasks
+      - add_change_log_entries
+      - update_file_list
+      - set_status_to_ready_for_review
+
+completion:
+  checklist:
+    - critical_issues_resolved
+    - major_issues_resolved
+    - new_tests_added
+    - all_tests_passing
+    - task_file_updated
+    - status_ready_for_review
+
+notes:
+  - Process issues in strict priority order (Critical → Major → Minor)
+  - Never skip validation steps
+  - Keep task file in sync with actual changes
+  - If blocked on any issue, document in task notes

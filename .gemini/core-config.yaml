@@ -1,0 +1,97 @@
+
+core_config:
+  model: gemini-2.5-pro
+  version: "2.0"
+  ecosystem:
+    name: CEO-Orchestration
+    framework: BMAD
+    orchestrator_agent: ceo
+  indexes:
+    agents: ".agent/agents.index.yaml"
+    tasks: ".agent/tasks.index.yaml"
+    checklists: ".agent/checklists.index.yaml"
+    templates: ".agent/templates.index.yaml"
+    data: ".agent/data.index.yaml"
+    utils: ".agent/utils.index.yaml"
+  paths:
+    agent_root: ".agent"
+    docs_root: "docs"
+    tasks: "docs/tasks"
+    qa: "docs/qa"
+    reports: "docs/reports"
+    marketing: "docs/marketing"
+    debug_log: ".ai/debug-log.md"
+    backup: ".agent/.backup"
+    execplans: "plans"
+    execplans_active: "plans/active"
+    execplans_completed: "plans/completed"
+  models:
+    default: gemini-2.5-pro
+    reasoning_effort: "medium"
+    verbosity: "low"
+  orchestration:
+    mode: "stop-confirm-continue"
+    allow_parallel: false
+    require_approval: true
+    maintain_audit_log: true
+  workflow_stages:
+    - id: "define"
+      value: "PM: Requirements → Task"
+    - id: "build"
+      value: "Dev: Implementation"
+    - id: "validate"
+      value: "QA: Quality Gate"
+    - id: "coordinate"
+      value: "CEO: Handoffs & Delivery"
+  task_states:
+    - "Draft"
+    - "Approved"
+    - "InProgress"
+    - "Review"
+    - "Done"
+  qa:
+    location: "docs/qa"
+    gate_values:
+      - "PASS"
+      - "CONCERNS"
+      - "FAIL"
+      - "WAIVED"
+    nfr_defaults:
+      - "security"
+      - "performance"
+      - "reliability"
+      - "maintainability"
+    thresholds:
+      test_coverage_min: 80
+      code_quality_min: 70
+  safety:
+    forbidden_tools:
+      - "codex exec"
+      - "codex list"
+    isolation:
+      prevent_agent_file_modification: true
+      allow_qa_section_only: true
+      prevent_cross_agent_loading: true
+    backup:
+      enabled: true
+      format: "YYYYMMDD-HHMMSS"
+      location: ".agent/.backup"
+  activation:
+    slash_prefix: "ceo"
+    auto_help: true
+    greeting_template: "Hi, I'm {name} {icon} — your {role}."
+  elicitation:
+    mode: "advanced"
+    max_questions_per_round: 2
+    use_numbered_options: true
+  output:
+    format: "markdown"
+    require_citations: true
+    end_with_next_actions: true
+  features:
+    markdown_exploder: true
+    auto_index_refresh: false
+    parallel_execution: false
+    context_window_management: true
+    adaptive_reasoning_effort: true
+    verbosity_control: true

@@ -1,0 +1,156 @@
+template:
+  id: task-template-v2-lean
+  name: Task Document
+  version: 2.0
+  max_length: "Keep it concise. Developer should understand in < 5 min read."
+  output:
+    format: markdown
+    filename: docs/tasks/{{task_name}}.md
+    title: "Task: {{task_title}}"
+
+workflow:
+  mode: interactive
+  elicitation: minimal-elicitation
+  context_first: true
+
+agent_config:
+  editable_sections:
+    - Status
+    - Description
+    - Requirements
+    - Subtasks
+    - Context Notes
+    - Testing
+    - Change Log
+
+sections:
+  - id: status
+    title: Status
+    type: choice
+    choices: [Draft, Approved, InProgress, Review, Done]
+    instruction: Select the current status of the task
+    owner: task-manager
+    editors: [task-manager, dev-agent]
+
+  - id: description
+    title: What & Why
+    type: text
+    max_length: "2-3 sentences"
+    instruction: |
+      What are we building and why does it matter to users?
+      Keep it brief and user-focused.
+    elicit: true
+    owner: task-manager
+    editors: [task-manager]
+
+  - id: requirements
+    title: Done When...
+    type: numbered-list
+    max_items: 5
+    instruction: |
+      Clear, testable completion criteria.
+      Developer should know exactly when they're done.
+    elicit: true
+    owner: task-manager
+    editors: [task-manager]
+    examples:
+      - "User can click 'Export' and download CSV with correct data"
+      - "All tests pass (including new test for edge case X)"
+
+  - id: subtasks
+    title: Subtasks
+    type: bullet-list
+    instruction: |
+      Break down the task into specific subtasks needed for implementation.
+      Reference applicable requirement numbers where relevant.
+    template: |
+      - [ ] Subtask 1 (Req: # if applicable)
+      - [ ] Subtask 2 (Req: # if applicable)
+      - [ ] Subtask 3 (Req: # if applicable)
+    elicit: true
+    owner: task-manager
+    editors: [task-manager, dev-agent]
+
+  - id: context-notes
+    title: Context for Developer
+    instruction: |
+      Everything the developer needs to implement this task WITHOUT reading other docs.
+      This section must be COMPREHENSIVE and SELF-CONTAINED.
+
+      CRITICAL RULES:
+      - Use context7 MCP to fetch official docs for any frameworks/libraries referenced
+      - Include file paths, API specs, data models, error handling patterns
+      - If context is missing, STOP and gather it first
+      - Never say "see architecture doc" — include the relevant info HERE
+    elicit: true
+    owner: task-manager
+    editors: [task-manager]
+    sections:
+      - id: tech-stack
+        title: Tech Stack & APIs
+        instruction: |
+          List frameworks, libraries, APIs with version numbers.
+          Use context7 MCP to validate and include relevant usage patterns.
+        context7_required: true
+
+      - id: file-locations
+        title: Key Files & Paths
+        instruction: "Where should the developer make changes?"
+        examples:
+          - "src/components/ExportButton.tsx"
+          - "src/api/exports.ts"
+
+      - id: testing
+        title: Testing Requirements
+        instruction: |
+          - Test file location
+          - Testing framework and patterns
+          - Specific test cases for this task
+        examples:
+          - "Add tests to src/__tests__/exports.test.ts"
+          - "Use Jest + React Testing Library"
+
+  - id: change-log
+    title: Change Log
+    type: table
+    columns: [Date, Version, Description, Author]
+    instruction: Track changes made to this task document
+    owner: task-manager
+    editors: [task-manager, dev-agent, qa-agent]
+
+  - id: dev-agent-record
+    title: Dev Agent Record
+    instruction: This section is populated by the development agent during implementation
+    owner: dev-agent
+    editors: [dev-agent]
+    sections:
+      - id: agent-model
+        title: Agent Model Used
+        template: "{{agent_model_name_version}}"
+        instruction: Record the specific AI agent model and version used for development
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: debug-log-references
+        title: Debug Log References
+        instruction: Reference any debug logs or traces generated during development
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: completion-notes
+        title: Completion Notes
+        instruction: Notes about the completion of subtasks and any issues encountered
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: file-list
+        title: File List
+        instruction: List all files created, modified, or affected during task implementation
+        owner: dev-agent
+        editors: [dev-agent]
+
+  - id: qa-results
+    title: QA Results
+    instruction: Results from QA Agent review of the completed task implementation
+    owner: qa-agent
+    editors: [qa-agent]

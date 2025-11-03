@@ -1,0 +1,66 @@
+validation_principles:
+  Clarity → The developer understands WHAT to build.
+  Context → WHY this matters and how it fits.
+  Guidance → HOW to approach implementation.
+  Testability → HOW success is verified.
+  Self-Containment → Task is actionable without external hunts.
+rules:
+  id: T1
+  name: Goal & Context
+  severity: HIGH
+  check:
+      Task clearly states its goal or outcome.
+      Business or user value is explicit.
+      Dependencies or sequencing with other tasks are listed.
+  fix: "Add a clear 'Goal' section and one sentence on business value; list dependent tasks."
+  id: T2
+  name: Implementation Guidance
+  severity: HIGH
+  check:
+      Key files/components to create or modify are identified.
+      APIs or data models to use are referenced or linked.
+      Integration points with existing systems are clear.
+  fix: "Reference relevant files/APIs or provide example structures."
+  id: T3
+  name: Self-Containment
+  severity: MEDIUM
+  check:
+      All core requirements appear within the task.
+      Assumptions are explicit.
+      Edge cases or error states are mentioned (even briefly).
+  fix: "Include missing details or summarize from external docs."
+  id: T4
+  name: Testing Instructions
+  severity: MEDIUM
+  check:
+      Testing type (unit/integration/e2e) is specified.
+      Key test cases or acceptance criteria are outlined.
+      Success criteria are measurable or objectively verifiable.
+  fix: "Add acceptance criteria or define expected test coverage."
+
+validation_result:
+  table:
+      category: Goal & Context Clarity
+      status: [PASS | PARTIAL | FAIL]
+      issues: string
+      category: Technical Implementation Guidance
+      status: [PASS | PARTIAL | FAIL]
+      issues: string
+      category: Self-Containment
+      status: [PASS | PARTIAL | FAIL]
+      issues: string
+      category: Testing Guidance
+      status: [PASS | PARTIAL | FAIL]
+      issues: string
+  summary:
+    readiness: [READY | NEEDS_REVISION]
+    clarity_score: int(1-10)
+    major_gaps: list
+    recommendations: string
+
+activation_hint:
+  Review task doc and referenced requirements.
+  For each rule, mark PASS / PARTIAL / FAIL → reason.
+  READY if all HIGH = PASS and ≤1 MEDIUM = PARTIAL.
+  NEEDS_REVISION otherwise.
+  End output with single SUMMARY line.

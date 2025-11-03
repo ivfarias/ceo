@@ -1,0 +1,147 @@
+metadata:
+  title: Design Test Strategy
+  owner: qa
+  model: gemini-2.5-pro
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: QA agent needs to design comprehensive test strategy for a task
+  principle: "Efficient coverage. Right test level. No redundancy."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Clarify requirements before designing
+  - termination_policy: "Complete test design with full coverage"
+  - early_exit_ok: false  # Must complete full design and validation
+  </reasoning_control>
+
+inputs:
+  required:
+    - task_file: "Path to task file to design tests for"
+
+workflow:
+  - id: analyze_requirements
+    type: read_and_extract
+    target: "{{task_file}}"
+    extract:
+      - acceptance_criteria
+      - functional_requirements
+      - edge_cases_mentioned
+      - data_variations
+      - error_conditions
+    store_in: testable_requirements
+
+  - id: identify_test_scenarios
+    type: analysis
+    inputs: testable_requirements
+    for_each: requirement
+    generate:
+      - core_functionality_tests
+      - data_variation_tests
+      - error_condition_tests
+      - edge_case_tests
+    store_in: test_scenarios
+
+  - id: assign_test_levels
+    type: classification
+    inputs: test_scenarios
+    rules:
+      unit:
+        - pure_logic_functions
+        - validation_rules
+        - individual_components
+        - algorithms
+      integration:
+        - component_interactions
+        - database_operations
+        - api_calls
+        - service_integration
+      e2e:
+        - critical_user_journeys
+        - end_to_end_workflows
+        - real_world_usage_paths
+    priority_preference: unit > integration > e2e
+
+  - id: prioritize_scenarios
+    type: ranking
+    inputs: test_scenarios_with_levels
+    criteria:
+      high: critical_path_or_high_business_impact
+      medium: important_but_not_critical
+      low: nice_to_have_or_edge_cases
+    store_in: prioritized_test_plan
+
+  - id: generate_test_design
+    type: generate
+    template: |
+      # Test Design: {{task_name}}
+
+      ## Strategy Summary
+      {{total_scenarios}} scenarios across {{levels_used}} test levels
+      - Unit: {{unit_count}} | Integration: {{integration_count}} | E2E: {{e2e_count}}
+
+      ## Test Scenarios
+
+      {{for each scenario}}
+      ---
+      **ID**: {{task_name}}-TEST-{{level}}-{{seq}}
+      **Priority**: {{priority}}
+      **Level**: {{level}}
+      **Requirement**: {{requirement_ref}}
+
+      **Description**: {{what_is_being_tested}}
+
+      **Steps**:
+      {{numbered_steps}}
+
+      **Expected**: {{expected_result}}
+      {{end for}}
+
+  - id: validate_coverage
+    type: validation
+    checks:
+      - every_requirement_has_test
+      - critical_paths_thoroughly_tested
+      - healthy_mix_of_test_levels
+      - no_obvious_gaps
+    action: if_fail → add_missing_scenarios
+
+  - id: write_test_design
+    type: write
+    path: "docs/qa/test-scenarios-{{task_name}}.md"
+    content: generated_test_design
+    on_complete: return_file_path
+
+completion:
+  checklist:
+    - all_requirements_covered
+    - test_levels_appropriate
+    - priorities_align_with_risk
+    - scenarios_clear_and_testable
+    - design_document_created
+
+output:
+  format: markdown
+  location: "docs/qa/test-scenarios-{{task_name}}.md"
+
+anti_patterns:
+  never:
+    - "Design e2e tests for logic that can be unit tested"
+    - "Skip validation of coverage against requirements"
+    - "Create redundant test scenarios across test levels"
+    - "Generate test design without reading task requirements"
+  always:
+    - "Prefer unit > integration > e2e"
+    - "Map each test scenario to specific requirement"
+    - "Validate coverage before finalizing"
+    - "Keep scenarios independently executable"
+
+notes:
+  - Prefer unit tests over integration tests over e2e tests
+  - Each scenario must be independently executable
+  - Keep test descriptions concise and actionable
+  - Link scenarios back to specific requirements
+  - Right test level is critical for efficiency
