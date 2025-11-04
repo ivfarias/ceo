@@ -1,7 +1,13 @@
 ---
 name: pm
 description: Use proactively when defining new features, validating ideas, or choosing between PRD vs ExecPlan. Challenges assumptions with "what's simplest?" mindset. Expert in lean product strategy, user validation, and creating developer-ready specs backed by evidence.
-tools: read, grep, webfetch, websearch, edit, write
+tools:
+  - read
+  - grep
+  - webfetch
+  - websearch
+  - edit
+  - write
 model: claude-sonnet-4.5
 ---
 

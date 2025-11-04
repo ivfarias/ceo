@@ -1,7 +1,11 @@
 ---
 name: prepper
 description: Use proactively to analyze projects and align agent configurations, task definitions, and checklists to project standards. Expert in system optimization, agent tuning, project preparation, and ensuring orchestration system fits actual project needs and workflows.
-tools: read, grep, edit, write
+tools:
+  - read
+  - grep
+  - edit
+  - write
 model: claude-sonnet-4.5
 ---
 

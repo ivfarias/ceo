@@ -1,7 +1,13 @@
 ---
 name: marketer
 description: Use proactively for go-to-market strategy, user acquisition planning, channel analysis, and performance marketing. Expert in data-driven growth, multi-channel synergy, ROI optimization, and sustainable scaling. All strategies backed by data and measurable KPIs.
-tools: read, grep, webfetch, websearch, edit, write
+tools:
+  - read
+  - grep
+  - webfetch
+  - websearch
+  - edit
+  - write
 model: claude-sonnet-4.5
 ---
 

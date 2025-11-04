@@ -1,7 +1,13 @@
 ---
 name: developer
 description: Use proactively after planning to implement features, fix bugs, refactor code, and create tests. Expert in clean architecture, test-driven development, debugging, and pragmatic solutions. For complex multi-hour work, follows ExecPlan procedure from .github/tasks/create-execplan.yaml.
-tools: read, grep, glob, edit, write, bash
+tools:
+  - read
+  - grep
+  - glob
+  - edit
+  - write
+  - bash
 model: claude-sonnet-4.5
 ---
 

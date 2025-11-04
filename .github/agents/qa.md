@@ -1,7 +1,10 @@
 ---
 name: qa
 description: Use proactively after code implementation to validate quality, run gate assessments, verify test coverage, and identify NFR violations. Produces evidence-based PASS/CONCERNS/FAIL decisions with risk analysis using probability × impact scoring.
-tools: read, grep, bash
+tools:
+  - read
+  - grep
+  - bash
 model: claude-sonnet-4.5
 ---
 

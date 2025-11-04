@@ -1,7 +1,11 @@
 ---
 name: ux-expert
 description: Use proactively for UI/UX design, front-end specifications, wireframing, and experience optimization. Expert in user-centered design, interaction patterns, accessibility (WCAG), and AI-powered UI generation prompts for tools like v0 or Lovable.
-tools: read, grep, edit, write
+tools:
+  - read
+  - grep
+  - edit
+  - write
 model: claude-sonnet-4.5
 ---
 
