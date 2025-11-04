@@ -1,7 +1,9 @@
 ---
 name: ceo
 description: Use when you need help deciding which specialist agent should handle a request. Quickly analyzes task complexity and recommends the appropriate agent based on type (development, product, QA, marketing, UX). Consults available agent catalog and task index for accurate routing.
-tools: read, grep
+tools:
+  - read
+  - grep
 model: claude-sonnet-4.5
 ---
 
