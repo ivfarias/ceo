@@ -1,13 +1,16 @@
+![CEO-Led Orchestration System Logo](public/canva.png)
+
 # CEO-Led Orchestration System
 
-A streamlined framework for coordinating specialized AI agents using GitHub Copilot CLI. Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a much more streamlined and lean way to orchestrate multiple agents.
+A streamlined framework for coordinating specialized AI agents across multiple AI platforms (GitHub Copilot CLI, OpenAI Codex CLI, Claude Code, and Gemini CLI). Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a streamlined and lean way to orchestrate multiple agents.
 
 **Why This Exists:**
 
-The BMAD method is powerful but, I personally couldn't really get the whole benefit of it, because it felt like an  overkill for professionals like me, running things on their own. This system strips away the complexity while keeping the core orchestration benefits:
+The BMAD method is powerful but felt like overkill for solo professionals. This system strips away the complexity while keeping the core orchestration benefits:
 
 - **Token-efficient**: Dramatically reduced token usage vs. full BMAD implementations
-- **Claude Sonnet 4.5**: Optimized for Claude with official prompting best practices
+- **Multi-model support**: Works with GitHub Copilot CLI (GPT-4/Claude), OpenAI Codex CLI (GPT-5-Codex), Claude Code (Claude Sonnet 4.5), and Gemini CLI (Gemini 2.5 Pro)
+- **Model-optimized**: Each platform folder follows official prompting best practices for its AI model
 - **Solo-friendly**: Built for one person wearing many hats, not enterprise teams
 - **Lean by default**: No heavy processes unless you actually need them
 
@@ -26,16 +29,16 @@ This system provides the structure and methodology missing from unstructured "AI
 
 ## How It Works
 
-This system uses **profile-based agent switching** with GitHub Copilot CLI:
+This system uses **profile-based agent switching**:
 
 1. **CEO Agent (Cleo)** - Workflow consultant that analyzes your request and prescribes complete workflows
 2. **Specialist Agents** - Focused experts (Developer, PM, QA, etc.) that execute specific tasks
 3. **Resource Indexes** - Auto-generated catalogs of available tasks, checklists, and data
-4. **Profile Switching** - Native GitHub Copilot CLI mechanism to switch between agent contexts
+4. **Profile Switching** - Native mechanism to switch between agent contexts for each model.
 
 ### The CEO Workflow
 
-```bash
+```text
 User → CEO Agent → Analyzes intent → Consults indexes → Prescribes workflow
 
 CEO Output:
@@ -49,79 +52,146 @@ The CEO doesn't execute work—it provides **complete, actionable guidance** so 
 
 ## Quick Start
 
-### 1. Install GitHub Copilot CLI
+### 1. Choose Your AI Platform
+
+Pick one (or more) AI coding assistants to install:
+
+**GitHub Copilot CLI** (Recommended - uses GPT-4 or Claude 3.5):
 
 ```bash
 npm install -g @github/copilot
 ```
 
-### 2. Add Agent Profiles
-
-Copy the generated profile configurations to your GitHub Copilot config:
+**OpenAI Codex CLI** (GPT-5-Codex):
 
 ```bash
-cat .github/profiles.toml >> ~/.github/config.toml
+npm install -g codex-cli
 ```
 
-This adds all agent profiles (`ceo`, `developer`, `pm`, `qa`, `analytics`, `marketer`, `ux-expert`, `prepper`) to your GitHub Copilot CLI.
+**Claude Code** (Claude Sonnet 4.5):
+
+```bash
+npm i @anthropic-ai/claude-code
+```
+
+**Gemini CLI** (Gemini 2.5 Pro):
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+### 2. Set Up Agent Profiles
+
+Each platform has its own configuration folder with 7 core agents (+ Prepper for system optimization). Choose the folder for your platform:
+
+- **`.github/`** → GitHub Copilot CLI (requires git commit/push to activate)
+- **`.agent/`** → OpenAI Codex CLI
+- **`.claude/`** → Claude Code
+- **`.gemini/`** → Gemini CLI
+
+**Note:** The `prepper` agent is for system optimization only - see [Prepper Guide](docs/PREPPER-GUIDE.md). Use it separately via web AI, not in regular workflows.
+
+**Configuration steps vary by platform:**
+
+#### GitHub Copilot CLI
+
+Agents work automatically via custom agents in `.github/agents/` - no manual config needed. Just ensure your repo is pushed to GitHub.
+
+To access CEO agent:
+
+```bash
+# Start Copilot CLI
+copilot
+
+# Then type the slash command
+/agent ceo
+```
+
+#### OpenAI Codex CLI / Claude Code / Gemini CLI
+
+Add profiles to your config file:
+
+```bash
+# For Codex (check actual install location)
+cat .agent/profiles.toml >> ~/.agent/config.toml
+
+# For Claude (check actual install location)
+cat .claude/profiles.toml >> ~/.claude/config.toml
+
+# For Gemini (check actual install location)
+# Gemini uses a `settings.json` file. Profiles from `.gemini/profiles.toml` must be manually added.
+# See .gemini/SETUP.md for details.
+```
+
+Then access CEO agent:
+
+```bash
+# Codex
+codex --profile ceo
+
+# Claude
+claude --profile ceo
+
+# Gemini
+gemini --profile ceo
+```
+
+See platform-specific SETUP.md files for detailed instructions:
+
+- `.github/SETUP.md`
+- `.agent/SETUP.md`
+- `.claude/SETUP.md`
+- `.gemini/SETUP.md`
 
 ### 3. Start with the CEO
 
-```bash
-copilot --profile ceo
+The CEO agent analyzes your request and prescribes which specialist agents to use.
+
+**Example conversation:**
+
 ```
+You: "I need to build a login feature"
 
-Then tell the CEO what you need:
+CEO: "This is a new feature development workflow.
 
-```bash
-"I need to build a login feature"
-```
+Step 1: Product Manager (pm agent)
+- Define requirements and create PRD
+- Command: codex --profile pm  (or your platform equivalent)
 
-The CEO will analyze your request and prescribe a complete workflow:
+Step 2: Developer (developer agent)
+- Implement based on PRD
+- Command: codex --profile developer
 
-```bash
-**New Feature Development Workflow**
-
-**Step 1: Product Manager (Manny)**
-Command: `copilot --profile pm`
-Task: Execute task create-doc with prd-tmpl template
-Checklist: pm-context-checklist
-Reference: technical-preferences.yaml
-Expected Output: PRD document
-
-**Step 2: Developer (Devon)**
-Command: `copilot --profile developer`
-Task: Implement feature based on PRD
-Checklist: code-quality-checklist, openai-sdk-compliance-checklist
-Reference: technical-preferences.yaml
-Expected Output: Working implementation with tests
-
-**Step 3: QA (Quinn)**
-Command: `copilot --profile qa`
-Task: review-task
-Checklist: Test coverage validation
-Expected Output: QA report
-
----
-Quick Start:
-copilot --profile pm
+Step 3: QA (qa agent)
+- Validate implementation
+- Command: codex --profile qa"
 ```
 
 ### 4. Follow the Prescribed Workflow
 
+Execute each step the CEO recommends:
+
 ```bash
-copilot --profile pm
+# Step 1 - PM creates spec
+codex --profile pm
+> "Create PRD for login feature"
+
+# Step 2 - Developer implements
+codex --profile developer
+> "Implement login feature per PRD in docs/"
+
+# Step 3 - QA validates
+codex --profile qa
+> "Review login implementation"
 ```
 
-Then: "Execute task create-doc with prd-tmpl template for login feature"
-
-The specialist agent will execute with full context from its definition file.
+Replace `codex` with `copilot`, `claude`, or `gemini` depending on your platform.
 
 ## System Components
 
-### Agents (`.github/agents/`)
+### Core Agents (`.github/agents/`)
 
-Specialized AI personas with distinct capabilities:
+Specialized AI personas for your orchestration workflow:
 
 - **ceo** (Cleo) - Workflow consultant, routes to specialists
 - **developer** (Devon) - Architecture, implementation, debugging
@@ -130,7 +200,16 @@ Specialized AI personas with distinct capabilities:
 - **analytics** (Ana) - Data analysis, metrics, reporting
 - **marketer** (Mark) - Marketing strategy, campaigns, growth
 - **ux-expert** (Sally) - UI/UX design, wireframes
-- **prepper** (Pepe) - System optimization, agent tuning
+
+### Meta Agent (Separate Tool)
+
+- **prepper** (Pepe) - System optimizer (NOT for regular workflows)
+  - **Purpose:** Tune and optimize the orchestration system itself
+  - **When:** Initial setup, tech stack changes, periodic optimization
+  - **How:** Use via web AI (ChatGPT, Claude, Gemini) with flattened codebase
+  - **⚠️ High token usage** - See [Prepper Guide](docs/PREPPER-GUIDE.md) for details
+
+**Note:** Prepper is a meta-optimization tool, not part of daily development. Use standard agents (CEO → Developer → QA) for regular work.
 
 ### Tasks (`.github/tasks/`)
 
@@ -224,14 +303,7 @@ The CEO agent is a **Workflow Consultant**, not a simple router.
    - Reference data files
 5. **Sequences** multi-agent workflows when needed
 
-### What CEO Cannot Do
-
-❌ Invoke agents automatically (GitHub Copilot CLI doesn't support this)
-❌ Execute code or create files
-❌ Transform into other agents mid-conversation
-❌ Run multi-agent workflows automatically
-
-### What CEO Can Do
+### What CEO Can Do (All Platforms)
 
 ✅ Analyze intent accurately
 ✅ Consult indexes for available resources
@@ -240,82 +312,226 @@ The CEO agent is a **Workflow Consultant**, not a simple router.
 ✅ Sequence multi-step workflows properly
 ✅ Guide through complex scenarios
 
+### Platform-Specific Capabilities
+
+#### GitHub Copilot CLI
+
+✅ **Can invoke other agents automatically** via custom agent tools
+✅ CEO can directly call Developer, PM, QA, etc. without manual switching
+✅ Seamless multi-agent workflows in single conversation
+
+#### Claude Code
+
+✅ **Can invoke other agents via MCP** (Model Context Protocol)
+✅ Supports tool-based agent invocation when MCP server configured
+⚠️ Requires MCP setup (optional, advanced feature)
+
+#### Codex CLI
+
+❌ **Cannot invoke agents automatically**
+⚠️ Manual profile switching required (`codex --profile <name>`)
+⚠️ CEO prescribes workflow, user executes each step
+
+#### Gemini CLI
+
+✅ **Can invoke other agents via MCP** (Model Context Protocol)
+✅ Supports tool-based agent invocation when MCP server configured
+⚠️ Requires MCP setup (optional, advanced feature)
+
+### What CEO Cannot Do (Any Platform)
+
+❌ Execute arbitrary code outside of agent context
+❌ Transform into other agents mid-conversation (changes context)
+❌ Modify system files directly
+❌ Auto-apply changes without user confirmation
+
 ## Common Workflows
 
 ### New Feature Development
 
+**GitHub Copilot CLI:**
+
 ```bash
-copilot --profile ceo "I want to add [feature]"
+copilot
+/agent ceo
+> "I want to add user notifications feature"
+# CEO prescribes: PM → Developer → QA
 ```
 
-CEO prescribes: **PM → Developer → QA**
+**Codex/Claude/Gemini:**
+
+```bash
+codex --profile ceo "I want to add user notifications feature"
+# CEO prescribes: PM → Developer → QA
+# Then: codex --profile pm, codex --profile developer, etc.
+```
 
 ### Bug Fix
 
+**GitHub Copilot CLI:**
+
 ```bash
-copilot --profile ceo "Fix bug in [component]"
+copilot
+/agent ceo
+> "Fix bug in authentication module"
 ```
 
-CEO prescribes: **Developer → QA**
+**Codex/Claude/Gemini:**
+
+```bash
+codex --profile ceo "Fix bug in authentication module"
+# CEO prescribes: Developer → QA
+```
 
 ### Requirements/Planning
 
+**GitHub Copilot CLI:**
+
 ```bash
-copilot --profile ceo "Create spec for [feature]"
+copilot
+/agent pm
+> "Create spec for dashboard feature"
 ```
 
-CEO prescribes: **PM** (single agent)
+**Codex/Claude/Gemini:**
+
+```bash
+codex --profile pm "Create spec for dashboard feature"
+# Direct PM access (skip CEO for simple planning)
+```
 
 ### Marketing Campaign
 
+**GitHub Copilot CLI:**
+
 ```bash
-copilot --profile ceo "Plan campaign for [product]"
+copilot
+/agent ceo
+> "Plan campaign for product launch"
 ```
 
-CEO prescribes: **Marketer → Analytics**
+**Codex/Claude/Gemini:**
+
+```bash
+codex --profile ceo "Plan campaign for product launch"
+# CEO prescribes: Marketer → Analytics
+```
 
 ### Direct Agent Access
 
 Once familiar with the system, bypass CEO and go directly to specialists:
 
+**GitHub Copilot CLI:**
+
 ```bash
-copilot --profile developer "Implement authentication"
-copilot --profile qa "Review recent changes"
-copilot --profile pm "Create PRD for user dashboard"
+copilot
+/agent developer  # Implementation
+/agent qa         # Code review
+/agent pm         # Product specs
+/agent analytics  # Data analysis
 ```
 
-## Why Profile-Based Switching?
+**Codex/Claude/Gemini:**
 
-This system uses GitHub Copilot CLI's native profile mechanism instead of mid-conversation agent transformation:
+```bash
+codex --profile developer "Implement authentication"
+codex --profile qa "Review recent changes"
+codex --profile pm "Create PRD for user dashboard"
+codex --profile analytics "Analyze user engagement metrics"
+```
 
-**Advantages:**
+## Agent Orchestration Approaches
 
-- ✅ Native GitHub Copilot CLI feature (no extra setup)
-- ✅ Each agent gets full context from its definition file
-- ✅ Clean separation between agent contexts
-- ✅ No MCP server required
-- ✅ Simple for users to understand
+This system supports different orchestration models depending on your platform:
 
-**Trade-off:**
+### GitHub Copilot CLI - Native Agent Orchestration
 
-- Manual profile switching (can't auto-invoke)
-- Context doesn't automatically transfer between agents
+- ✅ Uses native custom agents in `.github/agents/`
+- ✅ Activated automatically from Git repo
+- ✅ Accessed via `/agent <name>` slash commands
+- ✅ No manual profile configuration needed
+- ✅ **CEO can invoke other agents automatically** via tool calls
+- ⚠️ Requires repo to be pushed to GitHub
 
-**Solution:**
+**Workflow:** CEO analyzes → Automatically calls Developer → Developer calls QA → Complete
+
+### Claude Code - MCP-Based Orchestration (Optional)
+
+- ✅ Uses TOML profile configuration
+- ✅ Activated via `--profile <name>` flag
+- ✅ Works offline without Git
+- ✅ **Can auto-invoke agents with MCP setup** (advanced)
+- ⚠️ Requires one-time profile setup
+- ⚠️ MCP server setup optional for auto-invocation
+
+**Workflow Options:**
+
+- **With MCP:** CEO analyzes → Calls agents automatically
+- **Without MCP:** CEO prescribes → User switches profiles manually
+
+### Codex CLI / Gemini CLI - Manual Orchestration
+
+- ✅ Uses TOML profile configuration
+- ✅ Activated via `--profile <name>` flag
+- ✅ Works offline without Git
+- ❌ **Cannot auto-invoke agents** - manual switching required
+- ⚠️ Requires one-time profile setup
+
+**Workflow:** CEO prescribes → User runs `codex --profile developer` → User runs `codex --profile qa`
+
+### Common Trade-offs (All Platforms)
+
+- Context doesn't automatically transfer between agents (file-based artifacts bridge this)
+- User maintains awareness of workflow state
+
+### How We Handle Context Transfer
 
 - CEO provides complete guidance with exact commands
-- Agents coordinate via file-based artifacts (specs, reports, etc.)
+- Agents coordinate via file-based artifacts (PRDs, specs, reports, etc.)
 - Users maintain context by following prescribed workflows
+- Each platform folder (`.github/`, `.agent/`, etc.) is self-contained
 
 ## Customization
 
-### Adapt to Your Project
+### Quick Manual Tweaks
 
 1. **Update `technical-preferences.yaml`** with your tech stack
-2. **Customize agent instructions** in `.github/agents/*.md`
+2. **Customize agent instructions** in `.github/agents/*.md` (or your platform folder)
 3. **Add project-specific tasks** in `.github/tasks/`
 4. **Define custom checklists** in `.github/checklists/`
 5. **Regenerate indexes** with `.github/utils/generate-indexes.sh`
+
+### AI-Powered Optimization with Prepper
+
+**For comprehensive system optimization**, use the Prepper agent:
+
+**⚠️ Use via Web AI, not CLI** - Prepper consumes significant tokens analyzing your entire project.
+
+**What Prepper does:**
+
+- Analyzes your project's tech stack and patterns
+- Optimizes agent configurations to match your needs
+- Tunes task workflows and checklists
+- Aligns the orchestration system with your actual development workflow
+
+**Quick Start:**
+
+1. Flatten your codebase: `npx llm-context` (creates `context.md`)
+2. Open web AI (Claude.ai, ChatGPT, or Gemini)
+3. Load Prepper agent from `.github/agents/prepper.md`
+4. Upload flattened codebase
+5. Request: "Optimize this orchestration system for my project"
+6. Apply recommendations manually
+7. Regenerate indexes
+
+**📖 Full Guide:** [Prepper Guide](docs/PREPPER-GUIDE.md) - Detailed instructions, flattening options, best practices
+
+**When to use Prepper:**
+
+- ✅ Initial project setup
+- ✅ Tech stack migrations
+- ✅ Periodic optimization (every 3-6 months)
+- ❌ NOT for daily development (use CEO → Developer → QA)
 
 ### Extend the System
 
@@ -341,7 +557,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 ### What We Simplified
 
 - **No heavy orchestration layer:** CEO prescribes workflows instead of executing them
-- **Optimized for Claude Sonnet 4.5:** Single model with official prompting best practices
+- **Multi-model support:** Optimized configurations for GPT-5-Codex, Claude Sonnet 4.5, Gemini 2.5 Pro, and GitHub Copilot
 - **No enterprise ceremony:** Lightweight PRDs and optional ExecPlans instead of mandatory bureaucracy
 - **Massive token reduction:** File-based coordination and bash-generated indexes (not LLM calls)
 
@@ -358,32 +574,93 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 
 ### CEO doesn't know about new resource
 
-**Solution:** Regenerate indexes
+**Solution:** Regenerate indexes for your platform
 
 ```bash
+# GitHub Copilot CLI
 .github/utils/generate-indexes.sh
+
+# Codex CLI
+.agent/utils/generate-indexes.sh
+
+# Claude Code
+.claude/utils/generate-indexes.sh
+
+# Gemini CLI
+.gemini/utils/generate-indexes.sh
 ```
 
-### Profile not found
+### Profile not found (Codex/Claude/Gemini)
 
 **Solution:** Add profiles to your config
 
 ```bash
-cat .github/profiles.toml >> ~/.github/config.toml
+# Codex
+cat .agent/profiles.toml >> ~/.agent/config.toml
+
+# Claude
+cat .claude/profiles.toml >> ~/.claude/config.toml
+
+# Gemini
+cat .gemini/profiles.toml >> ~/.gemini/config.toml
 ```
+
+### GitHub Copilot CLI agents not appearing
+
+**Solution:** Ensure your repository is pushed to GitHub
+
+```bash
+git add .
+git commit -m "Add CEO orchestration agents"
+git push origin main
+```
+
+GitHub Copilot CLI reads custom agents from `.github/agents/` only when the repo is on GitHub.
 
 ### Agent gives generic responses
 
-**Solution:** Ensure agent loads its full definition file on activation. Check that `dependencies` in YAML point to correct resources.
+**Solution:**
+
+- **GitHub Copilot CLI:** Agents auto-load from `.github/agents/*.md` - check file syntax
+- **Others:** Verify profile config points to correct agent file paths
+- Ensure YAML frontmatter in agent files is valid
 
 ### Indexes out of date
 
 **Solution:** The git pre-commit hook should auto-update. If not:
 
 ```bash
+# Make scripts executable (any platform)
 chmod +x .git/hooks/pre-commit
-chmod +x .github/utils/generate-indexes.sh
+
+# Make platform-specific index generator executable
+chmod +x .github/utils/generate-indexes.sh  # GitHub Copilot
+chmod +x .agent/utils/generate-indexes.sh   # Codex
+chmod +x .claude/utils/generate-indexes.sh  # Claude
+chmod +x .gemini/utils/generate-indexes.sh  # Gemini
 ```
+
+## Platform Comparison
+
+| Feature               | GitHub Copilot CLI    | Codex CLI              | Claude Code              | Gemini CLI               |
+|-----------------------|-----------------------|------------------------|--------------------------|--------------------------|
+| **AI Model**          | GPT-4 / Claude 3.5    | GPT-5-Codex            | Claude Sonnet 4.5        | Gemini 2.5 Pro           |
+| **Setup**             | Auto (via `.github/`) | Manual profiles        | Manual profiles          | Manual profiles          |
+| **Activation**        | `/agent <name>`       | `--profile <name>`     | `--profile <name>`       | `--profile <name>`       |
+| **Auto-Invoke Agents**| ✅ Yes (native)       | ❌ No                  | ⚠️ Yes (with MCP)        | ⚠️ Yes (with MCP)        |
+| **Orchestration**     | Automatic             | Manual switching       | Manual/MCP hybrid        | Manual/MCP hybrid        |
+| **Git Required**      | Yes (push to GH)      | No                     | No                       | No                       |
+| **Config File**       | None needed           | `~/.agent/config.toml` | `~/.claude/settings.json`| `~/.gemini/settings.json`|
+| **Best For**          | Seamless workflows    | OpenAI power users     | Flexibility              | Google ecosystem         |
+
+**Legend:**
+
+- ✅ Fully supported
+- ⚠️ Supported with additional setup
+- ❌ Not supported
+- ❓ Uncertain/untested
+
+Choose based on your existing workflow and model preference. All platforms provide the same 7 core agents (CEO, Developer, PM, QA, Analytics, Marketer, UX-Expert) plus Prepper for optimization.
 
 ## Contributing
 

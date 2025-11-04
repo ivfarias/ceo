@@ -1,4 +1,4 @@
-<core_config model="claude-sonnet-4.5" version="2.0">
+<core_config model="gpt-4" version="2.0">
   <ecosystem name="CEO-Orchestration" framework="BMAD">
     <orchestrator_agent>ceo</orchestrator_agent>
   </ecosystem>
@@ -13,7 +13,7 @@
   </indexes>
 
   <paths>
-    <agent_root>.agent</agent_root>
+    <agent_root>.github</agent_root>
     <docs_root>docs</docs_root>
     <tasks>docs/tasks</tasks>
     <qa>docs/qa</qa>
@@ -26,7 +26,7 @@
     <execplans_completed>plans/completed</execplans_completed>
   </paths>
 
-  <models default="claude-sonnet-4.5" reasoning_effort="medium" verbosity="low" />
+  <models default="gpt-4" reasoning_effort="medium" verbosity="low" />
 
   <orchestration>
     <mode>stop-confirm-continue</mode>

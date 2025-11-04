@@ -1,15 +1,15 @@
 # ============================================================================
 # CEO Orchestration System - Agent Profiles
 # ============================================================================
-# Add these profiles to your ~/.agent/config.toml to enable agent switching
+# Add these profiles to your ~/.gemini/settings.json to enable agent switching
 #
 # Usage:
-#   codex --profile ceo        # Start with CEO orchestrator
-#   codex --profile developer  # Start with Developer agent
-#   codex --profile pm         # Start with Product Manager
+#   gemini --profile ceo        # Start with CEO orchestrator
+#   gemini --profile developer  # Start with Developer agent
+#   gemini --profile pm         # Start with Product Manager
 #   etc.
 #
-# Copy-paste this entire block into your ~/.agent/config.toml file
+# Copy-paste this entire block into your ~/.gemini/settings.json file
 # ============================================================================
 
 [profiles.analyst]

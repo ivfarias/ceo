@@ -1,61 +1,60 @@
 # ============================================================================
 # CEO Orchestration System - Agent Profiles
 # ============================================================================
-# Add these profiles to your ~/.github/config.toml to enable agent switching
+# This file is for reference. GitHub Copilot CLI agents are loaded automatically
+# from the .github/agents directory. No manual profile configuration is needed.
 #
 # Usage:
-#   copilot --profile ceo        # Start with CEO orchestrator
-#   copilot --profile developer  # Start with Developer agent
-#   copilot --profile pm         # Start with Product Manager
+#   copilot /agent ceo        # Start with CEO orchestrator
+#   copilot /agent developer  # Start with Developer agent
+#   copilot /agent pm         # Start with Product Manager
 #   etc.
-#
-# Copy-paste this entire block into your ~/.github/config.toml file
 # ============================================================================
 
 [profiles.analyst]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Ana - Analytics Specialist
 
 [profiles.ceo]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Cleo - Executive Orchestrator
 
 [profiles.developer]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Devon - Senior Developer & Architect
 
 [profiles.marketer]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Mark - Unified Marketing Strategist 📢
 
 [profiles.pm]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Manny - Lean Product Manager
 
 [profiles.prepper]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Pepe - Project Preparation & Optimization Specialist
 
 [profiles.qa]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Quinn - Test Architect & Quality Advisor
 
 [profiles.ux-expert]
-model = "claude-sonnet-4.5"
+model = "gpt-4"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Sally - UX Expert

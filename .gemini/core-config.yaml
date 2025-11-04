@@ -7,21 +7,21 @@ core_config:
     framework: BMAD
     orchestrator_agent: ceo
   indexes:
-    agents: ".agent/agents.index.yaml"
-    tasks: ".agent/tasks.index.yaml"
-    checklists: ".agent/checklists.index.yaml"
-    templates: ".agent/templates.index.yaml"
-    data: ".agent/data.index.yaml"
-    utils: ".agent/utils.index.yaml"
+    agents: ".gemini/agents.index.yaml"
+    tasks: ".gemini/tasks.index.yaml"
+    checklists: ".gemini/checklists.index.yaml"
+    templates: ".gemini/templates.index.yaml"
+    data: ".gemini/data.index.yaml"
+    utils: ".gemini/utils.index.yaml"
   paths:
-    agent_root: ".agent"
+    agent_root: ".gemini"
     docs_root: "docs"
     tasks: "docs/tasks"
     qa: "docs/qa"
     reports: "docs/reports"
     marketing: "docs/marketing"
     debug_log: ".ai/debug-log.md"
-    backup: ".agent/.backup"
+    backup: ".gemini/.backup"
     execplans: "plans"
     execplans_active: "plans/active"
     execplans_completed: "plans/completed"
@@ -75,7 +75,7 @@ core_config:
     backup:
       enabled: true
       format: "YYYYMMDD-HHMMSS"
-      location: ".agent/.backup"
+      location: ".gemini/.backup"
   activation:
     slash_prefix: "ceo"
     auto_help: true

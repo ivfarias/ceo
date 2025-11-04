@@ -1,7 +1,7 @@
 # ============================================================================
 # CEO Orchestration System - Agent Profiles
 # ============================================================================
-# Add these profiles to your ~/.claude/config.toml to enable agent switching
+# Add these profiles to your ~/.claude/settings.json to enable agent switching
 #
 # Usage:
 #   claude --profile ceo        # Start with CEO orchestrator
@@ -9,54 +9,54 @@
 #   claude --profile pm         # Start with Product Manager
 #   etc.
 #
-# Copy-paste this entire block into your ~/.claude/config.toml file
+# Copy-paste this entire block into your ~/.claude/settings.json file
 # ============================================================================
 
 [profiles.analytics]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Analytics - Analytics
+# Agent: Ana - Analytics Specialist
 
 [profiles.ceo]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Ceo - Ceo
+# Agent: Cleo - Executive Orchestrator
 
 [profiles.developer]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
-# Agent: Developer - Developer
+# Agent: Devon - Senior Developer & Architect
 
 [profiles.marketer]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Marketer - Marketer
+# Agent: Mark - Unified Marketing Strategist 📢
 
 [profiles.pm]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Pm - Pm
+# Agent: Manny - Lean Product Manager
 
 [profiles.prepper]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Prepper - Prepper
+# Agent: Pepe - Project Preparation & Optimization Specialist
 
 [profiles.qa]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
-# Agent: Qa - Qa
+# Agent: Quinn - Test Architect & Quality Advisor
 
 [profiles.ux-expert]
 model = "claude-sonnet-4.5"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
-# Agent: Ux Expert - Ux Expert
+# Agent: Sally - UX Expert
 

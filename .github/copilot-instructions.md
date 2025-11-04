@@ -99,7 +99,6 @@ cat .github/agents/developer.md
 
 ### Never Modify
 
-- Files in `.github/` directory
 - Auto-generated index files (`*.index.yaml`)
 - Configuration in `.github/agents/` without approval
 
@@ -144,7 +143,7 @@ Examples:
   - TypeScript and JavaScript Language Features
   - Prettier - Code formatter
   - ESLint
-- Github Copilot CLI CLI
+- Github Copilot CLI
 
 ### Optional
 
@@ -224,7 +223,7 @@ Ensure agents are in `.github/agents/` directory with proper YAML frontmatter.
 
 - Use absolute paths or repo-relative paths
 - Check if file exists before referencing
-- Remember: `.github/` is legacy, `.github/` is active
+- 
 
 ### Tool Permission Errors
 
@@ -234,7 +233,7 @@ Some operations require explicit user approval. Check Github Copilot CLI permiss
 
 ### Active System
 
-The `.github/` directory contains Github Copilot CLI optimized agents. This is the active system. Agents here use Claude 4.5 best practices with XML control tags.
+The `.github/` directory contains Github Copilot CLI optimized agents. This is the active system.
 
 ### Dual Reference
 

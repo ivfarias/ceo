@@ -4,7 +4,7 @@ This document defines shorthand terms and conventions used by AI agents in this 
 
 ## ExecPlans
 
-When writing **complex features** or **significant refactors**, use an **ExecPlan** (as described in `.agent/PLANS.md`) from design to implementation.
+When writing **complex features** or **significant refactors**, use an **ExecPlan** (as described in `.gemini/PLANS.md`) from design to implementation.
 
 ### What is an ExecPlan?
 
@@ -34,14 +34,14 @@ Do NOT use ExecPlans for:
 
 ### When to Use Other Approaches
 
-- **Lean PRD** (`.agent/templates/prd-tmpl.yaml`): Simple features, 1-2 page specs, clear requirements
-- **Task YAML** (`.agent/tasks/*.yaml`): Procedural workflows, repeatable operations, checklists
+- **Lean PRD** (`.gemini/templates/prd-tmpl.yaml`): Simple features, 1-2 page specs, clear requirements
+- **Task YAML** (`.gemini/tasks/*.yaml`): Procedural workflows, repeatable operations, checklists
 - **Direct implementation**: Obvious bug fixes, minor changes, clear one-step tasks
 
 ### How to Create an ExecPlan
 
-1. Use the template: `.agent/templates/execplan-tmpl.yaml`
-2. Follow the requirements in: `.agent/PLANS.md`
+1. Use the template: `.gemini/templates/execplan-tmpl.yaml`
+2. Follow the requirements in: `.gemini/PLANS.md`
 3. Store active plans in: `plans/active/`
 4. Archive completed plans in: `plans/completed/`
 
@@ -57,4 +57,4 @@ Do NOT use ExecPlans for:
 
 ---
 
-For complete ExecPlan guidelines and requirements, see `.agent/PLANS.md`.
+For complete ExecPlan guidelines and requirements, see `.gemini/PLANS.md`.

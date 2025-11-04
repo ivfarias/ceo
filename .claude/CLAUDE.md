@@ -99,7 +99,6 @@ cat .claude/agents/developer.md
 
 ### Never Modify
 
-- Files in `.claude/` directory
 - Auto-generated index files (`*.index.yaml`)
 - Configuration in `.claude/agents/` without approval
 
@@ -224,7 +223,7 @@ Ensure agents are in `.claude/agents/` directory with proper YAML frontmatter.
 
 - Use absolute paths or repo-relative paths
 - Check if file exists before referencing
-- Remember: `.claude/` is legacy, `.claude/` is active
+- Remember: `.agent/` is for the OpenAI model, `.claude/` is for the Claude model.
 
 ### Tool Permission Errors
 

@@ -13,7 +13,7 @@
   </indexes>
 
   <paths>
-    <agent_root>.agent</agent_root>
+    <agent_root>.claude</agent_root>
     <docs_root>docs</docs_root>
     <tasks>docs/tasks</tasks>
     <qa>docs/qa</qa>
