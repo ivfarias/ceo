@@ -1,137 +1,116 @@
-metadata:
-  title: Execute Checklist
-  owner: qa
-  claude-sonnet-4.5
-  reasoning_effort: medium
-  verbosity: low
+task:
+  id: ".claude/tasks/execute-checklist.yaml"
+  name: "Execute Checklist Validation"
+  objective: "Systematically validate document or codebase against checklist, provide evidence for each item, generate compliance report"
 
-activation:
-  when: Need to validate document/codebase against checklist
-  principle: "Systematic validation. Evidence-based. Actionable recommendations."
+  inputs:
+    - name: checklist_file
+      desc: "Path to checklist YAML file"
+    - name: target_path
+      desc: "File or directory to validate"
+    - name: document
+      desc: "Specific document to validate (optional)"
+      default_note: "If not provided, try fuzzy match or ask user"
 
-reasoning_control: |
-  <reasoning_control>
-  - reasoning_effort: medium
-  - uncertainty_tolerance: low
-  - prefer_act_over_ask: true  # Validate autonomously with evidence
-  - termination_policy: "Complete validation and generate report"
-  - early_exit_ok: false  # Must validate all items and write report
-  </reasoning_control>
+  flow:
+    - n: 1
+      title: "Setup"
+      actions:
+        - "Load checklist from checklist_file"
+        - "If document not provided or unclear, fuzzy match similar files"
+        - "If still unclear, ask user: 'Which document should I validate?'"
+        - "Load target document/directory content"
+        - "Extract checklist items and categories"
 
-inputs:
-  required:
-    - checklist_file: "Path to checklist file"
-    - target_path: "File or directory to validate"
+    - n: 2
+      title: "Validate"
+      critical: true
+      mandate: "For EVERY checklist item, WITHOUT SKIPPING ANY:"
+      for_each_item:
+        actions:
+          - "Read requirement carefully"
+          - "Search document for evidence (quotes with line numbers)"
+          - "Analyze deeply - look for explicit AND implied coverage"
+          - "Check related files if directory validation"
+        mark_as:
+          - "✓ PASS - Requirement fully met (provide evidence)"
+          - "⚠ PARTIAL - Some coverage but incomplete (explain gaps)"
+          - "✗ FAIL - Not met or severely deficient (explain why)"
+          - "➖ N/A - Not applicable (explain reason)"
+      critical_note: "DO NOT SKIP ANY SECTIONS OR ITEMS"
+      validation:
+        - "Every item has status (PASS, PARTIAL, FAIL, N/A)"
+        - "Evidence provided for each status"
+        - "Line references included where applicable"
+        - "Rationale clear for FAIL and PARTIAL"
 
-workflow:
-  - id: load_checklist
-    type: read
-    target: "{{checklist_file}}"
-    extract:
-      - checklist_items
-      - validation_criteria
-      - category_groupings
-    store_in: checklist
+    - n: 3
+      title: "Calculate Metrics"
+      actions:
+        - "Count: total_applicable = items where status != N/A"
+        - "Count: passed = items where status == PASS"
+        - "Calculate: pass_rate = (passed / total_applicable) × 100"
+        - "Categorize failed items by priority (High/Medium/Low)"
 
-  - id: analyze_target
-    type: read
-    target: "{{target_path}}"
-    mode: directory_or_file
-    action:
-      - if_file: read_content
-      - if_directory: analyze_contents_recursively
-    store_in: target_content
+    - n: 4
+      title: "Generate Report"
+      actions:
+        - "Create validation report in target's directory or docs/qa/reports/"
+        - "Use Write tool to save report"
+      report_format: |
+        # Validation Report
 
-  - id: execute_validation
-    type: validation
-    for_each: checklist.items
-    against: target_content
-    status_options: [PASS, FAIL, PARTIAL, N/A]
-    output_per_item:
-      - status
-      - evidence
-      - rationale
-      - line_references_if_applicable
+        **Document:** {document_path}
+        **Checklist:** {checklist_path}
+        **Date:** {timestamp}
 
-  - id: calculate_pass_rate
-    type: calculation
-    formula: |
-      total_applicable = count(items where status != N/A)
-      passed = count(items where status == PASS)
-      pass_rate = (passed / total_applicable) * 100
+        ## Summary
+        - Overall: {passed}/{total_applicable} passed ({pass_rate}%)
+        - Critical Issues: {count}
 
-  - id: generate_report
-    type: generate
-    template: |
-      # Compliance Report: {{checklist_name}} → {{target_name}}
+        ## Section Results
 
-      **Date**: {{date}}
-      **Checklist**: {{checklist_file}}
-      **Target**: {{target_path}}
+        {For each category:}
+        ### {Category Name}
+        Pass Rate: {X}/{Y} ({Z}%)
 
-      ## Summary
-      - **Pass Rate**: {{pass_rate}}% ({{passed}}/{{total_applicable}})
-      - **Total Items**: {{total_items}}
-      - **Passed**: {{pass_count}} ✅
-      - **Failed**: {{fail_count}} ❌
-      - **Partial**: {{partial_count}} ⚠️
-      - **Not Applicable**: {{na_count}}
+        {For each item in category:}
+        #### {Item Number}. {Item Description}
+        **Status:** {status_icon} {status}
+        **Evidence:** {quote or explanation with line numbers}
+        {If FAIL/PARTIAL:}
+        **Impact:** {why this matters}
+        **Recommendation:** {specific fix}
 
-      ## Detailed Results
+        ## Failed Items
 
-      {{for each category}}
-      ### {{category_name}}
+        {All ✗ items with recommendations, prioritized}
 
-      {{for each item in category}}
-      #### {{item_number}}. {{item_description}}
-      **Status**: {{status_icon}} {{status}}
-      **Evidence**: {{evidence_or_rationale}}
-      {{if line_refs}}**Location**: {{file_path}}:{{line_numbers}}{{end}}
-      {{if status != PASS}}**Recommendation**: {{specific_fix}}{{end}}
+        ## Partial Items
 
-      {{end for category items}}
-      {{end for categories}}
+        {All ⚠ items with what's missing}
 
-      ## Failed/Partial Items Summary
+        ## Recommendations
 
-      {{for each item where status in [FAIL, PARTIAL]}}
-      - **{{item_id}}**: {{item_description}}
-        - Issue: {{problem}}
-        - Fix: {{recommendation}}
-        - Priority: {{high_medium_low}}
-      {{end for}}
+        1. **Must Fix (High Priority):** {critical failures}
+        2. **Should Improve (Medium Priority):** {important gaps}
+        3. **Consider (Low Priority):** {minor improvements}
+      stop_confirm: true
+      message: "Validation report generated. Review results?"
 
-      ## Recommendations
+    - n: 5
+      title: "Summary for User"
+      actions:
+        - "Present section-by-section summary"
+        - "Highlight all critical issues (FAIL items)"
+        - "Provide path to saved report"
+        - "HALT - do not continue unless user asks"
 
-      {{prioritized_list_of_actions_to_achieve_full_compliance}}
-
-  - id: write_report
-    type: write
-    path: "docs/qa/reports/report-{{checklist_name}}-{{target_name}}.md"
-    content: generated_report
-    on_complete: return_file_path
-
-completion:
-  outputs:
-    - compliance_report_file
-    - pass_rate_percentage
-    - failed_items_list
-
-anti_patterns:
-  never:
-    - "Mark items as PASS without concrete evidence"
-    - "Skip evidence collection or line references"
-    - "Mark items as N/A to inflate pass rate"
-    - "Generate report without validating all items"
-  always:
-    - "Provide concrete evidence for each status"
-    - "Include line references when possible"
-    - "Prioritize failed items by impact"
-    - "Give specific, actionable recommendations"
-
-notes:
-  - Validate each item independently
-  - Collect concrete evidence for each status
-  - Provide specific line references when possible
-  - Mark N/A only when truly not applicable
-  - Prioritize recommendations by impact
+  critical_rules:
+    - "NEVER skip sections - validate EVERYTHING"
+    - "ALWAYS provide evidence (quotes + line numbers) for marks"
+    - "NEVER mark items as N/A to inflate pass rate"
+    - "ALWAYS give specific, actionable recommendations for FAIL/PARTIAL"
+    - "Think deeply about each requirement - don't rush"
+    - "Save report automatically - no artifact functions"
+    - "HALT after presenting summary - wait for user"

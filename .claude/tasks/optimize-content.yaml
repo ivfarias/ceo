@@ -1,0 +1,195 @@
+task:
+  id: ".claude/tasks/optimize-content.yaml"
+  name: "Optimize Content for SEO & Readability"
+  objective: "Enhance draft for search visibility, conversational AI, and conversion while preserving quality and citations"
+
+  inputs:
+    - name: draft_file
+      desc: "Path to draft in docs/drafts/"
+      default_note: "If not provided, find most recent draft file"
+    - name: primary_keyword
+      desc: "Main SEO keyword"
+    - name: secondary_keywords
+      desc: "Supporting keywords (comma-separated)"
+
+  flow:
+    - n: 1
+      title: "Load Materials"
+      actions:
+        - "Read draft file from docs/drafts/"
+        - "Read research file from docs/research/"
+        - "Extract research summary, sources, personas"
+
+    - n: 2
+      title: "Baseline Analysis"
+      actions:
+        - "Calculate current metrics:"
+        - "  • Word count and reading time"
+        - "  • Flesch-Kincaid readability score (estimate)"
+        - "  • Keyword density (primary and secondary)"
+        - "  • Heading hierarchy count (H1/H2/H3)"
+        - "  • Link profile (internal/external counts)"
+        - "  • Average sentence length"
+        - "  • Average paragraph length"
+        - "  • Passive voice instances (estimate)"
+        - "Document baseline metrics for comparison"
+      stop_confirm: true
+      message: "Baseline metrics established. Review before optimizing?"
+
+    - n: 3
+      title: "Map Intents & Entities"
+      actions:
+        - "Identify 5-9 conversational user intents/questions from:"
+        - "  • Research key questions"
+        - "  • Draft headings (H1/H2/H3)"
+        - "  • Common queries about topic"
+        - "Extract canonical entities (people, orgs, concepts, regions)"
+        - "Map intents to sections (which answers which)"
+        - "Document gaps (intents not fully answered)"
+      stop_confirm: true
+      message: "Intent & entity map complete. Review for GEO/AEO?"
+
+    - n: 4
+      title: "SEO Optimization"
+      critical: true
+      mandate: "Preserve all citations during optimization"
+      seo_checklist:
+        - "Primary keyword in H1"
+        - "Primary keyword in first 100 words"
+        - "Primary keyword in conclusion"
+        - "Secondary keywords in H2s"
+        - "Keyword density 1-2% (natural, not stuffed)"
+        - "Meta title optimized (≤60 chars, keyword + benefit)"
+        - "Meta description optimized (150-160 chars, keyword + value)"
+        - "Internal links added (3-5)"
+        - "External links to Tier 1-2 sources (2-3)"
+        - "Citations adjacent to claims they support"
+      actions:
+        - "Verify keyword placement (checklist above)"
+        - "Ensure keywords natural (not stuffed)"
+        - "Create meta title and description"
+        - "Add internal and external links"
+        - "Verify citations still adjacent to claims"
+      stop_confirm: true
+      message: "SEO optimization complete. Review changes?"
+
+    - n: 5
+      title: "Readability Optimization"
+      readability_targets:
+        flesch_kincaid: "8-10 grade level"
+        sentence_length: "15-20 words average"
+        paragraph_length: "3-5 sentences max"
+        active_voice: "80%+ ratio"
+        transitions: "30%+ paragraphs with transition words"
+      actions:
+        - "Reduce sentence length to 15-20 words average"
+        - "Break paragraphs to 3-5 sentences max"
+        - "Convert passive to active voice (aim 80% active)"
+        - "Add transition words between paragraphs"
+        - "Simplify complex words and phrases"
+        - "Remove redundancies and filler"
+        - "Add bullet points for lists"
+      stop_confirm: true
+      message: "Readability improved. Review clarity enhancements?"
+
+    - n: 6
+      title: "Conversational Search Optimization (GEO/AEO)"
+      actions:
+        - "GEO (Generative Engine Optimization):"
+        - "  • Make entities and relationships explicit inline"
+        - "  • Add 1-2 sentence micro-summary per major section"
+        - "  • Use semantic subheadings (Key Facts, How It Works, Example)"
+        - "  • Ensure Tier 1-2 citations adjacent to claims"
+        - "AEO (Answer Engine Optimization):"
+        - "  • Convert main H2s to question form where suitable"
+        - "  • Start each section with 40-60 word direct answer"
+        - "  • End each section with one-sentence takeaway"
+        - "Conversational Alignment:"
+        - "  • Mirror natural question phrasing"
+        - "  • Ensure content reads well aloud"
+        - "  • Add connective explanations for flow"
+      stop_confirm: true
+      message: "Conversational search optimized. Review GEO/AEO changes?"
+
+    - n: 7
+      title: "Conversion Optimization"
+      actions:
+        - "Review CTA clarity and prominence"
+        - "Strengthen benefit language"
+        - "Add urgency or scarcity (if authentic)"
+        - "Remove friction from next step"
+        - "Add trust signals (data, expert quotes, citations)"
+        - "Address common objections"
+      stop_confirm: true
+      message: "Conversion elements enhanced. Review?"
+
+    - n: 8
+      title: "Final Quality Check"
+      checklist: ".claude/checklists/content-quality-checklist.yaml"
+      actions:
+        - "Run through content quality checklist"
+        - "Verify no new grammar/syntax errors"
+        - "Confirm all citations preserved and intact"
+        - "Check heading hierarchy still proper"
+        - "Validate tone consistency maintained"
+
+    - n: 9
+      title: "Generate Report & Save"
+      actions:
+        - "Create optimization report with before/after metrics"
+        - "Update draft file using Edit tool"
+        - "Add frontmatter with metadata (meta_title, meta_description, intents, entities)"
+      optimization_report: |
+        # Optimization Report
+
+        **Draft:** {draft_file}
+        **Optimization Date:** {timestamp}
+
+        ## Before/After Metrics
+
+        | Metric | Before | After | Change |
+        |--------|--------|-------|--------|
+        | Word Count | {before} | {after} | {delta} |
+        | Reading Time | {before}min | {after}min | {delta}min |
+        | Readability (FK) | {before} | {after} | {delta} |
+        | Primary Keyword Density | {before}% | {after}% | {delta}% |
+        | Avg Sentence Length | {before} words | {after} words | {delta} |
+        | Avg Paragraph Length | {before} sent | {after} sent | {delta} |
+        | Active Voice Ratio | {before}% | {after}% | {delta}% |
+
+        ## Changes Made
+
+        ### SEO
+        {List SEO improvements}
+
+        ### Readability
+        {List readability enhancements}
+
+        ### Conversational Search
+        {List GEO/AEO optimizations}
+
+        ### Conversion
+        {List conversion improvements}
+
+        ## Metadata
+
+        **Meta Title:** {title}
+        **Meta Description:** {description}
+        **Intents:** {list}
+        **Entities:** {list}
+
+        ## Quality Score
+
+        **Before:** {before}/100
+        **After:** {after}/100
+      stop_confirm: true
+      message: "Optimized draft saved. Review final version and metrics?"
+
+  critical_rules:
+    - "NEVER break or move citations away from claims"
+    - "NEVER add facts without sources"
+    - "NEVER sacrifice clarity for SEO metrics"
+    - "ALWAYS preserve content quality during optimization"
+    - "ALWAYS document before/after metrics"
+    - "Use Edit tool to update file - no artifact functions"
+    - "Get approval at key optimization gates"

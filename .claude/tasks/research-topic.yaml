@@ -1,0 +1,115 @@
+task:
+  id: ".claude/tasks/research-topic.yaml"
+  name: "Evidence-Based Topic Research"
+  objective: "Gather 15+ authoritative sources, rank by tier, synthesize findings, and derive 5 key questions to guide content creation"
+
+  inputs:
+    - name: topic
+      desc: "Primary topic or keyword to research"
+    - name: audience
+      desc: "Target audience description"
+    - name: goals
+      desc: "Content goals (educate, convert, engage, etc.)"
+    - name: timeframe
+      desc: "How recent sources must be"
+      default_note: "If not provided, use past 12-18 months"
+
+  flow:
+    - n: 1
+      title: "Define Research Scope"
+      actions:
+        - "Confirm topic, audience, and content goals with user if not clear"
+        - "Generate 4-6 diversified search queries"
+        - "Plan to prioritize current information (12-18 months unless historical topic)"
+
+    - n: 2
+      title: "Gather Sources"
+      actions:
+        - "Execute search queries using websearch tool in parallel"
+        - "Collect: URL, Title, Domain, Summary for each result"
+        - "Filter: Keep only valid, clickable URLs"
+        - "Deduplicate by domain (prefer most authoritative per domain)"
+        - "Aim for 15+ diverse sources minimum"
+      validation: "Minimum 15 sources collected with valid URLs"
+
+    - n: 3
+      title: "Rank Sources by Tier"
+      critical: true
+      actions:
+        - "Classify each source:"
+        - "  • Tier 1: Academic/Institutional (.edu, .gov, peer-reviewed)"
+        - "  • Tier 2: Major News (Reuters, BBC, NYT, WSJ, Economist)"
+        - "  • Tier 3: Professional (HBR, McKinsey, industry pubs)"
+        - "  • Tier 4: Community (Reddit, LinkedIn, blogs)"
+        - "Add reliability note for each source"
+        - "Verify: 50%+ sources are Tier 1-2"
+      stop_confirm: true
+      message: "Sources ranked. Review quality before proceeding?"
+
+    - n: 4
+      title: "Synthesize Findings"
+      actions:
+        - "Analyze sources for converging themes and insights"
+        - "Write 3-6 sentence factual summary"
+        - "Note contradictions, disagreements, or data gaps"
+        - "Keep neutral and evidence-based (no opinion)"
+        - "Prioritize Tier 1-2 sources for factual claims"
+
+    - n: 5
+      title: "Derive 5 Key Questions"
+      actions:
+        - "Extract 5 most pertinent questions raised by research"
+        - "Ensure questions:"
+        - "  • Cover major themes and tensions"
+        - "  • Guide content structure"
+        - "  • Invite persona perspectives"
+        - "  • Address reader needs"
+        - "Order logically (foundational → specific)"
+      stop_confirm: true
+      message: "5 key questions derived. Review before export?"
+
+    - n: 6
+      title: "Export Research Report"
+      actions:
+        - "Create markdown file: docs/research/research-[slugified-topic].md"
+        - "Use Write tool to save the report"
+      report_format: |
+        # Research Report: {Topic}
+
+        **Date:** {timestamp}
+        **Author:** Writer Agent
+        **Sources:** {count} sources ({tier-1-count} Tier 1, {tier-2-count} Tier 2)
+
+        ## Research Summary
+
+        {3-6 sentence synthesis of key findings}
+
+        ## Source Table
+
+        | Title | URL | Tier | Summary | Reliability |
+        |-------|-----|------|---------|-------------|
+        {For each source:}
+        | {title} | {url} | {tier} | {summary} | {reliability-note} |
+
+        ## Key Questions
+
+        1. {Question 1}
+        2. {Question 2}
+        3. {Question 3}
+        4. {Question 4}
+        5. {Question 5}
+
+        ## Research Notes
+
+        - **Converging Themes:** {List major themes}
+        - **Contradictions:** {Note any disagreements or gaps}
+        - **Content Gaps:** {Opportunities competitors missed}
+      stop_confirm: true
+      message: "Research report saved. Review final document?"
+
+  critical_rules:
+    - "NEVER fabricate or placeholder URLs - all sources must be real"
+    - "ALWAYS verify 50%+ sources are Tier 1-2"
+    - "NEVER skip source ranking - tier classification is mandatory"
+    - "Use Write tool to save file - no artifact functions"
+    - "Stop and confirm at key gates (after ranking, after questions)"

@@ -27,47 +27,11 @@ For implementation details, use focused thinking (5-15 seconds).
 Show reasoning only when explicitly requested by user.
 </thinking_protocol>
 
-<artifact_policy>
-When creating code files, test suites, or configuration, declare as artifacts
-with appropriate type (application/vnd.ant.code, text/markdown). This improves
-structured output handling and version tracking.
-</artifact_policy>
-
-<thinking_protocol>
-For complex architectural decisions, use extended thinking (10-30 seconds).
-For implementation details, use focused thinking (5-15 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating code files, test suites, or configuration, declare as artifacts
-with appropriate type (application/vnd.ant.code, text/markdown). This improves
-structured output handling and version tracking.
-</artifact_policy>
-
-<thinking_protocol>
-For complex architectural decisions, use extended thinking (10-30 seconds).
-For implementation details, use focused thinking (5-15 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating code files, test suites, or configuration, declare as artifacts
-with appropriate type (application/vnd.ant.code, text/markdown). This improves
-structured output handling and version tracking.
-</artifact_policy>
-
-<thinking_protocol>
-For complex architectural decisions, use extended thinking (10-30 seconds).
-For implementation details, use focused thinking (5-15 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating code files, test suites, or configuration, declare as artifacts
-with appropriate type (application/vnd.ant.code, text/markdown). This improves
-structured output handling and version tracking.
-</artifact_policy>
+<file_creation_policy>
+Always use Write tool to create actual files on the filesystem. Save code in src/,
+tests in tests/, docs in docs/, and ExecPlans in plans/active/. Never modify
+.claude/ directory. Use bash tool to run tests and verify implementations.
+</file_creation_policy>
 
 ## Role
 

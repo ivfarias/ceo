@@ -1,0 +1,107 @@
+metadata:
+  title: "Build Personas Task"
+  owner: content_writer
+  model: gpt-5
+  reasoning_effort: high
+  verbosity: medium
+  source_mode: internal  # Works offline using research outputs (no web search)
+
+activation:
+  when: user runs `*build-personas`
+  principle: "Transform research findings into five well-defined personas, each answering all five research questions. Append all outputs to the same research document for a unified reference file."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: high
+  - uncertainty_tolerance: medium
+  - prefer_act_over_ask: true
+  - termination_policy: "Five personas created, all five questions answered, results appended to research document."
+  - early_exit_ok: false
+  </reasoning_control>
+
+workflow:
+  - id: load_research_context
+    type: load
+    from: docs/research/
+    expects:
+      - research_summary
+      - source_table
+      - derived_questions
+    if_missing: |
+      Ask user: "No research data found. Please run *start-research first or provide a summary and 5 key questions."
+    next: define_personas
+
+  - id: define_personas
+    synthesize:
+      - Based on the topic and research summary, define exactly five personas.
+      - Each persona must represent a distinct and relevant viewpoint connected to the topic.
+      - Each persona must include:
+        - Name or Archetype (e.g., “The Policy Analyst”)
+        - Profession / Domain Expertise
+        - Core Motivation or Point of View
+        - Unique Value or Perspective they bring.
+      - Ensure the five personas collectively represent diverse professional, social, and experiential backgrounds.
+    output_var: persona_profiles
+    next: generate_answers
+
+  - id: generate_answers
+    synthesize:
+      - For each persona, answer each of the five research questions from the same research file.
+      - Each answer must be concise (1-3 sentences) and reflect the persona's authentic tone and expertise.
+      - Maintain consistent structure: Persona → Q1-Q5.
+      - Avoid repeating ideas across personas.
+      - Answers should sound human, credible, and differentiated.
+    output_var: persona_matrix
+    next: validate_personas
+
+  - id: validate_personas
+    type: check
+    checklist:
+      - "Exactly 5 personas defined."
+      - "Each persona includes name/archetype, expertise, motivation, and unique viewpoint."
+      - "Each persona answers all 5 research questions."
+      - "Answers are concise, natural, and aligned with persona background."
+      - "No persona duplicates another's tone or content."
+    on_pass: append_personas
+    on_fail: regenerate_personas
+
+  - id: regenerate_personas
+    action: synthesize
+    prompt: |
+      The persona set failed validation. Adjust roles or rephrase to ensure diversity, clarity, and unique voice.
+    next: validate_personas
+
+  - id: append_personas
+    type: append
+    format: markdown
+    from: docs/research/
+    to: docs/research/
+    filename_pattern: "research-[slugified_topic].md"
+    content: |
+      ---
+      # Personas Overview
+      {{ persona_profiles }}
+
+      # Persona Responses
+      {{ persona_matrix }}
+
+completion:
+  checklist:
+    - research_context_loaded
+    - five_personas_defined
+    - persona_answers_complete
+    - validation_passed
+    - appended_to_research_doc
+
+anti_patterns:
+  never:
+    - "Write long essays per persona."
+    - "Skip or merge questions."
+    - "Use identical tone or phrasing for multiple personas."
+    - "Invent sources, citations, or external references."
+    - "Create a new export file; always append to the existing research doc."
+  always:
+    - "Ensure exactly five distinct personas."
+    - "Answer each research question individually for all personas."
+    - "Preserve Markdown structure consistency."
+    - "Append personas to the same research file created by *start-research*."

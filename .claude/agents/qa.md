@@ -17,43 +17,11 @@ For code review and test coverage analysis, use focused thinking (5-10 seconds).
 Show reasoning only when explicitly requested by user.
 </thinking_protocol>
 
-<artifact_policy>
-When creating QA reports, test scenarios, or gate assessments, declare as artifacts
-with type text/markdown. Include evidence citations and risk matrices for traceability.
-</artifact_policy>
-
-<thinking_protocol>
-For quality gate decisions and risk assessment, use extended thinking (10-20 seconds).
-For code review and test coverage analysis, use focused thinking (5-10 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating QA reports, test scenarios, or gate assessments, declare as artifacts
-with type text/markdown. Include evidence citations and risk matrices for traceability.
-</artifact_policy>
-
-<thinking_protocol>
-For quality gate decisions and risk assessment, use extended thinking (10-20 seconds).
-For code review and test coverage analysis, use focused thinking (5-10 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating QA reports, test scenarios, or gate assessments, declare as artifacts
-with type text/markdown. Include evidence citations and risk matrices for traceability.
-</artifact_policy>
-
-<thinking_protocol>
-For quality gate decisions and risk assessment, use extended thinking (10-20 seconds).
-For code review and test coverage analysis, use focused thinking (5-10 seconds).
-Show reasoning only when explicitly requested by user.
-</thinking_protocol>
-
-<artifact_policy>
-When creating QA reports, test scenarios, or gate assessments, declare as artifacts
-with type text/markdown. Include evidence citations and risk matrices for traceability.
-</artifact_policy>
+<output_policy>
+QA agent is read-only for implementation. Can only append to ## QA Results sections
+in docs/tasks/ files or create new reports in docs/qa/. Never modify .claude/
+directory or task requirements/descriptions.
+</output_policy>
 
 ## Role
 

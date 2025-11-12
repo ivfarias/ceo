@@ -1,0 +1,118 @@
+metadata:
+  title: "Start Research Task"
+  owner: content_writer
+  model: gpt-5
+  reasoning_effort: high
+  verbosity: medium
+  source_mode: online
+
+activation:
+  when: user runs `*start-research`
+  principle: "Evidence-first research. Gather verifiable online sources and surface 5 guiding questions."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: high
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: true
+  - termination_policy: "Research summary and 5 questions completed"
+  - early_exit_ok: false
+  </reasoning_control>
+
+workflow:
+  - id: capture_topic
+    ask:
+      - "What topic should I research?"
+      - "Any specific subdomains or time frame to focus on?"
+      - "Should I focus on online or internal references?"
+    default: "online"
+    next: plan_search
+
+  - id: plan_search
+    synthesize:
+      - Generate 4-6 diversified search queries for the topic.
+      - Identify related terms, synonyms, and adjacent themes.
+      - Prioritize current information (past 12-18 months).
+      - Plan to use **online retrieval** for live, verifiable information.
+    output_var: search_queries
+    next: collect_sources
+
+  - id: collect_sources
+    method: online
+    use_tool: web.search
+    for_each: search_queries
+    collect:
+      - URL
+      - Title
+      - Domain
+      - Summary (1-2 sentences)
+    filter:
+      - Only keep valid clickable URLs.
+      - Deduplicate domains.
+      - Limit to 15 results.
+    next: rank_sources
+
+  - id: rank_sources
+    classify:
+      - Tier 1: Academic/Institutional (.edu, .gov, NGOs, peer-reviewed)
+      - Tier 2: Major News & Reference (Reuters, BBC, NYT, WSJ, Economist)
+      - Tier 3: Professional Commentary (HBR, McKinsey, reputable Substack)
+      - Tier 4: Community/Anecdotal (Reddit, LinkedIn, personal blogs)
+    annotate:
+      - reliability_note
+    next: summarize_findings
+
+  - id: summarize_findings
+    synthesize:
+      - Write a factual summary (3-6 sentences) of converging insights.
+      - Note any disagreements or data gaps.
+      - Select the 5 most pertinent, open-ended questions suggested by the findings.
+    output: research_summary
+    next: confirm_or_edit
+
+  - id: confirm_or_edit
+    type: review
+    prompt: |
+      Here's your draft research summary, sources, and five derived questions.
+      Would you like to:
+      1. Approve
+      2. Edit
+      3. Add or remove sources
+      4. Regenerate
+    on_approve: export_research
+
+  - id: export_research
+    type: save
+    format: markdown
+    path: docs/research/
+    filename_pattern: "research-[slugified_topic].md"
+
+completion:
+  checklist:
+    - topic_defined
+    - live_sources_verified
+    - sources_ranked_by_tier
+    - summary_generated
+    - five_questions_derived
+    - output_exported
+
+anti_patterns:
+  never:
+    - "Use placeholder or fabricated links"
+    - "Mix factual and opinion content without marking tiers"
+    - "Produce summary before source ranking"
+    - "End without generating 5 guiding questions"
+  always:
+    - "Verify URLs before summarizing"
+    - "Apply tier hierarchy (1-4)"
+    - "Note any contradictory information"
+    - "Export markdown with all sections"
+
+notes:
+  - Each source must include Title, URL, Tier, Summary, and Reliability Note.
+  - If fewer than 3 Tier 1 or Tier 2 sources exist, note this limitation.
+  - Keep summaries neutral and concise; avoid interpretation.
+  - All outputs should follow the structure:
+    - Research Summary
+    - Source Table
+    - Derived Key Questions

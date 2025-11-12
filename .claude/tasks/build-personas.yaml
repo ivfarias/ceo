@@ -1,0 +1,108 @@
+task:
+  id: ".claude/tasks/build-personas.yaml"
+  name: "Build 5 Diverse Personas"
+  objective: "Generate 5 distinct personas who answer all 5 research questions from unique perspectives, creating rich viewpoints for content"
+
+  inputs:
+    - name: research_file
+      desc: "Path to research-[topic].md file"
+      default_note: "If not provided, look in docs/research/ for most recent file"
+
+  flow:
+    - n: 1
+      title: "Load Research Context"
+      actions:
+        - "Read research file from docs/research/"
+        - "Extract research summary"
+        - "Extract 5 key questions"
+        - "Extract source table for context understanding"
+      error_handling: "If file missing: Ask user for research file path or suggest running research-topic task first"
+
+    - n: 2
+      title: "Define 5 Personas"
+      critical: true
+      mandate: "Create EXACTLY 5 personas - no more, no less"
+      actions:
+        - "Based on topic and research, identify 5 distinct viewpoints"
+        - "Ensure diverse backgrounds: professional, social, experiential"
+        - "For each persona define:"
+        - "  • Name or Archetype (e.g., 'Maria, Small Business Owner')"
+        - "  • Profession / Domain Expertise"
+        - "  • Core Motivation or Point of View"
+        - "  • Unique Value they bring to topic"
+        - "Verify no two personas overlap in perspective"
+      validation: "Exactly 5 personas with unique perspectives"
+      stop_confirm: true
+      message: "5 personas defined. Review for diversity and authenticity?"
+
+    - n: 3
+      title: "Generate Persona Responses"
+      critical: true
+      mandate: "ALL 5 personas answer ALL 5 questions - 25 total answers required"
+      for_each_persona:
+        for_each_question:
+          actions:
+            - "Answer from persona's unique perspective"
+            - "Keep concise: 1-3 sentences per answer"
+            - "Maintain authentic tone matching persona's expertise"
+            - "Differentiate from other personas (no repetition)"
+            - "Ground in research findings (don't fabricate)"
+            - "Use natural human language (avoid AI phrasing)"
+      validation: "All 25 answers present (5 personas × 5 questions)"
+      stop_confirm: true
+      message: "Persona responses complete (25 answers). Review quality and diversity?"
+
+    - n: 4
+      title: "Validate Persona Quality"
+      checklist:
+        - "Exactly 5 personas defined"
+        - "Each persona has name, expertise, motivation, unique viewpoint"
+        - "Each persona answered all 5 questions"
+        - "Answers concise (1-3 sentences each)"
+        - "Answers natural, credible, aligned with persona"
+        - "No persona duplicates another's tone or perspective"
+      on_fail: "Regenerate problematic personas and re-validate"
+
+    - n: 5
+      title: "Append to Research File"
+      actions:
+        - "Open research file using Edit tool"
+        - "Append new section: ## Personas Overview"
+        - "Add formatted persona profiles"
+        - "Append section: ## Persona Responses"
+        - "Add persona matrix (each answering all questions)"
+        - "Preserve all existing content (summary, sources, questions)"
+        - "Save updated file"
+      persona_format: |
+        ## Personas Overview
+
+        ### {Persona 1 Name/Archetype}
+        - **Profession:** {Job title or domain}
+        - **Motivation:** {Core motivation or viewpoint}
+        - **Unique Value:** {What perspective they bring}
+
+        {Repeat for all 5 personas}
+
+        ## Persona Responses
+
+        ### {Persona 1 Name} Responses
+
+        **Q1:** {Question 1 text}
+        {Answer in 1-3 sentences}
+
+        **Q2:** {Question 2 text}
+        {Answer in 1-3 sentences}
+
+        {Continue for all 5 questions}
+
+        {Repeat for all 5 personas}
+      stop_confirm: true
+      message: "Personas appended to research file. Review final document?"
+
+  critical_rules:
+    - "NEVER create more or fewer than 5 personas"
+    - "NEVER skip any persona or question - all 25 answers required"
+    - "ALWAYS append to research file - don't create separate file"
+    - "NEVER use identical phrasing across personas"
+    - "Use Edit tool to update file - no artifact functions"
+    - "Validate quality before appending to research file"

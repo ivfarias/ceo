@@ -11,29 +11,12 @@ validate findings with multiple checks. This prevents decisions based on flawed
 data or misinterpretation, which could lead to costly mistakes.
 </data_integrity_first>
 
-<artifact_policy>
-When creating analytics reports, dashboards, or data summaries, declare as artifacts
-with type text/markdown or application/vnd.ant.mermaid for charts. Include data
-source citations and methodology for reproducibility.
-</artifact_policy>
-
-<artifact_policy>
-When creating analytics reports, dashboards, or data summaries, declare as artifacts
-with type text/markdown or application/vnd.ant.mermaid for charts. Include data
-source citations and methodology for reproducibility.
-</artifact_policy>
-
-<artifact_policy>
-When creating analytics reports, dashboards, or data summaries, declare as artifacts
-with type text/markdown or application/vnd.ant.mermaid for charts. Include data
-source citations and methodology for reproducibility.
-</artifact_policy>
-
-<artifact_policy>
-When creating analytics reports, dashboards, or data summaries, declare as artifacts
-with type text/markdown or application/vnd.ant.mermaid for charts. Include data
-source citations and methodology for reproducibility.
-</artifact_policy>
+<file_creation_policy>
+Always use Write tool to create actual files. Save analytics reports in
+docs/analytics/, campaign analysis in docs/analytics/campaigns/, data quality
+alerts in docs/analytics/alerts/. Include data source citations and methodology.
+Never modify .claude/ directory.
+</file_creation_policy>
 
 ## Role
 

@@ -1,0 +1,103 @@
+metadata:
+  title: "Write Content Task"
+  owner: content_writer
+  model: gpt-5
+  reasoning_effort: high
+  verbosity: medium
+  source_mode: internal  # uses existing research+persona file, no new search
+
+activation:
+  when: user runs `*write-draft`
+  principle: "Read the consolidated research and persona responses, then produce a structured, well-written article following the content structure template."
+
+reasoning_control: |
+  <reasoning_control>
+  - reasoning_effort: high
+  - uncertainty_tolerance: medium
+  - prefer_act_over_ask: true
+  - termination_policy: "Complete, structured draft written to template specifications."
+  - early_exit_ok: false
+  </reasoning_control>
+
+workflow:
+  - id: load_context
+    type: load
+    from: docs/research/
+    expects:
+      - research_summary
+      - source_table
+      - derived_questions
+      - persona_profiles
+      - persona_matrix
+    if_missing: |
+      Ask user: "Missing research or persona data. Please complete *start-research and *build-personas before drafting."
+    next: outline_article
+
+  - id: outline_article
+    synthesize:
+      - Analyze the research summary and persona responses.
+      - Identify major themes, tensions, and consensus points.
+      - Generate an outline based on `.agent/templates/content-structure-tmpl.yaml`.
+      - Each section must correspond logically to the research questions and persona insights.
+    output_var: content_outline
+    next: write_sections
+
+  - id: write_sections
+    synthesize:
+      - Expand each outline section into full paragraphs.
+      - Incorporate persona perspectives to illustrate differing views or lived experiences.
+      - Integrate verifiable facts and link them to their sources (using Markdown citations).
+      - Maintain clarity, flow, and tone consistent with professional editorial standards.
+    output_var: article_draft
+    next: quality_check
+
+  - id: quality_check
+    type: check
+    checklist:
+      - "All template sections are complete."
+      - "Factual content supported by research sources."
+      - "Persona quotes or paraphrases are accurate and attributed."
+      - "Flow and tone are consistent with audience needs."
+    on_pass: save_draft
+    on_fail: regenerate_draft
+
+  - id: regenerate_draft
+    action: synthesize
+    prompt: |
+      The draft failed one or more quality checks. Revise to improve flow, completeness, and accuracy.
+    next: quality_check
+
+  - id: save_draft
+    type: save
+    format: markdown
+    path: docs/drafts/
+    filename_pattern: "draft-[slugified_topic].md"
+    content: |
+      # Article Draft
+      {{ article_draft }}
+
+completion:
+  checklist:
+    - research_and_personas_loaded
+    - outline_created
+    - draft_written
+    - draft_passed_quality_check
+    - draft_saved
+
+anti_patterns:
+  never:
+    - "Write outside the template structure."
+    - "Invent new facts or citations."
+    - "Use AI-like repetitive phrasing or generic tone."
+    - "Exclude persona perspectives entirely."
+  always:
+    - "Follow the content-structure template."
+    - "Attribute information and viewpoints clearly."
+    - "Write with editorial quality and logical coherence."
+    - "Ensure draft readability and accessibility."
+
+notes:
+  - The draft should read as a polished, magazine-quality article.
+  - Each major section should correspond to one of the key research questions.
+  - Persona perspectives should be integrated naturally, not in isolated blocks.
+  - The output file will serve as input for the *optimize-content* task.

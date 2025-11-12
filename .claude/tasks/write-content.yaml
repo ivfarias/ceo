@@ -1,0 +1,199 @@
+task:
+  id: ".claude/tasks/write-content.yaml"
+  name: "Write Content Draft Section-by-Section"
+  objective: "Create structured, high-quality content draft with section-by-section approval gates to prevent off-track writing"
+
+  inputs:
+    - name: research_file
+      desc: "Path to research file with personas"
+      default_note: "Look in docs/research/ if not provided"
+    - name: content_type
+      desc: "Blog post, white paper, case study, etc."
+    - name: target_length
+      desc: "Word count range (e.g., 1500-2000)"
+    - name: tone
+      desc: "Professional, conversational, technical, etc."
+      default_note: "Professional if not specified"
+    - name: primary_keyword
+      desc: "Main SEO keyword (optional)"
+
+  flow:
+    - n: 1
+      title: "Load Context"
+      actions:
+        - "Read research file from docs/research/"
+        - "Extract: research summary, 5 questions, Source Table with URLs, personas"
+        - "CRITICAL: Preserve Source Table with all URLs for inline citations"
+        - "Verify all required sections present including Source Table"
+      error_handling: "If personas missing: Suggest running build-personas task first"
+
+    - n: 2
+      title: "Create Outline"
+      actions:
+        - "Analyze research summary and persona responses"
+        - "Identify major themes, tensions, consensus points"
+        - "Create structured outline:"
+        - "  • 3-5 headline options"
+        - "  • Introduction (hook, context, promise)"
+        - "  • Body sections (H2s from research questions)"
+        - "  • Subsections (H3s for depth)"
+        - "  • Conclusion and CTA"
+        - "Assign rough word counts per section"
+        - "Note persona integration points"
+        - "Plan citation placement"
+      stop_confirm: true
+      message: "Outline complete. Review structure before writing?"
+
+    - n: 3
+      title: "Select Headline"
+      actions:
+        - "Present 3-5 headline options to user"
+        - "Get user selection or create alternatives if requested"
+        - "Final headline must:"
+        - "  • Include primary keyword (if provided)"
+        - "  • Be under 60 characters"
+        - "  • State clear benefit"
+        - "  • Hook with specificity or curiosity"
+      stop_confirm: true
+      message: "Select headline or request alternatives?"
+
+    - n: 4
+      title: "Write Introduction"
+      actions:
+        - "Open with compelling hook (stat, question, story, bold statement)"
+        - "Establish immediate relevance to reader"
+        - "State what reader will learn/gain"
+        - "Include primary keyword in first paragraph (if applicable)"
+        - "Keep under 150 words"
+        - "End with smooth transition to body"
+      validation: "Hook compelling, value clear, keyword included, under 150 words"
+      stop_confirm: true
+      message: "Introduction complete. Approve or request revisions?"
+
+    - n: 5
+      title: "Write Body Sections"
+      critical: true
+      mandate: "Write ONE section at a time, get approval, then proceed to next"
+      section_approval_gate: |
+        <critical_pattern>
+        For EACH H2 section:
+        1. Write the section following outline
+        2. Integrate persona perspectives naturally
+        3. Support claims with citations
+        4. Add subheadings (H3) for readability
+        5. Keep paragraphs 3-5 sentences
+        6. Use transitions between paragraphs
+        7. Validate against content-quality-checklist.yaml
+        8. Calculate quality score
+        9. PRESENT section to user with score
+        10. WAIT for approval
+        11. Make revisions if requested
+        12. Move to next section ONLY after approval
+        </critical_pattern>
+      for_each_section:
+        actions:
+          - "Write section following outline promise"
+          - "Integrate persona perspectives (not in isolated blocks)"
+          - "CITE sources inline using markdown links: [descriptive text](URL)"
+          - "Reference Source Table from research file for all URLs"
+          - "Every factual claim MUST have inline citation with URL from research"
+          - "Example citation format: 'Studies show X happens [according to research](https://...)"
+          - "Use secondary keywords naturally"
+          - "Maintain consistent tone"
+        validation_per_section:
+          - "On-topic and fulfills outline promise"
+          - "ALL factual claims have inline citations with URLs"
+          - "Citations use markdown link format: [text](URL)"
+          - "URLs match those from research Source Table"
+          - "Personas integrated naturally"
+          - "Keywords natural (not stuffed)"
+          - "Proper heading hierarchy"
+          - "Smooth transitions"
+        stop_confirm: true
+        message: "Section '{H2 Title}' complete. Quality score: {X/100}. Approve or revise?"
+      critical_note: "DO NOT write multiple sections without approval - prevents rework"
+
+    - n: 6
+      title: "Write Conclusion and CTA"
+      actions:
+        - "Summarize key takeaways (3-5 points)"
+        - "Reinforce main message"
+        - "Address lingering objections if needed"
+        - "Craft clear, compelling call-to-action"
+        - "Remove friction from CTA (easy next step)"
+        - "Include primary keyword"
+        - "Keep concise (100-150 words)"
+      stop_confirm: true
+      message: "Conclusion and CTA complete. Review for clarity and impact?"
+
+    - n: 7
+      title: "Format for Readability"
+      actions:
+        - "Ensure proper markdown heading hierarchy (H1 > H2 > H3)"
+        - "Add bullet points and numbered lists where appropriate"
+        - "Bold key terms or phrases"
+        - "Break up long paragraphs (3-5 sentences max)"
+        - "Add blockquotes for important quotes"
+        - "Note image placement (don't create images)"
+
+    - n: 8
+      title: "Quality Check"
+      checklist: ".claude/checklists/content-quality-checklist.yaml"
+      actions:
+        - "Run through content quality checklist"
+        - "Check grammar and spelling"
+        - "Verify keyword usage natural"
+        - "VALIDATE all factual claims have inline citations with URLs"
+        - "Verify all citation URLs are valid and from research Source Table"
+        - "Confirm citation format is markdown links: [text](URL)"
+        - "Confirm tone consistency"
+        - "Verify word count target met (±10%)"
+      stop_confirm: true
+      message: "Quality check complete. Review results and approve draft?"
+
+    - n: 9
+      title: "Save Draft"
+      actions:
+        - "Create markdown file: docs/drafts/draft-[slugified-topic].md"
+        - "Use Write tool to save"
+      draft_format: |
+        ---
+        title: {Headline}
+        word_count: {count}
+        reading_time: {word_count ÷ 200} minutes
+        date: {timestamp}
+        author: Writer Agent
+        content_type: {type}
+        primary_keyword: {keyword if applicable}
+        ---
+
+        # {Headline}
+
+        {Introduction with inline citations [text](URL)}
+
+        {Body sections with H2/H3 structure and inline citations [text](URL) for all claims}
+
+        {Conclusion and CTA}
+
+        ---
+
+        ## Sources
+
+        All sources used in this article with inline citations:
+
+        1. [Source Title](URL) - Tier {1/2/3/4}
+        2. [Source Title](URL) - Tier {1/2/3/4}
+        {List all sources that were cited inline with URLs and tier classification}
+      stop_confirm: true
+      message: "Draft saved to docs/drafts/. Ready for optimization phase?"
+
+  critical_rules:
+    - "NEVER write entire draft without section approval gates"
+    - "ALWAYS wait for approval after each H2 section before continuing"
+    - "ALWAYS cite sources inline with markdown links: [text](URL)"
+    - "EVERY factual claim MUST have inline citation with URL from research Source Table"
+    - "NEVER use sources without URLs - all citations must be clickable links"
+    - "NEVER skip quality checklist before saving"
+    - "Use Write tool to save file - no artifact functions"
+    - "STOP and confirm at every section approval gate"
+    - "Section-by-section approval prevents wasted rework"

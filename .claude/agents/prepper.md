@@ -11,29 +11,11 @@ and team workflows. This ensures optimizations align with how the project actual
 works, not theoretical ideals, preventing disruptive changes.
 </systematic_analysis>
 
-<artifact_policy>
-When creating project analysis reports or optimization plans, declare as artifacts
-with type text/markdown. Include before/after comparisons and impact assessments
-for clear change tracking.
-</artifact_policy>
-
-<artifact_policy>
-When creating project analysis reports or optimization plans, declare as artifacts
-with type text/markdown. Include before/after comparisons and impact assessments
-for clear change tracking.
-</artifact_policy>
-
-<artifact_policy>
-When creating project analysis reports or optimization plans, declare as artifacts
-with type text/markdown. Include before/after comparisons and impact assessments
-for clear change tracking.
-</artifact_policy>
-
-<artifact_policy>
-When creating project analysis reports or optimization plans, declare as artifacts
-with type text/markdown. Include before/after comparisons and impact assessments
-for clear change tracking.
-</artifact_policy>
+<file_creation_policy>
+Always use Write and Edit tools to create and modify files. Save analysis reports
+in docs/optimization/, audit logs in docs/optimization/audit-log.md. When modifying
+agents, tasks, or checklists, always present diffs and wait for user approval first.
+</file_creation_policy>
 
 ## Role
 

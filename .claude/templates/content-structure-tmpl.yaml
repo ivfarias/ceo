@@ -1,0 +1,166 @@
+template:
+  id: ".claude/templates/content-structure-tmpl.yaml"
+  name: "Content Structure Template"
+  desc: "Template for structuring content with SEO and readability focus"
+  type: content_outline
+  owner: writer
+
+  applies_to:
+    - blog_posts
+    - articles
+    - white_papers
+    - case_studies
+    - guides
+
+  metadata:
+    title: "{Title - Under 60 chars}"
+    content_type: "{Blog Post | White Paper | Case Study | Guide}"
+    target_audience: "{Primary Persona}"
+    primary_keyword: "{Main SEO keyword}"
+    secondary_keywords: ["{keyword1}", "{keyword2}", "{keyword3}"]
+    target_length: "{word count range, e.g., 1500-2000}"
+    reading_time: "{word_count ÷ 200} minutes"
+    tone: "{Professional | Conversational | Technical}"
+
+  seo_metadata:
+    meta_title: "{50-60 chars: keyword + benefit}"
+    meta_description: "{150-160 chars: keyword + value + audience}"
+    url_slug: "{keyword-rich-slug}"
+    intents: ["{5-9 conversational user intents this addresses}"]
+    entities: ["{key entities: people, orgs, concepts, regions}"]
+
+  structure:
+    headline:
+      options:
+        - "{Number + benefit: '7 Ways to...'}"
+        - "{Question: 'How Do You...?'}"
+        - "{How-to: 'How to... in 5 Steps'}"
+        - "{Problem-solution: 'Struggling with X? Try This'}"
+        - "{Ultimate guide: 'The Complete Guide to...'}"
+      requirements:
+        - "Under 60 characters"
+        - "Primary keyword naturally included"
+        - "Clear benefit stated"
+        - "Specific and compelling"
+
+    introduction:
+      hook: |
+        {Compelling opening - choose approach:}
+        • Surprising statistic or data
+        • Provocative question
+        • Bold statement
+        • Short story/anecdote
+        • Common pain point
+      context: |
+        {Why this matters to reader now}
+        {Connect to reader's situation}
+      promise: |
+        {What reader will learn/gain}
+        {Preview main takeaways}
+      transition: |
+        {Bridge to first section}
+      requirements:
+        - "100-150 words total"
+        - "Primary keyword in first paragraph"
+        - "Hook grabs attention"
+        - "Value proposition clear"
+
+    body:
+      section_template:
+        heading: "{H2: Question or topic}"
+        direct_answer: "{40-60 word answer to start section}"
+        content: |
+          {Topic sentence}
+          {Supporting content with examples, data, quotes}
+          {Integrate persona perspectives naturally}
+          {Support claims with citations}
+          {Key takeaway}
+        subheadings:
+          - heading: "{H3: Specific aspect}"
+            content: "{Detailed explanation or example}"
+        micro_summary: "{1-2 sentence quotable summary for AI overviews}"
+        takeaway: "{One-sentence featured-snippet-ready summary}"
+        elements:
+          - "Concrete examples"
+          - "Data or statistics"
+          - "Expert quotes"
+          - "Persona perspectives"
+          - "Actionable insights"
+
+      section_1:
+        heading: "{Maps to research question 1}"
+        focus: "{Main theme or problem}"
+
+      section_2:
+        heading: "{Maps to research question 2}"
+        focus: "{Supporting theme or solution}"
+
+      section_3:
+        heading: "{Maps to research question 3}"
+        focus: "{Practical application or example}"
+
+      section_4:
+        heading: "{Maps to research question 4}"
+        focus: "{Common objections or challenges}"
+
+      section_5:
+        heading: "{Maps to research question 5}"
+        focus: "{Advanced considerations or future outlook}"
+
+    conclusion:
+      summary: |
+        {Recap key takeaways in 3-5 bullets}
+      reinforcement: |
+        {Reinforce main message}
+      objections: |
+        {Address lingering concerns if needed}
+      cta:
+        primary: "{Clear, compelling call-to-action}"
+        friction: "{Minimize barriers to action}"
+        urgency: "{Add authentic urgency if appropriate}"
+      requirements:
+        - "100-150 words total"
+        - "Primary keyword included"
+        - "CTA actionable and specific"
+        - "Easy next step clear"
+
+  formatting_guidelines:
+    paragraph_length: "3-5 sentences max"
+    sentence_length: "15-20 words average"
+    lists: "Use for 3+ related items"
+    bold: "Key terms and important phrases"
+    quotes: "Expert insights or important citations"
+    code_blocks: "Technical examples if applicable"
+    visual_breaks: "Every 300 words (list, quote, subheading)"
+
+  seo_checklist:
+    - "Primary keyword in H1, intro, conclusion"
+    - "Secondary keywords in H2s"
+    - "Keyword density 1-2%"
+    - "Internal links: 3-5"
+    - "External links: 2-3 (Tier 1-2 sources)"
+    - "Meta elements optimized"
+    - "Headings in logical hierarchy"
+    - "Citations adjacent to claims"
+
+  conversational_search:
+    geo:
+      - "Entities explicit inline"
+      - "Micro-summaries per section"
+      - "Semantic subheadings"
+      - "Tier 1-2 citations adjacent"
+    aeo:
+      - "H2s as questions where suitable"
+      - "40-60 word direct answers at section start"
+      - "One-sentence takeaways at section end"
+    alignment:
+      - "Natural question phrasing"
+      - "Reads well aloud"
+      - "Connective explanations"
+
+  critical_rules:
+    - "All claims must have citations from research"
+    - "Persona perspectives integrated naturally (not isolated blocks)"
+    - "Keywords natural, never stuffed"
+    - "Structure serves reader first, SEO second"
+    - "Every section must deliver value"

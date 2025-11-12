@@ -1,0 +1,193 @@
+metadata:
+  title: "Optimize Content Task"
+  owner: content_writer
+  model: gpt-5
+  reasoning_effort: high        # calibrated persistence for long, multi-step edits (see GPT-5 guide)
+  verbosity: medium
+  source_mode: internal         # no new research; operate only on existing artifacts
+
+activation:
+  when: user runs `*optimize-content`
+  principle: "Perform an SXO-focused editorial pass that upgrades quality, coherence, and search experience (GEO/AEO/Conversational), while preserving factual grounding and citations."
+
+reasoning_control: |
+  <persistence>
+  - You are an agent; keep going until the optimization is complete across all categories before yielding back. Do not hand control back early. 
+  - Only stop when the draft passes all checks and is saved. 
+  </persistence>
+  <context_gathering>
+  Goal: Get enough context to optimize decisively—do not over-search or defer.
+  Method:
+  - Load the unified research + personas doc and the current draft.
+  - Extract entities, intents, and section structure; proceed to act.
+  Stop when:
+  - All required sections are identified and an intent/entity map is built.
+  </context_gathering>
+  <tool_preambles>
+  - Begin by restating the optimization goal and outline the steps (intents → SXO → edit → QA → save).
+  - Summarize what changed at the end (bullets).
+  </tool_preambles>
+
+inputs:
+  audience: null
+  goal: null
+
+workflow:
+  - id: load_materials
+    type: load
+    from:
+      - docs/research/
+      - docs/drafts/
+    expects:
+      - research_summary
+      - source_table
+      - derived_questions
+      - persona_profiles
+      - persona_matrix
+      - article_draft
+    if_missing: |
+      Ask user: "Missing research or draft. Please complete *write-draft first."
+    next: derive_intents_entities
+
+  - id: derive_intents_entities
+    synthesize:
+      - Build an **Intent & Entity Map** from:
+        - Derived key questions (user intents)
+        - Draft H1/H2/H3 and lead paragraph
+        - Prominent entities from research_summary and Tier 1-2 source titles
+      - Output:
+        - intents: 5-9 clustered conversational queries (e.g., "how do I…", "why does…", "what is the best…")
+        - entities: canonical list with relationships (people/orgs/regions/concepts)
+        - gaps: any section whose content does not yet answer an intent
+    output_var: intent_entity_map
+    next: sxo_plan
+
+  - id: sxo_plan
+    synthesize:
+      - Create an **SXO Plan** that upgrades the draft across:
+        - GEO (Generative Engine Optimization):
+          - Make entities explicit and linkable; add 1-2 sentence quotable micro-summaries per section.
+          - Label semantic blocks (`## Key Facts`, `## How it works`, `## Example`, `## Takeaway`).
+          - Reinforce trust with inline citations to Tier 1-2 sources adjacent to claims.
+        - AEO (Answer Engine Optimization):
+          - Convert main H2s into **question-form** where suitable.
+          - Begin each section with a **40-60 word direct answer** (“In short…”, “It works because…”).
+          - End each section with a **snippet-ready takeaway** (one sentence).
+        - Conversational Search:
+          - Align phrasing to natural queries; ensure paragraphs can be read aloud smoothly.
+          - Add connective prompts (“Let's look at…”, “That means…”) only where they improve comprehension.
+        - Metadata:
+          - Draft a meta title (≤60 chars) that answers the primary intent.
+          - Draft a meta description (≤155 chars) summarizing value + who it's for.
+      - Map **intents → sections** so each intent is explicitly answered in one primary section.
+    output_var: sxo_plan
+    next: optimization_pass
+
+  - id: optimization_pass
+    synthesize:
+      - Apply edits to `article_draft` under four explicit categories:
+
+        - QUALITY (must):
+          - Fix grammar/syntax; remove redundancy and filler.
+          - Clarify references; simplify complex sentences without losing meaning.
+          - Preserve all citations; do not add new facts.
+
+        - COHERENCE (must):
+          - Ensure each section fulfills its heading's promise and ties to an intent.
+          - Add/strengthen transitions and topic sentences; align terminology globally.
+          - Remove contradictions; maintain consistent perspective/tense.
+
+        - SXO (2025 standard; must):
+          - GEO:
+            - Make core entities and relationships explicit in-line.
+            - Add per-section **micro-summary** (1-2 sentences) that could be quoted by AI overviews.
+            - Use semantic subheads (`### Key Facts`, `### Example`, `### Takeaway`) where helpful.
+            - Place Tier 1-2 citations adjacent to the claim they support.
+          - AEO:
+            - Phrase main H2s as questions where it improves retrieval.
+            - Start each section with a **40-60 word direct answer**.
+            - End with a one-sentence **featured-snippet takeaway**.
+          - Conversational Alignment:
+            - Mirror natural question phrasing and speech cadence.
+            - Ensure each paragraph reads clearly if spoken aloud.
+            - Use first/second person sparingly where it aids clarity and empathy.
+          - Metadata:
+            - Meta title ≤60 chars answering the **primary intent**.
+            - Meta description ≤155 chars, value-focused for the target audience.
+
+        - HUMAN STYLE (must):
+          - Vary rhythm; replace buzzwords with plain language.
+          - Use concise, concrete examples or brief anecdotes where useful.
+          - Remove robotic frames and filler transitions unless they add meaning.
+
+      - Output bundle:
+        - optimized_draft (full Markdown)
+        - sxo_notes:
+            intents: {{ intent_entity_map.intents }}
+            entities: {{ intent_entity_map.entities }}
+            meta_title: "<computed>"
+            meta_description: "<computed>"
+            section_map: "intent → section headings"
+            changes_summary: "bullet list of the key structural and stylistic edits"
+    output_var: optimized_bundle
+    next: validation_pass
+
+  - id: validation_pass
+    type: check
+    checklist:
+      - "QUALITY: No grammar/syntax errors; redundancy removed; citations preserved."
+      - "COHERENCE: Each section aligns to an explicit intent; transitions present; terminology consistent; no contradictions."
+      - "SXO—GEO: Entities/relations explicit; per-section micro-summary present; semantic subheads added where helpful; Tier 1-2 citations adjacent to claims."
+      - "SXO—AEO: Question-form H2s where suitable; 40-60 word direct answer at each section start; one-sentence takeaway at end."
+      - "SXO—Conversational: Natural phrasing; read-aloud friendly; clear connective explanations."
+      - "Metadata: Meta title ≤60 chars answers primary intent; meta description ≤155 chars; both present."
+      - "FORMAT: Markdown headings intact; links/citations unbroken."
+    on_pass: save_final
+    on_fail: revise
+
+  - id: revise
+    action: synthesize
+    prompt: |
+      One or more validation items failed. Fix only the failing categories while preserving others. Do not introduce new facts. Keep citations adjacent to claims.
+    next: validation_pass
+
+  - id: save_final
+    type: update
+    format: markdown
+    path: docs/drafts/
+    filename_pattern: "draft-[slugified_topic].md"
+    content: |
+      ---
+      meta_title: "{{ optimized_bundle.sxo_notes.meta_title }}"
+      meta_description: "{{ optimized_bundle.sxo_notes.meta_description }}"
+      intents: {{ optimized_bundle.sxo_notes.intents }}
+      entities: {{ optimized_bundle.sxo_notes.entities }}
+      ---
+      # Final Optimized Article
+      {{ optimized_bundle.optimized_draft }}
+
+      <!-- SXO Notes (for audit & future updates) -->
+      **Intent → Section Map:** {{ optimized_bundle.sxo_notes.section_map }}
+      **Changes Summary:** {{ optimized_bundle.sxo_notes.changes_summary }}
+
+completion:
+  checklist:
+    - materials_loaded
+    - intent_entity_map_created
+    - sxo_plan_created
+    - optimization_applied
+    - validation_passed
+    - draft_updated
+
+anti_patterns:
+  never:
+    - "Add new claims or fabricate citations."
+    - "Optimize for raw keyword density or stuff exact matches."
+    - "Break or relocate citations away from claims."
+    - "Overuse question headings where it harms readability."
+    - "Detector-evasion tactics or unnatural phrasing."
+  always:
+    - "Prefer entity/intent clarity over keyword repetition."
+    - "Tie each section to a specific conversational intent."
+    - "Keep per-section direct answers and takeaways tight and quotable."
+    - "Preserve the research → personas → draft → optimization chain of custody."
