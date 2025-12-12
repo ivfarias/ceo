@@ -37,7 +37,7 @@ workflow:
     synthesize:
       - Analyze the research summary and persona responses.
       - Identify major themes, tensions, and consensus points.
-      - Generate an outline based on `.agent/templates/content-structure-tmpl.yaml`.
+      - Generate an outline based on `.codex/templates/content-structure-tmpl.yaml`.
       - Each section must correspond logically to the research questions and persona insights.
     output_var: content_outline
     next: write_sections

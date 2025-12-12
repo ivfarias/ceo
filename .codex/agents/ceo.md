@@ -1,3 +1,8 @@
+---
+description: Executive orchestrator that analyzes requests and routes to the correct specialist agent
+argument-hint: [TASK="<description>"]
+---
+
 # ceo.md
 
 ACTIVATION-NOTICE: This file contains your full agent operating guidelines.
@@ -37,20 +42,20 @@ commands:
 
 dependencies:
   config:
-    - .agent/core-config.xml
+    - .codex/core-config.xml
   guidelines:
-    - .agent/AGENTS.md
+    - .codex/AGENTS.md
   indexes:
-    - .agent/agents.index.yaml
-    - .agent/tasks.index.yaml
-    - .agent/checklists.index.yaml
-    - .agent/data.index.yaml
+    - .codex/agents.index.yaml
+    - .codex/tasks.index.yaml
+    - .codex/checklists.index.yaml
+    - .codex/data.index.yaml
 ```
 
 <activation_protocol>
 
   1. Load all index files from dependencies.
-  2. Read `.agent/AGENTS.md` to understand ExecPlan workflow.
+  2. Read `.codex/AGENTS.md` to understand ExecPlan workflow.
   3. Greet the user: "Cleo 🎭. Tell me what you need to do, and I'll recommend the right agent and task."
   4. Await the user's request.
 </activation_protocol>

@@ -4,12 +4,12 @@
   </ecosystem>
 
   <indexes>
-    <agents>.agent/agents.index.yaml</agents>
-    <tasks>.agent/tasks.index.yaml</tasks>
-    <checklists>.agent/checklists.index.yaml</checklists>
-    <templates>.agent/templates.index.yaml</templates>
-    <data>.agent/data.index.yaml</data>
-    <utils>.agent/utils.index.yaml</utils>
+    <agents>.codex/agents.index.yaml</agents>
+    <tasks>.codex/tasks.index.yaml</tasks>
+    <checklists>.codex/checklists.index.yaml</checklists>
+    <templates>.codex/templates.index.yaml</templates>
+    <data>.codex/data.index.yaml</data>
+    <utils>.codex/utils.index.yaml</utils>
   </indexes>
 
   <paths>
@@ -20,7 +20,7 @@
     <reports>docs/reports</reports>
     <marketing>docs/marketing</marketing>
     <debug_log>.ai/debug-log.md</debug_log>
-    <backup>.agent/.backup</backup>
+    <backup>.codex/.backup</backup>
     <execplans>plans</execplans>
     <execplans_active>plans/active</execplans_active>
     <execplans_completed>plans/completed</execplans_completed>
@@ -81,7 +81,7 @@
       <prevent_cross_agent_loading>true</prevent_cross_agent_loading>
     </isolation>
     <backup enabled="true" format="YYYYMMDD-HHMMSS">
-      <location>.agent/.backup</location>
+      <location>.codex/.backup</location>
     </backup>
   </safety>
 
