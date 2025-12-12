@@ -85,7 +85,7 @@ npm install -g @google/gemini-cli
 Each platform has its own configuration folder with 7 core agents (+ Prepper for system optimization). Choose the folder for your platform:
 
 - **`.github/`** → GitHub Copilot CLI (requires git commit/push to activate)
-- **`.agent/`** → OpenAI Codex CLI
+- **`.codex/`** → OpenAI Codex CLI
 - **`.claude/`** → Claude Code
 - **`.gemini/`** → Gemini CLI
 
@@ -113,7 +113,7 @@ Add profiles to your config file:
 
 ```bash
 # For Codex (check actual install location)
-cat .agent/profiles.toml >> ~/.agent/config.toml
+cat .codex/profiles.toml >> ~/.codex/config.toml
 
 # For Claude (check actual install location)
 cat .claude/profiles.toml >> ~/.claude/config.toml
@@ -139,7 +139,7 @@ gemini --profile ceo
 See platform-specific SETUP.md files for detailed instructions:
 
 - `.github/SETUP.md`
-- `.agent/SETUP.md`
+- `.codex/SETUP.md`
 - `.claude/SETUP.md`
 - `.gemini/SETUP.md`
 
@@ -489,7 +489,7 @@ This system supports different orchestration models depending on your platform:
 - CEO provides complete guidance with exact commands
 - Agents coordinate via file-based artifacts (PRDs, specs, reports, etc.)
 - Users maintain context by following prescribed workflows
-- Each platform folder (`.github/`, `.agent/`, etc.) is self-contained
+- Each platform folder (`.github/`, `.codex/`, etc.) is self-contained
 
 ## Customization
 
@@ -581,7 +581,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 .github/utils/generate-indexes.sh
 
 # Codex CLI
-.agent/utils/generate-indexes.sh
+.codex/utils/generate-indexes.sh
 
 # Claude Code
 .claude/utils/generate-indexes.sh
@@ -596,7 +596,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 
 ```bash
 # Codex
-cat .agent/profiles.toml >> ~/.agent/config.toml
+cat .codex/profiles.toml >> ~/.codex/config.toml
 
 # Claude
 cat .claude/profiles.toml >> ~/.claude/config.toml
@@ -635,7 +635,7 @@ chmod +x .git/hooks/pre-commit
 
 # Make platform-specific index generator executable
 chmod +x .github/utils/generate-indexes.sh  # GitHub Copilot
-chmod +x .agent/utils/generate-indexes.sh   # Codex
+chmod +x .codex/utils/generate-indexes.sh   # Codex
 chmod +x .claude/utils/generate-indexes.sh  # Claude
 chmod +x .gemini/utils/generate-indexes.sh  # Gemini
 ```
@@ -650,7 +650,7 @@ chmod +x .gemini/utils/generate-indexes.sh  # Gemini
 | **Auto-Invoke Agents**| ✅ Yes (native)       | ❌ No                  | ⚠️ Yes (with MCP)        | ⚠️ Yes (with MCP)        |
 | **Orchestration**     | Automatic             | Manual switching       | Manual/MCP hybrid        | Manual/MCP hybrid        |
 | **Git Required**      | Yes (push to GH)      | No                     | No                       | No                       |
-| **Config File**       | None needed           | `~/.agent/config.toml` | `~/.claude/settings.json`| `~/.gemini/settings.json`|
+| **Config File**       | None needed           | `~/.codex/config.toml` | `~/.claude/settings.json`| `~/.gemini/settings.json`|
 | **Best For**          | Seamless workflows    | OpenAI power users     | Flexibility              | Google ecosystem         |
 
 **Legend:**

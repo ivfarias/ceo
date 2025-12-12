@@ -223,7 +223,7 @@ Ensure agents are in `.claude/agents/` directory with proper YAML frontmatter.
 
 - Use absolute paths or repo-relative paths
 - Check if file exists before referencing
-- Remember: `.agent/` is for the OpenAI model, `.claude/` is for the Claude model.
+- Remember: `.codex/` is for the OpenAI Codex CLI, `.claude/` is for the Claude model.
 
 ### Tool Permission Errors
 

@@ -109,7 +109,7 @@ Copy-paste the Prepper agent definition from your platform folder:
 ```
 1. Open the web interface
 2. Create new chat
-3. Paste contents of .github/agents/prepper.md (or .agent/, .claude/, .gemini/)
+3. Paste contents of .github/agents/prepper.md (or .codex/, .claude/, .gemini/)
 4. Send message: "Confirm you've loaded the Prepper agent role"
 ```
 
@@ -154,7 +154,7 @@ After applying changes:
 .github/utils/generate-indexes.sh
 
 # Codex CLI
-.agent/utils/generate-indexes.sh
+.codex/utils/generate-indexes.sh
 
 # Claude Code
 .claude/utils/generate-indexes.sh
