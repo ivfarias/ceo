@@ -108,7 +108,7 @@ for agent_file in "$AGENT_ROOT/agents"/*.md; do
     name: "$name"
     title: "$title"
     description: "$when_to_use"
-    claude-sonnet-4.5
+    model: gpt-5-codex
     path: "$rel_path"
 EOF
 
@@ -276,9 +276,9 @@ cat > "$PROFILES_FILE" <<'EOF'
 # Add these profiles to your ~/.claude/config.toml to enable agent switching
 #
 # Usage:
-#   claude --profile ceo        # Start with CEO orchestrator
-#   claude --profile developer  # Start with Developer agent
-#   claude --profile pm         # Start with Product Manager
+#   codex --profile ceo        # Start with CEO orchestrator
+#   codex --profile developer  # Start with Developer agent
+#   codex --profile pm         # Start with Product Manager
 #   etc.
 #
 # Copy-paste this entire block into your ~/.claude/config.toml file
@@ -302,7 +302,7 @@ for agent_file in "$AGENT_ROOT/agents"/*.md; do
 
     cat >> "$PROFILES_FILE" <<EOF
 [profiles.$id]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "$sandbox"
 # Agent: $name - $title
@@ -326,10 +326,10 @@ cat > "$SETUP_FILE" <<'EOF'
 
 ## Quick Start
 
-### 1. Install Claude Code
+### 1. Install Codex CLI
 
 ```bash
-npm i @anthropic-ai/claude-code
+npm install -g codex-cli
 ```
 
 ### 2. Add Agent Profiles
@@ -346,12 +346,12 @@ Or manually copy-paste the profiles section from `.claude/profiles.toml` into yo
 
 ```bash
 # Start with the CEO orchestrator
-claude --profile ceo
+codex --profile ceo
 
 # Or start directly with a specialist agent
-claude --profile developer
-claude --profile pm
-claude --profile qa
+codex --profile developer
+codex --profile pm
+codex --profile qa
 ```
 
 ## Agent Profiles
@@ -373,18 +373,18 @@ This system includes the following agent profiles:
 
 1. Start with CEO:
    ```bash
-   claude --profile ceo
+   codex --profile ceo
    ```
 
 2. CEO analyzes your request and recommends an agent:
    ```
    You: "I need to implement a login feature"
-   CEO: "This requires the developer agent. Exit and run: claude --profile developer"
+   CEO: "This requires the developer agent. Exit and run: codex --profile developer"
    ```
 
 3. Switch to the recommended agent:
    ```bash
-   claude --profile developer
+   codex --profile developer
    ```
 
 ### Direct Agent Access
@@ -392,7 +392,7 @@ This system includes the following agent profiles:
 If you know which agent you need, skip the CEO and go directly:
 
 ```bash
-claude --profile developer "Implement user authentication"
+codex --profile developer "Implement user authentication"
 ```
 
 ## Advanced: MCP Sub-Agents (Optional)

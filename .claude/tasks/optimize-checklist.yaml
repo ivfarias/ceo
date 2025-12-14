@@ -1,7 +1,7 @@
 metadata:
   title: Optimize Single Checklist
   owner: prepper
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -64,7 +64,7 @@ workflow:
       - standard_enforcement_items (e.g., "Verify ESLint passes" if .eslintrc exists)
       - framework_specific_items (e.g., "Check React hooks dependencies" if React project)
     validation:
-      - 
+      - use_context7_for_framework_best_practices: true
     store_in: recommended_additions
 
   - id: prioritize_improvements
@@ -185,14 +185,14 @@ anti_patterns:
     - "Remove items without understanding workflow impact"
   always:
     - "One checklist at a time, one change at a time"
-    - "Use codebase search tools for framework best practices"
+    - "Use context7 MCP for framework best practices"
     - "Cross-reference core-config.workflow_stages"
     - "Add project-specific items from analysis_report"
     - "Maintain audit_log with rationale"
 
 notes:
   - NEVER optimize multiple checklists in one step
-  - Use codebase search tools to validate framework-specific best practices
+  - Use context7 MCP to validate framework-specific best practices
   - Cross-reference core-config.workflow_stages for workflow alignment
   - Ensure QA checklists include core-config.qa.nfr_defaults
   - Preserve checklist structure and formatting

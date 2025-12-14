@@ -1,0 +1,208 @@
+checklist:
+  id: ".claude/checklists/content-quality-checklist.yaml"
+  name: "Content Quality Checklist"
+  desc: "Comprehensive quality validation for written content"
+  owner: writer
+
+  applies_to:
+    - blog_posts
+    - white_papers
+    - case_studies
+    - technical_documentation
+    - marketing_copy
+
+  scoring:
+    system: weighted
+    weights:
+      critical: 5
+      high: 3
+      medium: 2
+      low: 1
+    pass_threshold: 85%
+    calculation: "(earned_points / total_points) × 100 ≥ 85%"
+
+  categories:
+    - name: "Writing Quality"
+      weight: high
+      items:
+        - id: wq_grammar
+          check: "No grammar or spelling errors"
+          severity: critical
+          pass: "Zero errors or only intentional style choices"
+
+        - id: wq_clarity
+          check: "Writing is clear and easy to understand"
+          severity: critical
+          pass: "All sentences clear, jargon explained"
+
+        - id: wq_tone
+          check: "Consistent tone throughout piece"
+          severity: high
+          pass: "Tone appropriate for audience and consistent"
+
+        - id: wq_active_voice
+          check: "Predominantly active voice (80%+ target)"
+          severity: medium
+          pass: "Active voice ratio meets or approaches 80%"
+
+        - id: wq_conciseness
+          check: "No unnecessary words or redundancy"
+          severity: medium
+          pass: "Every word serves a purpose"
+
+        - id: wq_sentence_length
+          check: "Average sentence length 15-20 words"
+          severity: low
+          pass: "Within target range (±5 words acceptable)"
+
+    - name: "Structure & Organization"
+      weight: critical
+      items:
+        - id: so_flow
+          check: "Content flows logically from intro to conclusion"
+          severity: critical
+          pass: "Each section builds on previous, smooth flow"
+
+        - id: so_hierarchy
+          check: "Proper H1/H2/H3 hierarchy"
+          severity: critical
+          pass: "One H1, H2s for sections, H3s for subsections"
+
+        - id: so_paragraphs
+          check: "Paragraphs scannable (3-5 sentences max)"
+          severity: high
+          pass: "No walls of text, frequent paragraph breaks"
+
+        - id: so_introduction
+          check: "Introduction hooks reader immediately"
+          severity: critical
+          pass: "Compelling hook, establishes relevance"
+
+        - id: so_conclusion
+          check: "Conclusion summarizes and includes clear CTA"
+          severity: critical
+          pass: "Key points summarized, CTA actionable"
+
+    - name: "Readability"
+      weight: high
+      items:
+        - id: r_flesch_kincaid
+          check: "Flesch-Kincaid grade level 8-10"
+          severity: high
+          pass: "Within target range (±2 acceptable)"
+
+        - id: r_transitions
+          check: "Transition words used (30%+ paragraphs)"
+          severity: medium
+          pass: "Natural transitions between ideas"
+
+        - id: r_formatting
+          check: "Visual breaks (lists, quotes, bold) used appropriately"
+          severity: medium
+          pass: "Content scannable, visual variety"
+
+        - id: r_mobile
+          check: "Mobile-friendly formatting"
+          severity: high
+          pass: "Paragraphs short, no long code blocks unformatted"
+
+    - name: "Content Quality"
+      weight: critical
+      items:
+        - id: cq_accuracy
+          check: "All facts and claims accurate"
+          severity: critical
+          pass: "No factual errors, claims supported"
+
+        - id: cq_citations
+          check: "All factual claims have inline citations with URLs"
+          severity: critical
+          pass: "Every claim has inline citation using markdown links: [text](URL)"
+
+        - id: cq_citation_format
+          check: "Citations use proper markdown link format"
+          severity: critical
+          pass: "All citations format: [descriptive text](URL), URLs from research"
+
+        - id: cq_sources
+          check: "Sources authoritative (Tier 1-2 preferred)"
+          severity: high
+          pass: "Quality sources cited, no dubious links"
+
+        - id: cq_source_list
+          check: "Sources section lists all cited URLs with tier"
+          severity: high
+          pass: "Complete Sources section with all URLs and tier classifications"
+
+        - id: cq_depth
+          check: "Sufficient depth for topic"
+          severity: high
+          pass: "Topic covered comprehensively, not superficial"
+
+        - id: cq_originality
+          check: "Original insights or perspectives included"
+          severity: medium
+          pass: "Not just rehashed content, adds value"
+
+    - name: "SEO & Discoverability"
+      weight: high
+      items:
+        - id: seo_keyword_h1
+          check: "Primary keyword in H1"
+          severity: high
+          pass: "Keyword naturally integrated in headline"
+
+        - id: seo_keyword_intro
+          check: "Primary keyword in first 100 words"
+          severity: high
+          pass: "Keyword appears naturally early"
+
+        - id: seo_keyword_density
+          check: "Keyword density 1-2% (natural, not stuffed)"
+          severity: medium
+          pass: "Keywords present but not over-used"
+
+        - id: seo_meta
+          check: "Meta title and description optimized"
+          severity: high
+          pass: "Meta elements present, keyword + benefit clear"
+
+        - id: seo_links
+          check: "Internal (3-5) and external (2-3) links present"
+          severity: medium
+          pass: "Appropriate linking, all links functional"
+
+        - id: seo_headings
+          check: "Secondary keywords in H2s"
+          severity: low
+          pass: "Related keywords naturally in subheadings"
+
+    - name: "Audience Alignment"
+      weight: high
+      items:
+        - id: aa_relevance
+          check: "Content directly relevant to target audience"
+          severity: critical
+          pass: "Addresses audience needs and pain points"
+
+        - id: aa_value
+          check: "Clear value proposition throughout"
+          severity: critical
+          pass: "Reader knows what they'll gain"
+
+        - id: aa_language
+          check: "Language appropriate for audience"
+          severity: high
+          pass: "Technical level matches audience expertise"
+
+        - id: aa_examples
+          check: "Examples and use cases relevant to audience"
+          severity: medium
+          pass: "Examples relatable and practical"
+
+  critical_rules:
+    - "NEVER mark an item PASS without evidence"
+    - "ALWAYS provide rationale for FAIL or PARTIAL"
+    - "NEVER skip items - every check must be evaluated"
+    - "Calculate score honestly - don't inflate to reach threshold"
+    - "Critical items must PASS or have documented exception"

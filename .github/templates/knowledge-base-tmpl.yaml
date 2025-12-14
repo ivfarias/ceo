@@ -1,0 +1,194 @@
+# STORM Knowledge Base Template
+#
+# Purpose: Hierarchical structure for tracking facts, citations, and perspectives
+# Used by: warmstart-article.yaml and synthesize-article.yaml
+# GPT-5 Optimization: Structured data model for incremental updates
+
+metadata:
+  kb_version: "1.0"
+  topic: "[Article topic]"
+  created_date: "[YYYY-MM-DD]"
+  last_updated: "[YYYY-MM-DD]"
+  storm_phase: "warmstart" | "gap_filling" | "synthesis_ready"
+  article_scope: "[1-2 sentence description of what this article will cover]"
+
+outline:
+  - section_id: "background"
+    title: "Background and Context"
+    scope: "Historical context, definitions, scope-setting"
+    subsections: []
+
+  - section_id: "current_state"
+    title: "Current State and Trends"
+    scope: "Adoption rates, market dynamics, key players, recent developments"
+    subsections: []
+
+  - section_id: "applications"
+    title: "Applications and Use Cases"
+    scope: "Domain-specific deployment, case studies, practical implementations"
+    subsections: []
+
+  - section_id: "challenges"
+    title: "Challenges and Barriers"
+    scope: "Technical, organizational, and societal obstacles to adoption"
+    subsections: []
+
+  - section_id: "ethical_social"
+    title: "Ethical and Social Implications"
+    scope: "Stakeholder impacts, equity concerns, trust and transparency issues"
+    subsections: []
+
+  - section_id: "governance"
+    title: "Governance and Policy"
+    scope: "Regulatory frameworks, compliance requirements, policy debates"
+    subsections: []
+
+  - section_id: "future_outlook"
+    title: "Future Directions"
+    scope: "Emerging trends, projections, open questions"
+    subsections: []
+
+facts_db:
+  - fact_id: "fact_001"
+    claim: "[The specific factual claim or finding]"
+    section_id: "[Section this fact belongs to]"
+    confidence: "high" | "medium" | "low"
+    citations: ["cite_001", "cite_002"]
+    expert_perspectives:
+      - expert_id: "expert_001"
+        viewpoint: "[How this expert interprets/frames the fact]"
+        quote: "[Optional: exact quote from expert answer]"
+    related_facts: ["fact_002"]  # Optional: links to related facts
+    tags: ["tag1", "tag2"]  # Optional: for searchability
+    added_date: "[YYYY-MM-DD]"
+
+  # Example fact entry with multiple perspectives
+  - fact_id: "fact_002"
+    claim: "AI diagnostic adoption grew 40% year-over-year in 2024, primarily in radiology and pathology departments"
+    section_id: "current_state"
+    confidence: "high"
+    citations: ["cite_001"]
+    expert_perspectives:
+      - expert_id: "expert_001"
+        viewpoint: "Signals market maturation and clinical acceptance"
+        quote: "The 40% growth rate shows we've moved from early adoption to mainstream deployment"
+      - expert_id: "expert_003"
+        viewpoint: "Highlights governance lag: adoption outpacing regulatory frameworks"
+    related_facts: ["fact_003"]
+    tags: ["adoption", "healthcare", "radiology", "pathology"]
+    added_date: "2024-12-01"
+
+coverage_gaps:
+  high_priority:
+    - gap_id: "gap_001"
+      description: "[What's missing]"
+      location: "[Section ID]"
+      detected_by: "citation_density" | "perspective_diversity" | "stakeholder_coverage" | "manual"
+      recommendation: "[Suggested action to fill gap]"
+
+  medium_priority: []
+  low_priority: []
+
+  acknowledged_limitations:
+    - "[Gaps we're documenting but not addressing due to scope/time constraints]"
+
+unused_information:
+  - info_id: "unused_001"
+    claim: "[Information gathered but not yet integrated into outline]"
+    source_citations: ["cite_010"]
+    reason_unused: "Tangential to main narrative" | "Redundant with existing facts" | "Low reliability"
+    potential_use: "[Could be used for X section if Y condition]"
+
+citations:
+  - cite_id: "cite_001"
+    title: "[Full article/report title]"
+    url: "[Full URL]"
+    source: "[Publisher/Organization]"
+    date: "[YYYY-MM-DD]"
+    access_date: "[YYYY-MM-DD]"
+    tier: 1  # 1=Academic/Institutional, 2=Major News, 3=Professional, 4=Community
+    cited_by_experts: ["expert_001", "expert_003"]
+    cited_in_facts: ["fact_002"]
+
+  # Example citation entry
+  - cite_id: "cite_002"
+    title: "Global Health AI Adoption Report 2024"
+    url: "https://www.who.int/publications/i/item/ai-adoption-2024"
+    source: "World Health Organization"
+    date: "2024-03-15"
+    access_date: "2024-12-01"
+    tier: 1
+    cited_by_experts: ["expert_001"]
+    cited_in_facts: ["fact_002", "fact_003"]
+
+experts:
+  - expert_id: "expert_001"
+    name: "Dr. Sarah Chen"
+    role: "AI Researcher, Stanford HAI"
+    perspective: "Technical capabilities and research frontiers"
+    expertise_areas:
+      - "Machine learning architectures"
+      - "Benchmark evaluation"
+      - "Model capabilities and limitations"
+    focus_areas:
+      - "Technical performance metrics"
+      - "Research-to-deployment gaps"
+    potential_biases:
+      - "Academic research perspective (may underweight deployment constraints)"
+      - "US-centric viewpoint"
+    background_note: "Leading AI researcher focused on evaluating frontier model capabilities"
+    conversation_rounds_completed: 3
+
+  # Example expert entry
+  - expert_id: "expert_002"
+    name: "Dr. Marcus Johnson"
+    role: "Hospital CIO, Regional Medical Center"
+    perspective: "Clinical deployment and operational realities"
+    expertise_areas:
+      - "Healthcare IT systems"
+      - "Clinical workflow integration"
+      - "Vendor management"
+    focus_areas:
+      - "Technical integration challenges"
+      - "Change management"
+      - "ROI and value realization"
+    potential_biases:
+      - "Large hospital system perspective (may not reflect small clinic realities)"
+      - "Technology adoption optimist"
+    background_note: "20-year veteran of healthcare IT; responsible for deploying AI diagnostic tools across 5-hospital system"
+    conversation_rounds_completed: 3
+
+conversation_log:
+  - round_id: "round_001"
+    expert_id: "expert_001"
+    round_number: 1
+    question: "[Grounded question asked]"
+    answer_summary: "[1-2 sentence summary of expert's answer]"
+    facts_extracted: ["fact_001", "fact_002"]
+    citations_added: ["cite_001", "cite_002"]
+    timestamp: "[YYYY-MM-DD HH:MM]"
+
+statistics:
+  total_facts: 0
+  total_citations: 0
+  total_sections: 7
+  total_experts: 0
+  expert_contributions:
+    expert_001: 0
+    expert_002: 0
+  coverage_completeness: 0.0  # Ratio: facts_with_citations / total_facts
+  perspective_diversity: 0.0  # Average perspectives per fact
+  citation_tiers:
+    tier_1: 0
+    tier_2: 0
+    tier_3: 0
+    tier_4: 0
+
+usage_notes:
+  - "Update statistics after each expert conversation round"
+  - "Add new sections to outline as needed during research"
+  - "Mark unused_information for facts that don't fit narrative"
+  - "Track coverage_gaps incrementally; prioritize high-priority gaps"
+  - "Maintain citation provenance (tier, dates, URLs) for credibility"
+  - "Record expert_perspectives on facts, not just facts themselves"
+  - "Use conversation_log for transparency and debugging"

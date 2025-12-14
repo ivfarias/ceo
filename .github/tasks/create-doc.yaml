@@ -1,7 +1,7 @@
 metadata:
   title: Create Document from Template
   owner: product_manager
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -82,8 +82,8 @@ workflow:
     type: write
     critical: true
     rules:
-      - "NEVER write to agent file (.github/agents/product_manager.xml)"
-      - "NEVER write to template files (.github/templates/*.yaml)"
+      - "NEVER write to agent file (.claude/agents/product_manager.xml)"
+      - "NEVER write to template files (.claude/templates/*.yaml)"
       - "ALWAYS create NEW markdown file in appropriate directory"
 
     output_paths:

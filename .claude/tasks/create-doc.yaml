@@ -1,7 +1,7 @@
 metadata:
   title: Create Document from Template
   owner: product_manager
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -55,7 +55,7 @@ workflow:
     prompt: "Generate a complete first draft of the document based on the template and all gathered context."
     draft_rules:
       - "Keep it concise (follow template max_length)"
-      - "Check codebase for tech stack patterns"
+      - "Use context7 MCP for tech stack validation"
       - "Challenge assumptions - ask if uncertain"
       - "Cut ruthlessly - what can we NOT include?"
     store_in: document_draft
@@ -119,16 +119,16 @@ anti_patterns:
     - "Proceed without user approval on the final draft"
     - "Write 20-page docs when 1 page works"
     - "Write to agent or template files"
-    - "Skip tech stack validation validation for tech references"
+    - "Skip context7 validation for tech references"
   always:
     - "Generate a full draft for initial review"
     - "Incorporate user feedback before finalizing"
-    - "Use codebase search tools for tech validation"
+    - "Use context7 MCP for tech validation"
     - "Ask: Could this be simpler?"
     - "Create NEW markdown file in docs/"
 
 notes:
   - Section-by-section workflow prevents rework
-  - Always use codebase search tools for tech stack references
+  - Always use context7 MCP for tech stack references
   - Challenge scope at every step
   - Keep read time under 5 minutes

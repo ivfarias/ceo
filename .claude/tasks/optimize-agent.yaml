@@ -1,7 +1,7 @@
 metadata:
   title: Optimize Single Agent
   owner: prepper
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -56,7 +56,7 @@ workflow:
     inputs: agent_optimization_plan
     criteria:
       - impact: high → correctness fixes (wrong paths, outdated versions)
-      - impact: medium → enhancements (missing tech stack validation, better prompts)
+      - impact: medium → enhancements (missing context7, better prompts)
       - impact: low → style/consistency improvements
     output: ranked_changes
     rule: only_propose_top_priority_change
@@ -160,7 +160,7 @@ anti_patterns:
     - "Present change proposal with evidence"
     - "Await user decision before applying"
     - "Maintain audit_log and rollback_notes"
-    - "Use codebase search tools for tech validation"
+    - "Use context7 MCP for tech validation"
 
 notes:
   - NEVER optimize multiple agents in one step
@@ -168,5 +168,5 @@ notes:
   - Maintain audit_log with timestamp, agent, change, rationale
   - Store rollback_notes for each applied change
   - If no changes needed, still confirm with user before marking complete
-  - Use codebase search tools when validating tech stack references
+  - Use context7 MCP when validating tech stack references
   - Preserve original formatting and style unless fixing errors

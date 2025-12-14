@@ -1,7 +1,7 @@
 metadata:
   title: Apply QA Fixes
   owner: developer
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -17,6 +17,13 @@ reasoning_control: |
   - termination_policy: "Complete all critical/major fixes before stopping"
   </reasoning_control>
 
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - include_previous_response_id: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["fix_plan", "completed_fixes", "test_results", "verification_status"]
+  </session_memory>
 
 context_gathering: |
   <context_gathering>

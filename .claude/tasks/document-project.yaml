@@ -1,7 +1,7 @@
 metadata:
   title: Document Existing Project
   owner: developer
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
   description: "Generate lean, AI-agent-optimized documentation for existing projects"
@@ -18,6 +18,12 @@ reasoning_control: |
   - termination_policy: "Complete documentation generation"
   </reasoning_control>
 
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["project_analysis", "tech_stack", "focus_areas"]
+  </session_memory>
 
 workflow:
   - id: check_for_prd
@@ -48,7 +54,7 @@ workflow:
       - build_system (scripts, CI/CD)
       - existing_docs (README, /docs)
       - code_patterns (sample 3-5 key files)
-    # Validate frameworks and versions
+    use_context7: true  # Validate frameworks and versions
     store_in: project_analysis
 
   - id: elicit_context
@@ -73,7 +79,7 @@ workflow:
       - integration_points
       - technical_debt
       - workarounds
-    
+    use_context7_for: unfamiliar_frameworks
     map_reality_not_theory: true
 
   - id: generate_architecture_doc
@@ -104,7 +110,7 @@ workflow:
       {{affected_modules_and_files}}
       {{end}}
 
-      ## Tech Stack (Verified via grep/glob)
+      ## Tech Stack (Verified via context7)
       | Category | Technology | Version | Notes |
       |-|-|-|-|
       {{for each tech}}
@@ -142,10 +148,10 @@ workflow:
       ## AI Agent Tips
       {{areas_requiring_special_attention}}
 
-  - id: validate_with_tech stack validation
+  - id: validate_with_context7
     type: validation
     for_each: tech_stack_item
-    action: verify_version_and_patterns_via_tech stack validation
+    action: verify_version_and_patterns_via_context7
     update: doc_with_authoritative_info
 
   - id: write_documentation
@@ -164,13 +170,13 @@ anti_patterns:
     - "Document theoretical architecture vs reality"
     - "Skip technical debt and workarounds"
     - "Proceed without clarifying scope"
-    - "Skip tech stack validation validation for tech stack"
+    - "Skip context7 validation for tech stack"
     - "Document entire codebase when PRD exists"
   always:
     - "Document what exists, not what should exist"
     - "Include technical debt and workarounds"
     - "Focus on areas relevant to planned work"
-    - "Use codebase search tools for all tech validation"
+    - "Use context7 MCP for all tech validation"
     - "If PRD exists, focus docs on those areas only"
     - "Capture tribal knowledge and patterns"
 
@@ -179,11 +185,11 @@ lean_rules:
   - include_technical_debt_and_workarounds
   - focus_on_areas_relevant_to_planned_work
   - skip_theoretical_best_practices
-  - use_
+  - use_context7_for_all_tech_validation
   - keep_actionable_and_concise
 
 notes:
-  - Always use codebase search tools to validate tech stack
+  - Always use context7 MCP to validate tech stack
   - Document reality including workarounds
   - If PRD exists, focus docs on relevant areas only
   - Capture tribal knowledge and undocumented patterns

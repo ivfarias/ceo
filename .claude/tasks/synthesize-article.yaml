@@ -1,0 +1,361 @@
+---
+name: synthesize-article
+version: 2.0-storm
+description: Generate article from STORM knowledge base using multi-perspective synthesis
+agent: writer
+
+metadata:
+  methodology: STORM knowledge base synthesis
+  output_type: article_draft
+  requires_approval: true
+  prerequisite_task: warmstart-article
+
+# Input Parameters
+
+inputs:
+  working_dir:
+    type: string
+    required: true
+    description: "Path to article working directory containing knowledge_base.yaml"
+    example: "docs/articles/future-of-remote-work/"
+
+  style:
+    type: string
+    default: "informative"
+    options: ["informative", "persuasive", "narrative", "technical", "conversational"]
+    description: "Writing style and tone"
+
+  target_audience:
+    type: string
+    default: "general educated readers"
+    description: "Target audience for complexity level"
+
+  include_expert_voices:
+    type: boolean
+    default: true
+    description: "Include attributed expert quotes/perspectives"
+
+  citation_style:
+    type: string
+    default: "inline-numbered"
+    options: ["inline-numbered", "inline-author-year", "footnotes"]
+    description: "Citation format"
+
+# Output Structure
+
+outputs:
+  files:
+    - draft_article.md
+    - citation_index.md
+    - synthesis_report.md
+    - workflow_log.md (updated)
+
+# Workflow Definition
+
+workflow:
+  - step: 1
+    name: load_and_validate_kb
+    role: content_synthesizer
+    description: Load and validate knowledge base
+
+    instructions: |
+      Operating as CONTENT SYNTHESIZER.
+
+      Mission: Load knowledge_base.yaml and prepare for synthesis.
+
+      Validation:
+      1. Load KB from {working_dir}
+      2. Verify structure integrity (YAML valid, outline present, facts have citations)
+      3. Review outline for article flow
+      4. Check synthesis readiness (facts per section, balance)
+
+      If outline needs adjustment for flow:
+      - Document changes
+      - Get user approval
+      - Update KB if approved
+
+      If KB incomplete or has structural issues:
+      - STOP and report
+      - Recommend returning to warmstart gap-filling
+
+    outputs:
+      - workflow_log.md (validation results)
+
+    stop_condition: |
+      KB validated and ready, OR issues identified requiring user decision.
+
+  - step: 2
+    name: outline_to_article_plan
+    role: content_synthesizer
+    description: Transform KB outline into article structure
+
+    instructions: |
+      Convert knowledge_base.yaml outline into article_plan.yaml.
+
+      Plan article structure:
+      - Title and subtitle
+      - Section mappings (KB sections → article sections)
+      - Approach for each section
+      - Target lengths
+      - Multi-perspective handling strategy
+      - Expert attribution plan (if include_expert_voices = true)
+      - Flow and transition strategy
+
+      Save article_plan.yaml to working directory.
+      Log summary to workflow_log.md.
+
+    outputs:
+      - article_plan.yaml
+
+    stop_condition: |
+      Present article_plan.yaml.
+      Confirm approach before drafting.
+
+  - step: 3
+    name: draft_introduction
+    role: content_synthesizer
+    description: Draft article introduction
+
+    instructions: |
+      Draft introduction following article_plan.
+
+      Requirements:
+      1. Opening Hook (1-2 sentences: compelling fact/statistic/scenario)
+      2. Context Setting (2-3 sentences: why this matters now)
+      3. Scope Definition (1-2 sentences: what article covers)
+      4. Preview/Roadmap (1-2 sentences: main findings)
+
+      Style: {style}
+      Citations: Inline {citation_style} for facts
+      Length: Per article_plan target
+
+      Output to draft_article.md with article title.
+
+      Self-assess:
+      - Hook is compelling
+      - Context clear
+      - Scope defined
+      - Preview useful
+      - All facts cited
+      - Engaging to read
+
+    outputs:
+      - draft_article.md (introduction)
+
+    stop_condition: |
+      Present introduction.
+      Request feedback before proceeding to body.
+
+  - step: 4
+    name: draft_body_sections
+    role: content_synthesizer
+    description: Draft article body sections
+
+    synthesis_guide: .claude/templates/storm/synthesis-principles.md
+
+    instructions: |
+      Draft each body section following article_plan sequence.
+
+      For each section:
+        1. Gather content from KB (facts for this section)
+        2. Identify multi-perspective facts
+        3. Structure section logically
+
+        4. Draft section following {synthesis_guide}:
+           - Section heading (clear, engaging)
+           - Opening paragraph (set focus, lead with key finding)
+           - Development paragraphs (3-5 sentences each)
+           - Multi-perspective integration (see synthesis_guide patterns)
+           - Expert voices if enabled (see synthesis_guide attribution styles)
+           - Evidence and citations (every claim cited)
+           - Section closing (wrap up, transition)
+
+        5. Quality check per synthesis_guide
+
+        6. Append to draft_article.md
+
+        7. Log progress to workflow_log.md
+
+      Key principles from {synthesis_guide}:
+      - Synthesis > summary
+      - Lead with evidence, layer perspectives
+      - Acknowledge complexity
+      - Maintain readability
+      - Use multi-perspective integration patterns appropriately
+
+    outputs:
+      - draft_article.md (all body sections added)
+      - workflow_log.md (progress)
+
+    stop_condition: |
+      All body sections drafted.
+      Present full draft (intro + body).
+      User can approve or request section revisions.
+
+  - step: 5
+    name: draft_conclusion
+    role: content_synthesizer
+    description: Draft article conclusion
+
+    instructions: |
+      Draft conclusion following article_plan.
+
+      Requirements:
+      1. Key Insights Summary (2-3 sentences: synthesis, not repetition)
+      2. Synthesis Across Perspectives (2-3 sentences: consensus, tensions)
+      3. Implications (1-2 sentences: why this matters)
+      4. Forward Look (1-2 sentences: future developments)
+      5. Closing (1 sentence: final resonant thought)
+
+      Don't introduce new facts/arguments.
+      Synthesize, don't summarize.
+      Acknowledge uncertainty where appropriate.
+
+      Append to draft_article.md.
+
+    outputs:
+      - draft_article.md (with conclusion)
+
+    stop_condition: |
+      Present conclusion.
+      Request feedback before proceeding to citations.
+
+  - step: 6
+    name: generate_citations
+    role: content_synthesizer
+    description: Generate citation index
+
+    instructions: |
+      Create citation index from knowledge_base.yaml citations.
+
+      Process:
+      1. Extract all citation IDs from draft_article.md
+      2. Load citation details from knowledge_base.yaml
+      3. Format per {citation_style}
+      4. Sort appropriately (by number or alphabetically)
+      5. Validate (all inline citations have matching reference)
+
+      Format examples in task description (inline-numbered, inline-author-year, footnotes).
+
+      Output: citation_index.md
+
+    outputs:
+      - citation_index.md
+
+  - step: 7
+    name: integrate_citations
+    role: content_synthesizer
+    description: Append citations to draft
+
+    instructions: |
+      Integrate citation_index.md into draft_article.md.
+
+      Add separator, append references section.
+      Verify all inline citations match references.
+
+      Final draft_article.md includes:
+      - Title
+      - Introduction
+      - Body sections
+      - Conclusion
+      - References
+
+    outputs:
+      - draft_article.md (complete)
+
+  - step: 8
+    name: coherence_review
+    role: content_synthesizer
+    description: Review for coherence and quality
+
+    synthesis_guide: .claude/templates/storm/synthesis-principles.md
+
+    instructions: |
+      Holistic review of draft_article.md.
+
+      Review areas:
+      1. Narrative Flow (coherent story, logical connections, clear through-line)
+      2. Perspective Balance (fair representation, balanced controversies)
+      3. Redundancy (cut or consolidate)
+      4. Consistency (terminology, tone, style)
+      5. Readability (sentence variety, paragraph length, jargon explained, engaging)
+      6. Citation Integrity (all facts cited appropriately)
+
+      Reference {synthesis_guide} quality checklist.
+
+      Make edits directly to draft_article.md.
+
+      Document changes in synthesis_report.md:
+      - Article metrics (word count, sections, citations, experts)
+      - Coherence review changes (what was changed and why)
+      - Quality assessment (ratings and notes per area)
+      - Known issues / recommendations
+      - Checklist status against content-quality-checklist.yaml
+
+    outputs:
+      - draft_article.md (polished)
+      - synthesis_report.md
+
+# Completion
+
+completion:
+  message: |
+    Article synthesis complete!
+
+    Draft Article: {working_dir}/draft_article.md
+    Synthesis Report: {working_dir}/synthesis_report.md
+
+    Statistics:
+    - Word Count: {word_count}
+    - Sections: {section_count}
+    - Citations: {citation_count}
+    - Experts Referenced: {expert_count}
+
+    Next Steps:
+    1. Review draft_article.md
+    2. Check synthesis_report.md for quality assessment
+    3. Run 'optimize-content' task for SEO and readability polish
+
+validation:
+  required_outputs:
+    - draft_article.md exists with complete structure
+    - citation_index.md exists or integrated
+    - synthesis_report.md exists with quality assessment
+    - All inline citations have matching references
+    - Article meets target length (±20%)
+
+  quality_checks:
+    - Article has clear intro, body, conclusion
+    - All KB facts incorporated or excluded intentionally
+    - Multi-perspective facts given balanced treatment
+    - No unsupported factual claims
+    - Narrative flows coherently
+    - Readability appropriate for audience
+    - Expert voices integrated naturally (if enabled)
+    - Citations properly formatted
+
+# Related Resources
+
+references:
+  synthesis_guide: .claude/templates/storm/synthesis-principles.md
+  templates:
+    - .claude/templates/knowledge-base-tmpl.yaml
+  checklists:
+    - .claude/checklists/content-quality-checklist.yaml
+
+next_tasks:
+  - task: optimize-content
+    input: draft_article.md
+    description: Final SEO and readability optimization
+
+notes: |
+  Synthesizes STORM knowledge base into coherent article.
+
+  Key principles:
+  - Multi-perspective depth: Present diverse viewpoints fairly
+  - Evidence-based: Every claim backed by citations
+  - Narrative flow: Maintain readable story despite complexity
+  - Synthesis over summary: Integrate, don't just list
+  - Acknowledge complexity: Don't force false consensus
+
+  Output is research-backed, multi-perspective article ready for optimization.

@@ -1,7 +1,7 @@
 metadata:
   title: Analyze Project Context
   owner: prepper
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -29,7 +29,7 @@ workflow:
     type: read
     critical: true
     files:
-      - .github/core-config.xml
+      - .claude/core-config.xml
     extract:
       - ecosystem name/version
       - model defaults
@@ -92,8 +92,8 @@ workflow:
   - id: map_existing_agents
     type: discovery
     files:
-      - .github/agents/*.md
-      - .github/agents.index.yaml
+      - .claude/agents/*.md
+      - .claude/agents.index.yaml
     extract:
       - agent names and roles
       - model configurations
@@ -104,8 +104,8 @@ workflow:
   - id: map_existing_tasks
     type: discovery
     files:
-      - .github/tasks/*.yaml
-      - .github/tasks.index.yaml
+      - .claude/tasks/*.yaml
+      - .claude/tasks.index.yaml
     extract:
       - task names and purposes
       - workflow patterns

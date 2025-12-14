@@ -1,0 +1,279 @@
+# STORM Coverage Gap Analysis Criteria
+#
+# Purpose: Systematic detection of under-researched areas in knowledge base
+# Used by: warmstart-article.yaml (gap analysis step)
+# GPT-5 Optimization: Clear thresholds and scoring for gap detection
+
+metadata:
+  template_version: "1.0"
+  model_optimized_for: "gpt-5"
+  purpose: "Coverage gap detection and prioritization"
+
+gap_priorities:
+  high:
+    definition: "Critical gap that would make article incomplete or misleading"
+    resolution_required: true
+    examples:
+      - "Major stakeholder perspective missing entirely"
+      - "Section has <3 citations (insufficient backing)"
+      - "Controversial claim with only one perspective"
+      - "Outline section with 0 facts"
+    action: "MUST address before synthesis (add expert round or targeted research)"
+
+  medium:
+    definition: "Notable gap that reduces article quality but doesn't invalidate it"
+    resolution_required: false
+    recommendation: "Address if time permits; document if skipped"
+    examples:
+      - "Section has 3-5 citations (adequate but thin)"
+      - "Fact has only 1-2 expert perspectives where 3+ would be valuable"
+      - "Geographic or demographic angle underrepresented"
+      - "Tension mentioned but not explored"
+    action: "Consider 1 additional expert round or targeted web research"
+
+  low:
+    definition: "Minor gap; article is solid without addressing this"
+    resolution_required: false
+    recommendation: "Note for future work; skip for current article"
+    examples:
+      - "Section has 5-7 citations (good coverage)"
+      - "Tangential angle not critical to main narrative"
+      - "Very recent development (< 1 month old) with limited sources"
+    action: "Document in unused_information or future_directions"
+
+detection_rules:
+  citation_density:
+    rule: "Section has fewer than N citations"
+    thresholds:
+      high_priority: 3    # <3 citations = high priority gap
+      medium_priority: 5  # 3-4 citations = medium priority gap
+      target: 7           # 5-6 citations = low priority, 7+ = well-covered
+    rationale: "Insufficient source backing indicates shallow coverage"
+    detection_method: "Count unique citation IDs in facts assigned to section"
+
+  perspective_diversity:
+    rule: "Section has fewer than N expert perspectives"
+    thresholds:
+      high_priority: 2     # <2 perspectives = high priority gap
+      medium_priority: 3   # 2 perspectives = medium priority, 3+ = well-covered
+      target: 3
+    rationale: "Single perspective indicates potential bias or incompleteness"
+    detection_method: "Count unique expert IDs in expert_perspectives for facts in section"
+
+  stakeholder_coverage:
+    rule: "Major stakeholder group has no representation in facts_db"
+    thresholds:
+      high_priority: "0 facts representing this stakeholder"
+      target: "At least 3 facts per major stakeholder group"
+    rationale: "Missing stakeholder voices creates incomplete picture"
+    detection_method: "Review facts for stakeholder tags; check against topic's stakeholder map"
+    stakeholder_examples:
+      - "Users/consumers"
+      - "Producers/implementers"
+      - "Regulators/policy makers"
+      - "Affected communities"
+      - "Researchers/experts"
+
+  controversy_balance:
+    rule: "Controversial or contested claim has only one viewpoint"
+    thresholds:
+      high_priority: "Claim tagged 'contested' or 'controversial' with <2 perspectives"
+      target: "All contested claims have 2+ perspectives"
+    rationale: "One-sided treatment of controversy is misleading"
+    detection_method: "Check facts tagged 'contested' or 'controversial'; count perspectives"
+
+  section_emptiness:
+    rule: "Outline section has zero facts assigned"
+    thresholds:
+      high_priority: "0 facts in section that was part of initial outline"
+      n/a: "Sections created during research but not yet populated are medium priority"
+    rationale: "Empty section indicates research didn't address this angle"
+    detection_method: "Count facts with section_id matching outline sections"
+
+  temporal_coverage:
+    rule: "All citations are older than N months"
+    thresholds:
+      medium_priority: "All citations >12 months old for fast-moving topics"
+      target: "At least 30% of citations from past 6 months for current events"
+    rationale: "Outdated sources miss recent developments"
+    detection_method: "Check citation dates; flag if all are >12 months old"
+
+  geographic_diversity:
+    rule: "All sources are from single geographic region"
+    thresholds:
+      medium_priority: ">80% of sources from one region for global topics"
+      target: "At least 2 different regions represented"
+    rationale: "Geographic bias limits perspective on global issues"
+    detection_method: "Tag citations by region; calculate distribution"
+
+gap_detection_process:
+  step_1_quantitative:
+    description: "Run automated checks based on thresholds"
+    checks:
+      - "Citation density per section"
+      - "Perspective count per section"
+      - "Empty sections"
+      - "Contested claims with <2 perspectives"
+    output: "List of sections/facts triggering threshold alerts"
+
+  step_2_qualitative:
+    description: "Review for nuanced gaps not caught by rules"
+    checks:
+      - "Are all major stakeholders represented?"
+      - "Are there obvious angles the topic demands but we haven't covered?"
+      - "Do we have both 'what' (facts) and 'why'/'how' (mechanisms, context)?"
+      - "Are there tensions or trade-offs mentioned but not explored?"
+    output: "Narrative description of qualitative gaps"
+
+  step_3_prioritize:
+    description: "Assign priority levels to all detected gaps"
+    logic:
+      - "Apply priority levels (high/medium/low) based on rules"
+      - "Consider article scope: some gaps are out of scope, not true gaps"
+      - "Consider diminishing returns: is this gap worth additional research effort?"
+    output: "Prioritized gap list with recommended actions"
+
+gap_report_format:
+  executive_summary:
+    content: "1-2 sentence overall assessment of coverage completeness"
+    example: "Coverage is strong on technical capabilities and enterprise adoption (7-9 citations per section, 3+ perspectives), but lacks stakeholder voices from affected communities (0 facts) and policy/regulatory angles (2 citations only)."
+
+  high_priority_gaps:
+    format: |
+      ### High Priority Gaps
+
+      **Gap ID**: gap_001
+      **Location**: Section "Ethical Challenges"
+      **Issue**: Only 2 citations; lacks perspectives from affected communities
+      **Impact**: Article would appear one-sided on high-stakes ethical questions
+      **Recommendation**: Add 1 expert round with civil rights advocate or community organizer
+      **Estimated Effort**: 1 expert conversation (3-4 rounds)
+
+  medium_priority_gaps:
+    format: |
+      ### Medium Priority Gaps
+
+      **Gap ID**: gap_002
+      **Location**: Section "Policy Landscape"
+      **Issue**: All citations >12 months old; misses recent regulatory developments
+      **Impact**: Article won't reflect current policy state
+      **Recommendation**: Targeted web research on recent policy announcements
+      **Estimated Effort**: 15 minutes focused web search
+
+  low_priority_gaps:
+    format: |
+      ### Low Priority Gaps
+
+      **Gap ID**: gap_003
+      **Location**: Section "Future Outlook"
+      **Issue**: Speculative; only 4 citations
+      **Impact**: Minimal; future projections are inherently uncertain
+      **Recommendation**: Document in future_directions; skip for this article
+      **Estimated Effort**: N/A
+
+  unused_information:
+    description: "Facts researched but not yet integrated"
+    content: "List facts in unused_information section of KB; assess if any fill gaps"
+
+user_decision_point:
+  prompt: |
+    Based on gap analysis, you have options:
+
+    1. **Fill High Priority Gaps** (recommended)
+       - Add [N] expert rounds or targeted research
+       - Estimated time: [X] minutes
+       - Will significantly improve article completeness
+
+    2. **Skip Gap Filling**
+       - Proceed to synthesis with current coverage
+       - Document gaps in article limitations/scope section
+       - Faster but less comprehensive
+
+    3. **Fill Specific Gaps Only**
+       - Choose which gaps to address from list above
+       - Customize effort vs. quality trade-off
+
+    What would you like to do?
+
+gap_filling_strategies:
+  targeted_expert_round:
+    when: "Need specific stakeholder perspective or domain expertise"
+    process:
+      - "Identify expert archetype that would fill gap (e.g., advocate, policy maker)"
+      - "Generate expert profile targeting gap area"
+      - "Run 2-3 conversation rounds focused on gap"
+      - "Update KB with new facts"
+    cost: "Medium (20-30 minutes)"
+
+  focused_web_research:
+    when: "Need more citations or recent developments"
+    process:
+      - "Formulate 3-5 search queries targeting gap"
+      - "Collect 5-10 sources from web search"
+      - "Extract facts and add to KB"
+      - "No expert simulation needed"
+    cost: "Low (10-15 minutes)"
+
+  cross_reference_existing:
+    when: "Info might already be in unused_information"
+    process:
+      - "Review unused_information section of KB"
+      - "Identify facts that address gap"
+      - "Reassign to appropriate section"
+      - "Update outline if needed"
+    cost: "Very Low (5 minutes)"
+
+  scope_reduction:
+    when: "Gap is out of scope or diminishing returns"
+    process:
+      - "Document gap in coverage_gaps → acknowledged_limitations"
+      - "Narrow article scope statement to exclude this angle"
+      - "Proceed to synthesis"
+    cost: "None"
+
+anti_patterns:
+  never:
+    - "Ignore high priority gaps (citation density <3, missing stakeholder)"
+    - "Fill low priority gaps while high priority gaps remain"
+    - "Add expert rounds without clear gap-filling objective"
+    - "Proceed to synthesis with empty outline sections"
+
+  always:
+    - "Run gap analysis before deciding whether to fill gaps or proceed"
+    - "Prioritize gaps using criteria (high/medium/low)"
+    - "Present gap analysis to user for decision if high priority gaps exist"
+    - "Document unfilled gaps in final article scope/limitations"
+
+examples:
+  well_covered_section:
+    section_id: "technical_capabilities"
+    facts: 12
+    citations: 9
+    expert_perspectives: 4
+    gaps: "None (low priority: could add more recent benchmarks)"
+    status: "Ready for synthesis"
+
+  under_covered_section:
+    section_id: "patient_perspectives"
+    facts: 2
+    citations: 2
+    expert_perspectives: 1
+    gaps: "High priority: missing patient/user voices"
+    recommendation: "Add expert round with patient advocate or patient experience researcher"
+    status: "Gap filling required"
+
+  empty_section:
+    section_id: "regulatory_landscape"
+    facts: 0
+    citations: 0
+    expert_perspectives: 0
+    gaps: "High priority: section completely unaddressed"
+    recommendation: "Targeted web research on recent regulations + policy expert round"
+    status: "Critical gap"
+
+usage_notes:
+  - "Run gap analysis after all expert conversations complete"
+  - "Present gap report to user; get decision on gap filling"
+  - "If filling gaps, update KB and re-run gap analysis"
+  - "Document unfilled gaps in article scope for transparency"
+  - "Gap analysis informs synthesis: where to be cautious about claims"

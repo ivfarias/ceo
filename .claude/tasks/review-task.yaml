@@ -1,7 +1,7 @@
 metadata:
   title: Review Task (Lean)
   owner: qa
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: low
   verbosity: low
   description: "Adaptive QA review with Quality Gate and Risk Summary in single operation"
@@ -20,6 +20,13 @@ reasoning_control: |
   - termination_policy: "Stop after QA Results and Gate YAML written"
   </reasoning_control>
 
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - include_previous_response_id: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["review_depth", "qa_decision", "risk_summary", "traceability_map"]
+  </session_memory>
 
 context_gathering: |
   <context_gathering>

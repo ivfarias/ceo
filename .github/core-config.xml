@@ -1,32 +1,29 @@
-<core_config model="gpt-4" version="2.0">
+<core_config model="gpt-5-codex" version="2.0">
   <ecosystem name="CEO-Orchestration" framework="BMAD">
     <orchestrator_agent>ceo</orchestrator_agent>
   </ecosystem>
 
   <indexes>
-    <agents>.github/agents.index.yaml</agents>
-    <tasks>.github/tasks.index.yaml</tasks>
-    <checklists>.github/checklists.index.yaml</checklists>
-    <templates>.github/templates.index.yaml</templates>
-    <data>.github/data.index.yaml</data>
-    <utils>.github/utils.index.yaml</utils>
+    <agents>.claude/agents.index.yaml</agents>
+    <tasks>.claude/tasks.index.yaml</tasks>
+    <checklists>.claude/checklists.index.yaml</checklists>
+    <templates>.claude/templates.index.yaml</templates>
+    <data>.claude/data.index.yaml</data>
+    <utils>.claude/utils.index.yaml</utils>
   </indexes>
 
   <paths>
-    <agent_root>.github</agent_root>
+    <agent_root>.agent</agent_root>
     <docs_root>docs</docs_root>
     <tasks>docs/tasks</tasks>
     <qa>docs/qa</qa>
     <reports>docs/reports</reports>
     <marketing>docs/marketing</marketing>
     <debug_log>.ai/debug-log.md</debug_log>
-    <backup>.github/.backup</backup>
-    <execplans>plans</execplans>
-    <execplans_active>plans/active</execplans_active>
-    <execplans_completed>plans/completed</execplans_completed>
+    <backup>.claude/.backup</backup>
   </paths>
 
-  <models default="gpt-4" reasoning_effort="medium" verbosity="low" />
+  <models default="gpt-5-codex" reasoning_effort="medium" verbosity="low" />
 
   <orchestration>
     <mode>stop-confirm-continue</mode>
@@ -72,8 +69,8 @@
 
   <safety>
     <forbidden_tools>
-      <tool>copilot exec</tool>
-      <tool>copilot list</tool>
+      <tool>codex exec</tool>
+      <tool>codex list</tool>
     </forbidden_tools>
     <isolation>
       <prevent_agent_file_modification>true</prevent_agent_file_modification>
@@ -81,7 +78,7 @@
       <prevent_cross_agent_loading>true</prevent_cross_agent_loading>
     </isolation>
     <backup enabled="true" format="YYYYMMDD-HHMMSS">
-      <location>.github/.backup</location>
+      <location>.claude/.backup</location>
     </backup>
   </safety>
 

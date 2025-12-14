@@ -1,61 +1,61 @@
 # ============================================================================
 # CEO Orchestration System - Agent Profiles
 # ============================================================================
-# Add these profiles to your ~/.claude/settings.json to enable agent switching
+# Add these profiles to your ~/.claude/config.toml to enable agent switching
 #
 # Usage:
-#   claude --profile ceo        # Start with CEO orchestrator
-#   claude --profile developer  # Start with Developer agent
-#   claude --profile pm         # Start with Product Manager
+#   codex --profile ceo        # Start with CEO orchestrator
+#   codex --profile developer  # Start with Developer agent
+#   codex --profile pm         # Start with Product Manager
 #   etc.
 #
-# Copy-paste this entire block into your ~/.claude/settings.json file
+# Copy-paste this entire block into your ~/.claude/config.toml file
 # ============================================================================
 
-[profiles.analytics]
-model = "claude-sonnet-4.5"
+[profiles.analyst]
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Ana - Analytics Specialist
 
 [profiles.ceo]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Cleo - Executive Orchestrator
 
 [profiles.developer]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Devon - Senior Developer & Architect
 
 [profiles.marketer]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Mark - Unified Marketing Strategist 📢
 
 [profiles.pm]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Manny - Lean Product Manager
 
 [profiles.prepper]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Pepe - Project Preparation & Optimization Specialist
 
 [profiles.qa]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 # Agent: Quinn - Test Architect & Quality Advisor
 
 [profiles.ux-expert]
-model = "claude-sonnet-4.5"
+model = "gpt-5-codex"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 # Agent: Sally - UX Expert

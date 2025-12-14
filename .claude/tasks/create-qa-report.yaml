@@ -1,7 +1,7 @@
 metadata:
   title: Lean QA Test Report
   owner: qa
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
   description: "Quick validation of agent flow, behavior, and tool/API orchestration"

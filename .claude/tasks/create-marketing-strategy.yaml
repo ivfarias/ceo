@@ -1,7 +1,7 @@
 metadata:
   title: Create Marketing Strategy
   owner: marketer
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 

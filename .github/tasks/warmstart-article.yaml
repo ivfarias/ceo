@@ -1,0 +1,318 @@
+name: warmstart-article
+version: 2.0-storm
+description: STORM warm start - multi-perspective research, expert conversations, and knowledge base building
+agent: writer
+metadata:
+  methodology: Stanford STORM (Synthesis of Topic Outline through Retrieval and Multi-perspective question asking)
+  output_type: knowledge_base
+  requires_approval: true
+inputs:
+  topic:
+    type: string
+    required: true
+    description: "Article topic (e.g., 'Impact of AI on Healthcare')"
+    example: "The Future of Remote Work"
+  target_length:
+    type: string
+    default: "2000-3000 words"
+    description: "Target article length for final output"
+  num_experts:
+    type: integer
+    default: 4
+    min: 3
+    max: 6
+    description: "Number of expert perspectives"
+  rounds_per_expert:
+    type: integer
+    default: 2
+    min: 2
+    max: 4
+    description: "Conversation rounds per expert"
+  working_dir:
+    type: string
+    optional: true
+    description: "Custom working directory (defaults to docs/articles/{topic-slug}/)"
+outputs:
+  working_dir: "docs/articles/{topic-slug}/"
+  files:
+    - research_summary.md
+    - expert_profiles.yaml
+    - expert_conversations/*.yaml
+    - knowledge_base.md
+    - coverage_report.md
+    - workflow_log.md
+workflow:
+  - step: 1
+    name: initialize_workspace
+    description: Create working directory structure
+    actions:
+      - Create working directory if not exists
+      - Initialize workflow_log.md with timestamp and parameters
+      - Create subdirectories (expert_conversations/)
+    validation:
+      - Working directory exists and is writable
+      - Subdirectories created successfully
+  - step: 2
+    name: background_research
+    role: research_retriever
+    description: Conduct comprehensive background research
+    instructions: |
+      Operating as RESEARCH RETRIEVER.
+
+      Mission: Gather comprehensive background on "{topic}" from diverse authoritative sources.
+
+      Strategy:
+      1. Use WebSearch with parallel calls (5-8 queries at once):
+         - Definitional queries
+         - Current state (2025)
+         - Expert sources
+         - Controversies
+         - Statistics
+
+      2. Target 20+ sources with diversity:
+         - Academic/institutional (.edu, .gov, peer-reviewed)
+         - Major news (Reuters, BBC, WSJ, NYT)
+         - Professional (HBR, McKinsey, industry experts)
+
+      3. Create research_summary.md with sections:
+         - Executive Summary
+         - Key Concepts & Definitions
+         - Recent Developments
+         - Stakeholders & Perspectives
+         - Controversies & Debates
+         - Knowledge Gaps
+         - Source Quality Analysis
+         - Sources (complete numbered list)
+
+      Quality Bar:
+      - Minimum 15 sources (target 20-25)
+      - 40%+ from Tier 1-2 sources
+      - Multiple perspectives represented
+      - All URLs valid and accessible
+
+    outputs:
+      - research_summary.md
+
+    stop_condition: |
+      Present research_summary.md to user.
+      Wait for approval or request for additional research.
+
+  - step: 3
+    name: generate_experts
+    role: expert_interviewer
+    description: Generate diverse expert profiles
+
+    protocol: .claude/templates/expert-profile-tmpl.yaml
+
+    instructions: |
+      Operating as EXPERT INTERVIEWER.
+
+      Mission: Create {num_experts} expert profiles with diverse perspectives on "{topic}".
+
+      Follow template structure from: {protocol}
+
+      Strategy:
+      1. Review research_summary.md (Stakeholders, Controversies)
+      2. Design panel for DIVERSITY (see template checklist)
+      3. Use template format exactly
+
+      Each expert needs:
+      - Specific role and affiliation
+      - Clear perspective/lens
+      - 3-5 specific expertise areas
+      - Focus areas for discussion
+      - Acknowledged potential biases
+      - Background note for voice simulation
+
+      Output: expert_profiles.yaml
+
+    outputs:
+      - expert_profiles.yaml
+
+    stop_condition: |
+      Present expert_profiles.yaml to user.
+      Wait for approval or requested changes.
+
+  - step: 4
+    name: expert_conversations
+    role: expert_interviewer
+    description: Conduct multi-round expert conversations
+
+    protocol: .claude/data/conversation-protocol.md
+    question_guide: .claude/data/question-generation-guide.md
+    kb_protocol: .claude/data/kb-update-protocol.md
+
+    instructions: |
+      Operating as EXPERT INTERVIEWER conducting conversations.
+
+      Mission: Interview each expert for {rounds_per_expert} rounds, building knowledge progressively.
+
+      Follow: {protocol}
+
+      For each expert:
+        1. Initialize (load profile, create conversation file, load KB)
+
+        2. For each round:
+           A. Generate Questions (see {question_guide})
+           B. Research & Simulate Answer (web search + expert voice)
+           C. Update KB (see {kb_protocol})
+           D. Record Turn
+           E. Check Stopping Condition
+
+        3. Move to next expert
+
+      Key Protocols:
+      - Questions: Specific, grounded, progressive (reference {question_guide})
+      - Answers: Authentic voice, well-cited, adds new info
+      - KB Updates: Extract facts, assign sections, record perspectives
+      - Parallel web searches for efficiency
+
+      Output per expert:
+      - expert_conversations/{expert_id}.yaml
+      - Updated knowledge_base.md
+    outputs:
+      - expert_conversations/*.yaml
+      - knowledge_base.md (incrementally updated)
+      - workflow_log.md (progress tracking)
+    stop_condition: |
+      All {num_experts} expert conversations completed.
+      Present summary: rounds, sources, facts, KB status.
+  - step: 5
+    name: knowledge_base_curation
+    role: knowledge_curator
+    description: Consolidate and analyze knowledge base
+    gap_criteria: .claude/templates/gap-analysis-criteria.yaml
+    coverage_template: .claude/templates/coverage-report-tmpl.md
+    instructions: |
+      Operating as KNOWLEDGE CURATOR.
+      Mission: Ensure knowledge_base.md is well-organized and ready for synthesis.
+      Tasks:
+      1. Outline Refinement
+         - Review section hierarchy for logical flow
+         - Merge/split as needed (get approval for major changes)
+      2. Fact Validation
+         - All facts have citations
+         - Citation format consistent
+         - No duplicates
+      3. Perspective Analysis
+         - Identify multi-perspective facts
+         - Note agreements vs disagreements
+      4. Coverage Gap Analysis (see {gap_criteria})
+         - Check detection rules (citation density, perspective diversity, fact density, etc.)
+         - Categorize gaps by priority (high/medium/low)
+         - Follow gap_criteria thresholds and assessment methods
+      5. Unused Information
+         - Review research_summary.md for unused sources
+         - Classify by value (high/medium/low per criteria)
+      6. Statistics Update
+         - Calculate all metrics per KB template
+      7. Generate Coverage Report
+         - Use {coverage_template} structure
+         - Include all sections per template
+      Output:
+      - knowledge_base.md (curated and validated)
+      - coverage_report.md
+    outputs:
+      - knowledge_base.md (curated)
+      - coverage_report.md
+      - workflow_log.md (updated)
+    stop_condition: |
+      Present coverage_report.md to user.
+      Explain:
+      - Overall quality and completeness
+      - Identified gaps and severity
+      - Recommendations
+      Wait for user decision:
+      - Proceed to synthesis
+      - Fill gaps
+      - Adjust and re-curate
+
+  - step: 6
+    name: gap_filling
+    role: expert_interviewer
+    conditional: true
+    description: Optional gap filling
+    trigger: User requests gap filling
+    protocol: .claude/data/conversation-protocol.md
+    instructions: |
+      Returning to EXPERT INTERVIEWER role for gap filling.
+
+      Mission: Address specific gaps from coverage_report.md
+
+      For each gap to address:
+        Option A: Additional rounds with existing expert (if gap in their domain)
+        Option B: Targeted research without expert (if narrow/factual)
+        Option C: New expert generation (if gap needs entirely new perspective)
+
+      Update KB after addressing each gap.
+      Regenerate coverage_report.md.
+    outputs:
+      - expert_conversations/*.yaml (updated)
+      - knowledge_base.md (updated)
+      - coverage_report.md (updated)
+      - workflow_log.md (gap-filling log)
+    stop_condition: |
+      Gaps addressed per user request.
+      Present updated coverage_report.md.
+completion:
+  message: |
+    Warm start complete! Knowledge base ready.
+
+    Results:
+    - Knowledge Base: docs/articles/{topic-slug}/knowledge_base.md
+    - Coverage Report: docs/articles/{topic-slug}/coverage_report.md
+    - Experts: {num_experts}, Rounds: {total_rounds}
+    - Sources: {total_sources}, Facts: {total_facts}
+
+    Next Steps:
+    1. Review coverage_report.md
+    2. Run 'synthesize-article' task
+    3. Run 'optimize-content' task
+
+validation:
+  required_outputs:
+    - research_summary.md exists with 15+ sources
+    - expert_profiles.yaml exists with {num_experts} experts
+    - Each expert has {rounds_per_expert}+ conversation rounds
+    - knowledge_base.md has hierarchical outline
+    - All facts have citations
+    - coverage_report.md exists with gap analysis
+
+  quality_checks:
+    - KB has 40+ facts (for 2000-3000 word article)
+    - 30%+ facts have multiple expert perspectives
+    - 60%+ citations from Tier 1-2 sources
+    - All experts contributed facts to KB
+    - Coverage report identifies gaps or confirms readiness
+
+# Related Resources
+
+references:
+  protocols:
+    - .claude/data/conversation-protocol.md
+    - .claude/data/question-generation-guide.md
+    - .claude/data/kb-update-protocol.md
+  templates:
+    - .claude/templates/expert-profile-tmpl.yaml
+    - .claude/templates/gap-analysis-criteria.yaml
+    - .claude/templates/knowledge-base-tmpl.yaml
+    - .claude/templates/coverage-report-tmpl.yaml
+  checklists:
+    - .claude/checklists/content-quality-checklist.yaml
+
+next_tasks:
+  - task: synthesize-article
+    input: working_dir from this task
+  - task: optimize-content
+    input: draft from synthesize-article
+
+notes: |
+  STORM methodology adapted for bmad-style agent orchestration.
+
+  Key adaptations:
+  - Sequential expert interviews (vs concurrent) for control
+  - User approval checkpoints at phase transitions
+  - File-based KB (vs in-memory graph)
+  - Deterministic rounds (vs probability-based turns)
+
+  These maintain STORM's multi-perspective depth while fitting workflow philosophy.

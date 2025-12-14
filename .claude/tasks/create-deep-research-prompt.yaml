@@ -1,7 +1,7 @@
 metadata:
   title: Deep Research Task
   owner: product_manager
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -73,7 +73,7 @@ workflow:
         format: bulleted
       - title: Sources
         items:
-          -  (default)
+          - context7_mcp (default)
           - user_sources (if given)
       - title: Methodology
         value: brief plan or framework
@@ -103,17 +103,17 @@ completion:
 anti_patterns:
   never:
     - "Generate research prompt without clarifying objective"
-    - "Skip tech stack validation validation for tech-related research"
+    - "Skip context7 validation for tech-related research"
     - "Create overly broad research scope"
     - "Proceed without user approval on prompt draft"
   always:
     - "Start by classifying research type"
     - "Extract clear research goals from user input"
-    - "Use codebase search tools for tech validation"
+    - "Use context7 MCP for tech validation"
     - "Present draft for review before exporting"
 
 notes:
   - Lean-first: skip unnecessary depth unless prompted
   - Bug flow supports diagnostics + root cause research
   - Always prefer actionable clarity over generic detail
-  - Use codebase search tools for all tech stack references
+  - Use context7 MCP for all tech stack references

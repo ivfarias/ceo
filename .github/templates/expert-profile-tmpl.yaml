@@ -1,0 +1,120 @@
+# STORM Expert Profile Template
+#
+# Purpose: Define expert structure for multi-perspective research
+# Used by: warmstart-article.yaml (expert generation step)
+# GPT-5 Optimization: Modular template reduces cognitive load in main workflow
+
+expert_template:
+  id: "expert_001"
+  name: "Dr. [Full Name]"
+  role: "[Professional Title/Role]"
+  perspective: "[Core lens/angle this expert brings to the topic]"
+
+  expertise_areas:
+    - "[Primary domain expertise]"
+    - "[Secondary domain expertise]"
+    - "[Methodological or theoretical expertise]"
+
+  focus_areas:
+    - "[Specific aspect of topic this expert will illuminate]"
+    - "[Unique angle or sub-question they address]"
+    - "[Stakeholder concern they represent]"
+
+  potential_biases:
+    - "[Known bias 1 - e.g., industry affiliation, theoretical school]"
+    - "[Known bias 2 - e.g., geographic focus, political stance]"
+
+  background_note: "[1-2 sentence characterization of this expert's viewpoint and why it matters]"
+
+diversity_requirements:
+  sector_diversity:
+    requirement: "At least 2 different professional sectors (academic, industry, policy, advocacy, journalism)"
+    rationale: "Prevent echo chamber; surface different accountability structures"
+    examples:
+      - "Academic researcher + Industry practitioner"
+      - "Policy maker + Civil society advocate"
+      - "Journalist + Technical expert"
+
+  geographic_diversity:
+    requirement: "At least 2 different geographic contexts if topic is global"
+    rationale: "Surface regional variations and local expertise"
+    examples:
+      - "US-based expert + EU-based expert"
+      - "Global North + Global South perspectives"
+
+  methodological_diversity:
+    requirement: "At least 2 different methodological or theoretical approaches"
+    rationale: "Capture quantitative vs qualitative, theoretical vs applied tensions"
+    examples:
+      - "Quantitative economist + Qualitative sociologist"
+      - "Technical engineer + Social impact researcher"
+
+  stakeholder_diversity:
+    requirement: "Represent at least 3 different stakeholder groups affected by topic"
+    rationale: "Ensure comprehensive impact analysis"
+    examples:
+      - "Users/consumers"
+      - "Producers/implementers"
+      - "Regulators/overseers"
+      - "Affected communities"
+
+expert_archetypes:
+  researcher:
+    characteristics: "Evidence-driven, methodologically rigorous, cites studies"
+    typical_concerns: "Data quality, research gaps, causal mechanisms"
+    voice_markers: "References studies, uses technical terms, hedges claims with confidence intervals"
+
+  practitioner:
+    characteristics: "Experience-based, pragmatic, implementation-focused"
+    typical_concerns: "Real-world constraints, operational feasibility, ROI"
+    voice_markers: "Uses case examples, discusses trade-offs, focuses on 'what works'"
+
+  policy_maker:
+    characteristics: "Systems-thinking, concerned with scalability and equity"
+    typical_concerns: "Public interest, regulatory framework, unintended consequences"
+    voice_markers: "References policy precedents, considers stakeholder interests, thinks in timelines"
+
+  advocate:
+    characteristics: "Values-driven, represents specific community or cause"
+    typical_concerns: "Rights, representation, power dynamics, justice"
+    voice_markers: "Centers lived experience, challenges assumptions, highlights marginalized perspectives"
+
+  technologist:
+    characteristics: "Innovation-focused, understands technical possibilities and limits"
+    typical_concerns: "Technical feasibility, scalability, security, emerging capabilities"
+    voice_markers: "Discusses technical architecture, trade-offs, future possibilities"
+
+quality_criteria:
+  specificity:
+    requirement: "Each expert must have specific, named expertise (not generic 'expert in AI')"
+    bad_example: "AI Expert"
+    good_example: "Computer Vision Researcher specializing in medical imaging AI"
+
+  relevance:
+    requirement: "Expert's background must directly connect to the topic"
+    test: "Can you explain in 1 sentence why this expert's perspective matters for this topic?"
+
+  complementarity:
+    requirement: "Each expert should illuminate different facets; avoid redundancy"
+    test: "Do any two experts have >70% overlap in focus areas? If yes, diversify."
+
+  authenticity:
+    requirement: "Expert profile should be realistic (could exist in real world)"
+    test: "Could you find a real person with this exact combination of expertise?"
+
+generation_checklist:
+  - "[ ] 3-5 experts generated"
+  - "[ ] At least 2 different sectors represented"
+  - "[ ] At least 2 different methodological approaches"
+  - "[ ] At least 3 different stakeholder groups represented"
+  - "[ ] Each expert has specific (not generic) expertise"
+  - "[ ] Each expert's perspective is clearly distinct from others"
+  - "[ ] Potential biases identified for each expert"
+  - "[ ] Background note explains why this perspective matters"
+
+usage_notes:
+  - "Generate 3-5 experts depending on topic complexity"
+  - "For controversial topics, ensure ideological diversity"
+  - "For technical topics, balance technical depth with accessibility"
+  - "For global topics, ensure geographic diversity"
+  - "Record expert profiles in knowledge_base.yaml under experts: section"

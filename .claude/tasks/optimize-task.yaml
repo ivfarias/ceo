@@ -1,13 +1,13 @@
 metadata:
   title: Optimize Single Task
   owner: prepper
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
 activation:
   when: Prepper processes one task during optimize-tasks or optimize-all sequence
-  principle: "One task at a time. Validate tech stack with codebase search. Stop for confirmation."
+  principle: "One task at a time. Validate tech stack with context7. Stop for confirmation."
 
 reasoning_control: |
   <reasoning_control>
@@ -44,23 +44,23 @@ workflow:
     identify:
       - incorrect_file_paths
       - outdated_tech_stack_refs
-      - missing_
+      - missing_context7_validation
       - template_reference_errors
       - elicitation_gaps
       - workflow_step_inconsistencies
       - model_config_mismatches
     validation:
       - verify_paths_exist: true
-      - 
+      - use_context7_for_tech: true
       - check_template_availability: true
     store_in: task_optimization_plan
 
   - id: validate_tech_stack_references
-    type: 
+    type: context7_validation
     condition: task_contains_tech_references
     action:
       - extract_all_library_framework_mentions
-      - use_
+      - use_context7_mcp_to_validate_versions
       - check_api_patterns_against_latest_docs
       - flag_deprecated_usage
     store_in: tech_validation_results
@@ -73,7 +73,7 @@ workflow:
     criteria:
       - critical: broken_paths_or_missing_deps
       - high: incorrect_tech_stack_or_versions
-      - medium: missing_
+      - medium: missing_context7_validation
       - low: style_consistency_improvements
     output: ranked_fixes
     rule: propose_one_fix_at_a_time
@@ -95,7 +95,7 @@ workflow:
       ```
 
       **Validation:**
-      {{ if applicable}}
+      {{context7_validation_result if applicable}}
 
       **Impact:**
       - Developer experience: {{dx_impact}}
@@ -120,7 +120,7 @@ workflow:
     condition: user_choice == 1
     action:
       - edit_task_file
-      - update_audit_log_with_
+      - update_audit_log_with_context7_evidence
       - update_progress_table
       - store_rollback_notes
     next: announce_completion
@@ -171,29 +171,29 @@ completion:
   criteria:
     - user_confirmed_completion_or_skip
     - progress_table_updated
-    - audit_log_with_
+    - audit_log_with_context7_citations
     - rollback_notes_stored
 
 anti_patterns:
   never:
     - "Optimize multiple tasks in one step"
     - "Apply fix without user confirmation"
-    - "Skip tech stack validation validation for tech references"
+    - "Skip context7 validation for tech references"
     - "Propose changes without verifying file paths exist"
     - "Remove elicit=true user interaction points"
   always:
     - "One task at a time, one fix at a time"
-    - "Use codebase search tools for ALL tech/framework references"
+    - "Use context7 MCP for ALL tech/framework references"
     - "Present fix proposal with evidence"
     - "Await user decision before applying"
-    - "Maintain audit_log with codebase search citations"
+    - "Maintain audit_log with context7 citations"
 
 notes:
-  - CRITICAL: Use codebase search tools for ALL tech stack/framework/library references
+  - CRITICAL: Use context7 MCP for ALL tech stack/framework/library references
   - Validate file paths exist before proposing changes
   - Check that referenced templates are available
   - Ensure workflow steps align with core-config orchestration mode
   - Preserve elicit=true fields; do not remove user interaction points
-  - If task references outdated library versions, provide tech stack validation evidence
+  - If task references outdated library versions, provide context7 evidence
   - NEVER process multiple tasks in single step
-  - Maintain detailed audit_log with codebase search citations
+  - Maintain detailed audit_log with context7 citations

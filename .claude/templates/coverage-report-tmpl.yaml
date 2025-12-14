@@ -1,0 +1,178 @@
+template:
+  id: coverage-report-template-v1
+  name: Knowledge Base Coverage Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/coverage-report.md
+    title: "Coverage Report: {{topic}}"
+
+sections:
+
+  - id: executive-summary
+    title: Executive Summary
+    type: text
+    instruction: |
+      Summarize the completeness and quality of the knowledge base.
+      Include:
+      - Overall completeness percentage
+      - Strengths summary
+      - Gaps summary
+      - Recommendation (proceed / fill_gaps / restructure)
+
+  - id: statistics-overview
+    title: Statistics Overview
+    type: table
+    columns: [Metric, Value, Target, Status]
+    instruction: |
+      Populate metrics such as:
+      - Total Facts
+      - Unique Sources
+      - Expert Perspectives
+      - Multi-Perspective Facts (%)
+      - Tier 1-2 Source %
+      - Citation Density
+      - Sections Complete
+      - Expert Balance Score
+
+  - id: well-covered-areas
+    title: Well-Covered Areas
+    type: repeatable_section
+    instruction: |
+      List each section with strong coverage.
+      Include:
+      - Fact count
+      - Source count
+      - Expert perspective count
+      - Quality assessment
+      - Key facts with citations
+      - Short explanation of why coverage is strong
+
+  - id: coverage-gaps
+    title: Coverage Gaps
+    type: grouped
+    groups:
+      - id: high-priority
+        title: High Priority Gaps
+        type: repeatable_section
+        instruction: |
+          For each high-priority gap include:
+          - Section path
+          - Current fact/source/perspective counts
+          - Missing information
+          - Impact on article quality
+          - Recommended actions
+          - Estimated time
+      - id: medium-priority
+        title: Medium Priority Gaps
+        type: repeatable_section
+      - id: low-priority
+        title: Low Priority Gaps
+        type: repeatable_section
+
+  - id: unused-information
+    title: Unused Information
+    type: repeatable_section
+    instruction: |
+      List high-quality retrieved but unused snippets.
+      Include:
+      - Source
+      - Summary
+      - Relevance
+      - How to integrate
+      - Estimated value
+
+  - id: expert-contribution-analysis
+    title: Expert Contribution Analysis
+    type: section_group
+    sections:
+      - id: expert-distribution
+        title: Contribution Distribution
+        type: table
+        columns: [Expert, Facts, Sections, Unique Sources, Rounds, Balance Score]
+        instruction: "Evaluate contribution diversity and balance."
+      - id: expert-coverage
+        title: Coverage by Expert
+        type: repeatable_section
+        instruction: |
+          For each expert:
+            - Describe role and strengths
+            - List covered sections
+            - Identify domain gaps
+
+  - id: source-quality-analysis
+    title: Source Quality Analysis
+    type: section_group
+    sections:
+      - id: source-tiers
+        title: Sources by Tier
+        type: table
+        columns: [Tier, Count, Percentage, Quality Level]
+      - id: most-cited-sources
+        title: Most Cited Sources
+        type: repeatable_list
+        instruction: |
+          List top cited sources with:
+          - Count
+          - Tier
+          - Notes or concerns
+
+  - id: section-evaluation
+    title: Section-by-Section Evaluation
+    type: repeatable_section
+    instruction: |
+      For each article section:
+      - Status (Comprehensive / Adequate / Incomplete)
+      - Fact count
+      - Source count
+      - Perspective count
+      - Evaluation notes
+      - Required actions
+
+  - id: recommendations
+    title: Recommendations
+    type: repeatable_section
+    instruction: |
+      Present prioritized actions with:
+      - Action
+      - Rationale
+      - Estimated time
+      - Expected impact
+
+  - id: gap-filling-plan
+    title: Gap-Filling Plan
+    type: grouped
+    groups:
+      - id: high-priority-gap-plan
+        title: High Priority Gaps
+        type: repeatable_section
+        instruction: |
+          For each gap:
+          - Approach (expert round, research, new expert)
+          - Expert to use
+          - Questions to ask
+          - Expected outcome
+      - id: medium-priority-gap-plan
+        title: Medium Priority Gaps
+        type: repeatable_section
+
+  - id: decision-point
+    title: Decision Point
+    type: options
+    instruction: |
+      Provide three options:
+      - Proceed to Synthesis
+      - Fill High-Priority Gaps
+      - Major Restructuring
+      Include criteria for selecting each option.
+
+  - id: appendix
+    title: Appendix: Coverage Metrics Explained
+    type: text
+    instruction: |
+      Provide definitions for:
+      - Completeness Percentage
+      - Balance Score
+      - Citation Density
+      - Multi-Perspective Percentage
+      - Source Tier Definitions

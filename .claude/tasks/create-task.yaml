@@ -1,16 +1,25 @@
 metadata:
   title: Create Developer Task
   owner: product_manager
-  model: claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
 reasoning_control: |
-<reasoning_control>
-For strategic decisions about task structure and validation, use extended thinking
-(10-15 seconds). For tactical refinements, use focused thinking (5 seconds).
-Terminate when task is written, validated, and user confirms completeness.
-</reasoning_control>
+  <reasoning_control>
+  - reasoning_effort: medium
+  - uncertainty_tolerance: low
+  - prefer_act_over_ask: false  # Ask for context rather than assume
+  - termination_policy: "Stop when task written, validated, and user confirms"
+  </reasoning_control>
+
+session_memory: |
+  <session_memory>
+  - use_responses_api: true
+  - include_previous_response_id: true
+  - reuse_reasoning_context: true
+  - persist_keys: ["user_context", "tech_stack", "task_draft", "validation_results"]
+  </session_memory>
 
 context_gathering: |
   <context_gathering>
@@ -18,13 +27,14 @@ context_gathering: |
 
   Method:
   - Elicit user problem and success criteria first
-  - Check codebase for file paths and patterns (grep/glob)
-  - Ask max 2-3 clarifying questions per round
+  - Use context7 MCP for tech stack validation in parallel
+  - Check codebase for file paths and patterns (Glob/Grep)
+  - Ask max 2-3 questions per round
 
   Early stop criteria:
   - User problem clearly articulated
   - Success criteria defined and testable
-  - Tech stack validated
+  - Tech stack validated via context7
   - File paths identified
   - Testing requirements known
 
@@ -74,6 +84,7 @@ workflow:
         required: true
       - label: "Tech stack + versions"
         required: true
+        action: use_context7_mcp
       - label: "API specs or data models"
         required: true
       - label: "Testing requirements"
@@ -82,7 +93,7 @@ workflow:
     if_missing:
       - step: "Check if user can provide context"
       - step: "Check README or project docs"
-      - step: "Search codebase for tech stack patterns"
+      - step: "Use context7 MCP for tech stack validation"
       - step: "Document unknowns and present to user"
 
   - id: create_task_from_template
@@ -106,7 +117,7 @@ workflow:
         critical: true
         must_include:
           - file_paths
-          - tech_stack
+          - tech_stack_with_context7
           - api_specs
           - testing_patterns
         rule: "Developer should NEVER need to read other docs"
@@ -134,7 +145,7 @@ workflow:
 
 notes:
   - Never proceed without required context
-  - Verify tech stack with codebase search tools
+  - Use context7 MCP for all tech stack references
   - Keep tasks simple: < 5 min read time
   - Self-contained: no "see architecture doc" references
   - Challenge scope: what can we NOT build?

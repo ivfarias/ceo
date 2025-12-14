@@ -1,0 +1,99 @@
+metadata:
+  title: Analyze Campaign Performance
+  owner: analyst
+  model: gpt-5-codex
+  reasoning_effort: medium
+  verbosity: low
+
+activation:
+  when: Paid media performance analysis requested
+  principle: "Accurate. Reproducible. Actionable."
+
+dependencies:
+  - .codex/checklists/analytics-checklist.yaml
+  - .codex/templates/analytics-report-tmpl.yaml
+  - .codex/data/calculation-best-practices.yaml
+
+inputs:
+  required: [primary_data_file]
+  optional: [secondary_data_file, changelog_file, experiment_log_file, funnel_stages, focus_metrics, currency, attribution_window, reporting_week_end]
+
+workflow:
+  - id: setup_and_load
+    type: prepare
+    actions:
+      - validate_config: primary_data_file
+      - load_files: [core-config.xml, analytics-checklist.yaml, calculation-best-practices.yaml]
+      - read_data:
+          file: ${inputs.primary_data_file}
+          optional: [${inputs.secondary_data_file}, ${inputs.changelog_file}, ${inputs.experiment_log_file}]
+          schema_ref: analytics-checklist.standard_schema
+      - validate_data: ref analytics-checklist.data_integrity
+      - validate_calculations: ref analytics-checklist.calculation_accuracy
+
+  - id: compute_metrics
+    type: transform
+    preset: analytics-checklist.metric_derivations
+    output: metrics_standardized
+
+  - id: aggregate_trends
+    type: aggregate
+    config_ref: analytics-checklist.rollup_config
+    output:
+      - pop_trend_table
+      - campaign_ranking
+
+  - id: correlate_changes
+    type: correlate
+    files: [${inputs.changelog_file}]
+    preset: analytics-checklist.correlation_defaults
+    output: changelog_correlation
+
+  - id: analyze_funnel
+    type: analyze_funnel
+    stages: ${inputs.funnel_stages:=['Impressions','Clicks','Signups','Purchases']}
+    output: funnel_analysis
+
+  - id: efficiency_review
+    type: analyze_efficiency
+    preset: analytics-checklist.efficiency_defaults
+    output: efficiency_analysis
+
+  - id: generate_insights
+    type: generate
+    ref: analytics-checklist.recommendation_schema
+    output: recommendations
+
+  - id: summarize_validation
+    type: summarize
+    from: [setup_and_load, compute_metrics]
+    output: data_validation
+
+  - id: render_report
+    type: template_render
+    template: .codex/templates/analytics-report-tmpl.yaml
+    inputs:
+      - exec_summary
+      - data_validation
+      - pop_trend_table
+      - campaign_ranking
+      - funnel_analysis
+      - changelog_correlation
+      - recommendations
+
+  - id: write_output
+    type: write
+    files:
+      - path: "docs/analytics/weekly-analysis-{{reporting_week_end}}.md"
+        content: render_report
+
+completion:
+  outputs: [report_markdown, recommendations, funnel_analysis, changelog_correlation]
+
+anti_patterns:
+  never:
+    - "Skip data validation"
+    - "Report metrics without citation"
+  always:
+    - "Reference analytics-checklist for validation"
+    - "Focus on latest complete period"

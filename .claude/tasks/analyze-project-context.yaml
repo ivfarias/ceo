@@ -1,7 +1,7 @@
 metadata:
   title: Analyze Project Context
   owner: prepper
-  claude-sonnet-4.5
+  model: gpt-5-codex
   reasoning_effort: medium
   verbosity: low
 
@@ -69,7 +69,7 @@ workflow:
       - build tools (webpack, vite, etc.)
       - testing frameworks
     validation:
-      - 
+      - use_context7_mcp: true
       - verify_versions: true
     store_in: analysis_report.tech_stack
 
@@ -124,7 +124,7 @@ workflow:
       - analysis_report.existing_tasks
     analyze:
       - "Are agent models aligned with core-config defaults?"
-      - "Do tasks reference correct tech stack with codebase search?"
+      - "Do tasks reference correct tech stack with context7?"
       - "Are file paths in tasks consistent with actual structure?"
       - "Do workflows match core-config orchestration mode?"
       - "Are there missing integrations or tool references?"
@@ -166,11 +166,11 @@ anti_patterns:
     - "Proceed if core-config.xml not found (critical dependency)"
     - "Guess at tech stack or versions"
     - "Over-discover beyond 70% evidence threshold"
-    - "Skip tech stack validation validation for tech stack"
+    - "Skip context7 validation for tech stack"
     - "Analyze without respecting discovery budgets"
   always:
     - "Read core-config.xml first (critical)"
-    - "Use codebase search tools for all tech validation"
+    - "Use context7 MCP for all tech validation"
     - "Document unknowns rather than guessing"
     - "Respect max_tool_calls=2 per category"
     - "Converge at ~70% evidence"
@@ -180,6 +180,6 @@ notes:
   - Stop if core-config.xml is not found (critical dependency)
   - Document unknowns rather than guessing
   - Converge at ~70% evidence to avoid over-discovery
-  - Use codebase search tools for all tech stack validation
+  - Use context7 MCP for all tech stack validation
   - Persist analysis_report for use by optimization tasks
   - Evidence threshold: prefer concrete examples over assumptions
