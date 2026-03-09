@@ -1,0 +1,6 @@
+.DS_Store
+.worktrees/
+worktrees/
+.claude/settings.local.json
+.codex/settings.local.json
+.gemini/settings.local.json

@@ -4,6 +4,8 @@
 
 A streamlined framework for coordinating specialized AI agents across multiple AI platforms (GitHub Copilot CLI, OpenAI Codex CLI, Claude Code, and Gemini CLI). Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a streamlined and lean way to orchestrate multiple agents.
 
+This repository now also includes a reusable **AI-first team brain starter kit** at [`starter-kits/team-brain/`](starter-kits/team-brain/README.md). Use it when you want a repository that stores durable operating context, cycle history, and raw notes for both humans and AI agents.
+
 **Why This Exists:**
 
 The BMAD method is powerful but felt like overkill for solo professionals. This system strips away the complexity while keeping the core orchestration benefits:
@@ -15,6 +17,17 @@ The BMAD method is powerful but felt like overkill for solo professionals. This 
 - **Lean by default**: No heavy processes unless you actually need them
 
 Think of it as building your own AI startup team with you as the CEO that routes work to the right specialists—without the enterprise overhead.
+
+## Two Layers: Orchestration And Memory
+
+This repository is now opinionated about two complementary layers:
+
+- **Orchestration layer**: the root `.codex/`, `.claude/`, `.github/`, and `.gemini/` folders that define agents, tasks, prompts, and checklists
+- **Memory layer**: [`starter-kits/team-brain/`](starter-kits/team-brain/README.md), a template repository for persistent context, inbox processing, and cycle-based execution
+
+If you only have orchestration, your agents stay smart for one session.
+If you only have memory, your repository becomes organized but under-automated.
+The strongest setup uses both.
 
 ## What Problem Does This Solve?
 
@@ -51,6 +64,10 @@ CEO Output:
 The CEO doesn't execute work—it provides **complete, actionable guidance** so you know exactly what to do.
 
 ## Quick Start
+
+### 0. Optional: Start With The Team Brain Template
+
+If you want a durable repo where humans and AI can share operating context, start from [`starter-kits/team-brain/`](starter-kits/team-brain/README.md) and then bring in the agent setup from this repository.
 
 ### 1. Choose Your AI Platform
 
