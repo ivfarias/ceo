@@ -1,0 +1,30 @@
+template:
+  id: architecture-template-v1-simple
+  name: Architecture Document
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/architecture.md
+    title: "Architecture: {{project_name}}"
+
+sections:
+  - id: overview
+    title: System Overview
+    type: text
+    instruction: "Provide a high-level description of the system architecture, its components, and their interactions."
+
+  - id: tech-stack
+    title: Technology Stack
+    type: table
+    columns: [Category, Technology, Rationale]
+    instruction: "List the key technologies (languages, frameworks, databases, etc.) and the reason for their selection."
+
+  - id: data-model
+    title: Data Model
+    type: text
+    instruction: "Describe the main data entities, their attributes, and their relationships. A simple diagram or list is sufficient."
+
+  - id: deployment
+    title: Deployment Strategy
+    type: text
+    instruction: "Outline how the application will be deployed, including the target environment and any CI/CD process."

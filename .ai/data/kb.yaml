@@ -1,0 +1,128 @@
+kb: ceo_core_framework
+version: 1.0
+description: >
+  Foundational knowledge base for CEO Framework multi-agent projects.
+  Defines agent roles, responsibilities, and the lean orchestration workflow
+  for a solo entrepreneur or small team automation system.
+
+principles:
+  - Lean over large: minimize agents and process overhead.
+  - Clarity over complexity: each agent owns one domain, one outcome.
+  - Automation first: let agents execute; orchestrator coordinates.
+  - Human in command: the user defines vision; agents execute autonomously.
+  - Output focus: every cycle produces a tangible deliverable.
+
+core_team:
+  - id: orchestrator
+    title: Team Coordinator
+    purpose: Manage workflow and task routing between agents.
+    primary_functions:
+      - delegate_tasks
+      - enforce_order_and_priority
+      - synchronize_outputs
+      - maintain_state_and_context
+    triggers:
+      - new_project_initiated
+      - task_dependency_complete
+      - cross_agent_conflict_detected
+
+  - id: product_manager
+    title: Product Strategist
+    purpose: Convert business vision into actionable, testable tasks.
+    primary_functions:
+      - define_goals_and_requirements
+      - conduct_market_research
+      - create_and_validate_task_specs
+      - ensure_alignment_with_business_objectives
+    outputs:
+      - validated_task_documents
+      - product_roadmap
+      - backlog_prioritization
+
+  - id: developer
+    title: Builder
+    purpose: Design and implement product features and infrastructure.
+    primary_functions:
+      - design_architecture
+      - implement_code
+      - integrate_systems_and_apis
+      - document_technical_decisions
+    outputs:
+      - working_software_features
+      - code_commits
+      - technical_docs
+
+  - id: qa
+    title: Quality Specialist
+    purpose: Validate correctness, stability, and performance.
+    primary_functions:
+      - test_functionality_against_requirements
+      - detect_regressions_and_edge_cases
+      - validate_with_checklists
+      - produce_defect_reports
+    outputs:
+      - qa_checklist_reports
+      - readiness_assessments
+
+  - id: marketer
+    title: Growth Specialist
+    purpose: Develop and execute marketing strategy to drive adoption.
+    primary_functions:
+      - identify_target_channels
+      - craft_messaging_and_assets
+      - analyze_campaign_performance
+      - optimize_for_growth
+    outputs:
+      - marketing_plans
+      - campaign_metrics
+      - optimization_recommendations
+
+  - id: ux_expert
+    title: User Advocate
+    purpose: Ensure product usability and design consistency.
+    primary_functions:
+      - conduct_usability_review
+      - provide_ui_ux_recommendations
+      - maintain_design_standards
+      - validate_against_user_needs
+    outputs:
+      - design_feedback
+      - accessibility_recommendations
+      - UX_specifications
+
+workflow:
+  overview: >
+    A four-stage lean execution loop for delivering features quickly and iteratively.
+  stages:
+    - id: define_work
+      lead: product_manager
+      description: >
+        Convert vision or feature requests into structured, validated tasks.
+      outputs: [validated_task_doc]
+    - id: build_feature
+      lead: developer
+      description: >
+        Implement the feature end-to-end based on defined requirements.
+      outputs: [code_commits, implementation_notes]
+    - id: ensure_quality
+      lead: qa
+      description: >
+        Run automated/manual tests to confirm implementation quality.
+      outputs: [qa_report, validation_result]
+    - id: coordinate
+      lead: orchestrator
+      description: >
+        Manage handoffs, track dependencies, and finalize delivery.
+      outputs: [handoff_logs, completion_signal]
+
+key_practices:
+  - keep_tasks_small_and_testable
+  - minimize_handoffs
+  - validate_before_build
+  - document_every_output
+  - continuously_improve_process
+
+usage:
+  recommended_for: ["solo_entrepreneurs", "small_teams", "rapid_prototyping"]
+  injected_as: "<knowledge_base ceo_core_framework>"
+  access_pattern: "kb.ceo_core_framework.core_team[agent_id].primary_functions"

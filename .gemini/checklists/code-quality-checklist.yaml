@@ -1,0 +1,323 @@
+meta:
+  scope: changed files + directly impacted dependencies
+  stop_condition: fail_on(HIGH) OR findings_count > 25
+
+severity:
+  HIGH: correctness, security, runtime impact, system-wide drift
+  MEDIUM: maintainability, test brittleness
+  LOW: style, docs, minor cleanup
+rules:
+  - id: S1
+    name: Security Baseline
+    severity: HIGH
+    detect: "Hardcoded secrets, unsafe token handling, missing auth/permission checks, injection risk (SQL/NoSQL/command), unsafe deserialization, or logging sensitive data."
+    fix: "Move secrets to env/secret manager; enforce auth/permission checks at boundaries; parameterize queries; sanitize inputs; redact sensitive logs; add tests for critical security paths."
+    autofix: false
+
+  - id: C1
+    name: Duplicate Logic/Utils (DRY)
+    severity: HIGH
+    detect: "≥2 files contain functions with ≥85% token similarity or identical names; e.g., formatPhone repeated."
+    fix: "Consolidate into a shared utility module (e.g., <shared_utils_dir>/<name>.ts); replace call sites."
+    autofix: true
+
+  - id: C3
+    name: Config Drift (Single Source of Truth)
+    severity: HIGH
+    detect: "Same env key has divergent defaults or parsing across files."
+    fix: "Single source in a shared config module (e.g., <shared_config_dir>), validated at boot."
+    autofix: true
+
+  - id: C12
+    name: Boundary Validation Missing/Weak
+    severity: HIGH
+    detect: "External inputs (HTTP, webhooks, queues, files) are used without schema validation; validation exists but does not fail closed."
+    fix: "Validate at boundaries (e.g., Zod); fail closed with clear errors; co-locate schemas with the boundary handler; add tests for invalid cases."
+    autofix: partial
+
+  - id: C13
+    name: Error Handling Correctness
+    severity: HIGH
+    detect: "Errors are swallowed, promises not awaited, missing try/catch around critical IO, or error paths produce ambiguous outcomes."
+    fix: "Ensure errors propagate with context; use typed errors (AppError); handle async properly; return deterministic failure modes."
+    autofix: partial
+
+  - id: C14
+    name: Unreachable or Contradictory Logic
+    severity: HIGH
+    detect: "Code paths after return/throw or statically impossible branches; contradictory guards that make a branch dead."
+    fix: "Delete unreachable code; simplify guards; keep/adjust tests."
+    autofix: true
+
+  - id: O1
+    name: Observability Baseline
+    severity: MEDIUM
+    detect: "No meaningful error logs for failures; logs are unstructured/noisy; missing correlation identifiers in multi-step flows; console used in prod paths."
+    fix: "Use shared logger; log actionable errors with context; avoid sensitive data; add correlation IDs where applicable; remove console."
+    autofix: partial
+
+  - id: C6
+    name: Error Shape Drift
+    severity: MEDIUM
+    detect: "Inconsistent error payloads across modules."
+    fix: "Enforce AppError base; normalize to {code,message,meta?}."
+    autofix: partial
+
+  - id: C7
+    name: Logger Chaos
+    severity: LOW
+    detect: "Mixed logging libs or raw console in prod paths."
+    fix: "Use shared logger from a shared utility module (e.g., <shared_logging_module>) only."
+    autofix: true
+
+  - id: R1
+    name: Negative Space (Visual)
+    severity: LOW
+    detect: "Wall-of-code functions (≥40 lines without blank-line grouping), dense blocks with no logical paragraphs, or inconsistent formatting that obscures structure."
+    fix: "Introduce paragraph spacing between logical steps; extract small helpers; keep functions focused; apply consistent formatter."
+    autofix: partial
+
+  - id: R2
+    name: Negative Space (Structural / API Surface)
+    severity: MEDIUM
+    detect: "Excessive public API surface: classes/modules exporting many symbols (e.g., >10 exports) or exposing helpers that should be private/internal."
+    fix: "Reduce exports; keep helpers private/internal; expose only stable entry points; add index barrel only when it reduces cognitive load."
+    autofix: partial
+
+  - id: R3
+    name: Negative Space (Absence / Delete Code)
+    severity: MEDIUM
+    detect: "Dead/unused code exists (deprecated paths, commented blocks, unused flags) or features built just in case without current usage."
+    fix: "Delete dead code, unused flags, and deprecated paths; keep codebase lean; add a ticket only if deletion is risky."
+    autofix: true
+
+  - id: D11
+    name: Commented Code Blocks
+    severity: LOW
+    detect: "Commented blocks >5 lines without ticket reference."
+    fix: "Delete or add ticket + rationale."
+    autofix: true
+
+  - id: D18
+    name: Dead Feature Flags
+    severity: LOW
+    detect: "Flag always true/false with no roadmap."
+    fix: "Delete flag; inline winning path."
+    autofix: true
+
+  - id: D19
+    name: Stale TODO/FIXME
+    severity: LOW
+    detect: "TODO older than 90 days without ticket."
+    fix: "Create ticket or delete if obsolete."
+    autofix: partial
+
+  - id: D14
+    name: Dead Files
+    severity: MEDIUM
+    detect: "No imports; no runtime entry; not required by build."
+    fix: "Delete file; purge references from configs."
+    autofix: true
+
+  - id: D13
+    name: Unused Exports
+    severity: MEDIUM
+    detect: "Exported symbol with zero inbound imports."
+    fix: "Delete export or the file if fully unused."
+    autofix: true
+
+  - id: D10
+    name: Unused Imports
+    severity: LOW
+    detect: "Imports with zero references."
+    fix: "Remove import."
+    autofix: true
+
+  - id: K1
+    name: KISS (Unnecessary Complexity)
+    severity: MEDIUM
+    detect: "Solution introduces complexity without justification (excessive indirection, overly generic utilities, complex patterns for simple needs)."
+    fix: "Simplify to the smallest working solution; remove indirection; prefer straightforward code; document only non-obvious constraints."
+    autofix: partial
+
+  - id: Y1
+    name: YAGNI / Speculative Features
+    severity: MEDIUM
+    detect: "Features, config knobs, or abstractions exist for hypothetical future use; utilities used in <3 places; builder patterns without need."
+    fix: "Remove speculative code; inline until real second/third use; reintroduce abstraction only when duplication/risk justifies it."
+    autofix: partial
+
+  - id: D15
+    name: Premature Abstraction
+    severity: MEDIUM
+    detect: "General utility used in <3 places."
+    fix: "Inline where used; re-abstract at 3rd usage."
+    autofix: partial
+
+  - id: D16
+    name: Unnecessary Wrappers
+    severity: LOW
+    detect: "Wrapper only forwards args to another function."
+    fix: "Remove wrapper; call target directly."
+    autofix: true
+
+  - id: D17
+    name: Over-Parameterized API
+    severity: MEDIUM
+    detect: "Fn has >5 params or config object with ≥80% optional."
+    fix: "Simplify signature; introduce small typed input object; builder only if justified."
+    autofix: partial
+
+  - id: L1
+    name: Lightweight SOLID (SRP / Clear Boundaries)
+    severity: MEDIUM
+    detect: "Modules/classes handle multiple responsibilities (business logic + IO + formatting), or cross-layer coupling (UI/transport leaks into domain)."
+    fix: "Separate concerns: keep IO/adapters thin; move business rules into focused modules; reduce coupling through clear interfaces."
+    autofix: partial
+
+  - id: X1
+    name: Complexity Control (Nesting/Cyclomatic)
+    severity: MEDIUM
+    detect: "Deep nesting (≥3 levels), long functions (≥60 lines), or cyclomatic complexity likely high (many branches)."
+    fix: "Use guard clauses/early returns; split into small named helpers; simplify conditionals; extract decision tables when clearer."
+    autofix: partial
+
+  - id: T1
+    name: Testability (Determinism & Seams)
+    severity: MEDIUM
+    detect: "Business logic tightly coupled to IO/time/randomness; hard to mock dependencies; side effects mixed into core logic."
+    fix: "Isolate side effects; inject dependencies; prefer pure functions for business logic; wrap time/random behind interfaces."
+    autofix: partial
+
+  - id: T2
+    name: Testing Value (Pragmatic Coverage)
+    severity: MEDIUM
+    detect: "Critical business rules have no tests, or tests are brittle (assert internals), or many tests duplicate the same coverage."
+    fix: "Add unit tests for business rules; add integration tests for critical paths; remove/avoid implementation-detail assertions; keep tests minimal but meaningful."
+    autofix: partial
+
+  - id: TS1
+    name: Type Safety (If TypeScript)
+    severity: MEDIUM
+    detect: "Use of `any`/`unknown` without narrowing, unsafe casts, missing return types in public APIs, or schema types not aligned with runtime validation."
+    fix: "Replace `any` with explicit types; narrow `unknown`; align Zod schemas with inferred types; add explicit public API types."
+    autofix: partial
+
+  - id: P1
+    name: Performance (Only When Justified)
+    severity: LOW
+    detect: "Obvious inefficiencies in hot paths (nested loops on large arrays, repeated heavy parsing) or unnecessary repeated work without caching."
+    fix: "Fix only if evidenced by profiling/metrics or clearly hot path; otherwise document and defer."
+    autofix: partial
+
+  - id: DEP1
+    name: Dependency Hygiene
+    severity: MEDIUM
+    detect: "Unused dependencies, duplicate libs for same purpose (e.g., multiple date libs), or unpinned/unsafe patterns."
+    fix: "Remove unused deps; choose one canonical library; migrate imports; keep dependencies minimal."
+    autofix: partial
+
+  - id: C8
+    name: Date Library Mix
+    severity: LOW
+    detect: "Multiple date libs or native Date scattered."
+    fix: "Choose one (e.g., dayjs); migrate imports and usage."
+    autofix: partial
+
+  - id: DOC1
+    name: Docs (Just Enough)
+    severity: LOW
+    detect: "Public modules/tools lack minimal README or usage notes; comments explain what instead of why; missing rationale for non-obvious logic."
+    fix: "Add short README/usage for modules; prefer clear naming; add comments only for rationale/constraints; remove redundant comments."
+    autofix: partial
+
+  - id: C2
+    name: Unused Abstractions
+    severity: MEDIUM
+    detect: "Interface/abstract class has only 1 concrete impl and no second planned use."
+    fix: "Inline or delete abstraction; keep simplest concrete fn/class."
+    autofix: true
+
+  - id: C4
+    name: Tool Duplication
+    severity: MEDIUM
+    detect: "Overlapping tool definitions/descriptions do the same job."
+    fix: "Keep 1 canonical tool; delete others; update registry/imports."
+    autofix: true
+
+  - id: C5
+    name: Validation Scatter
+    severity: MEDIUM
+    detect: "Multiple input validators for same boundary/schema."
+    fix: "Standardize on Zod; co-locate schemas at boundaries."
+    autofix: partial
+
+  - id: C9
+    name: Regex for Natural Language
+    severity: MEDIUM
+    detect: "Regex used to parse user free-text intent."
+    fix: "Use structured inputs or NLP; keep regex for strict patterns only."
+    autofix: false
+
+  - id: D20
+    name: Duplicate Types
+    severity: MEDIUM
+    detect: "Equivalent TS interfaces/types defined in multiple files."
+    fix: "Merge into a shared types directory (e.g., <shared_types_dir>); update imports."
+    autofix: true
+
+  - id: D21
+    name: Unused Config Keys
+    severity: MEDIUM
+    detect: "Env vars defined but never read."
+    fix: "Remove from .env + config schema."
+    autofix: true
+
+  - id: D22
+    name: Legacy Error Handling
+    severity: MEDIUM
+    detect: "Old error pattern coexists with new."
+    fix: "Migrate callers to AppError; delete legacy."
+    autofix: partial
+
+  - id: D23
+    name: Orphaned Tests
+    severity: LOW
+    detect: "Tests target deleted code or are permanently skipped."
+    fix: "Delete or fix + unskip."
+    autofix: partial
+
+lean_guards:
+  do_not_expand_scope: true
+  prefer_small_safe_fixes: true
+  refactor_only_if_required_by_rule: true
+  skip_large_migrations: true
+  prefer_small_surface_area: true
+  avoid_new_abstractions_unless_reduces_complexity_or_duplication: true
+  do_not_enforce_enterprise_process_unless_requested: true
+  explain_tradeoffs_when_standards_conflict: true
+
+output_schema:
+  findings:
+    id: string
+    severity: enum(HIGH|MEDIUM|LOW)
+    file: string
+    symbol: string?
+    evidence: string
+    fix: string
+    autofix: boolean
+  summary:
+  high: int
+  medium: int
+  low: int
+  decision: enum(READY|NEEDS_REVISION|BLOCKED)
+
+activation_hint: | 
+  Evaluate rules top-down; stop on first HIGH unless --exhaustive.
+  Mark each rule PASS or FAIL→reason.
+  decision:
+    BLOCKED if any HIGH fails.
+    NEEDS_REVISION if no HIGH but any MEDIUM/LOW fails.
+    READY if all PASS.
+  When standards conflict (e.g., DRY vs KISS), explain trade-off and choose simplest option unless duplication is high-risk.
+  Prefer guard clauses, small helpers, and deleting dead/duplicate code to maximize negative space.

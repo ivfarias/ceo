@@ -23,7 +23,7 @@ If it should still matter next cycle, it belongs in `context/`.
 2. Fill `context/how-we-operate.md`, `context/okrs.md`, and `context/icp.md` before asking AI to do strategic work.
 3. Add one file per team member under `context/team/`.
 4. Add one file per core channel, workflow, or function under `context/channels/`.
-5. Copy or symlink the relevant agent configuration from this `ceo` repository into `.codex/`, `.claude/`, `.github/`, or `.gemini/`.
+5. Copy or symlink the relevant shared assets from this `ceo` repository into `.ai/`, then mirror the runtime-specific pieces into `.codex/`, `.claude/`, `.github/`, or `.gemini/`.
 6. Start your first cycle by duplicating `specs/template/`.
 
 ## Directory map

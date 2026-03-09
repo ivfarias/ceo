@@ -8,6 +8,7 @@ This repository now includes two first-class pieces:
 
 - agent orchestration assets in the root `.codex/`, `.claude/`, `.github/`, and `.gemini/` folders
 - reusable repository starter kits in [`starter-kits/`](starter-kits/README.md), including the AI-first [`starter-kits/team-brain/`](starter-kits/team-brain/README.md)
+- a shared AI asset layer in [`.ai/`](.ai/README.md) for reusable skills, templates, checklists, data, and utilities
 
 **Why This Exists:**
 
@@ -238,6 +239,18 @@ Replace `codex` with `copilot`, `claude`, or `gemini` depending on your platform
 Repository scaffolds that give your agents a durable place to operate:
 
 - [`team-brain`](starter-kits/team-brain/README.md) - Persistent context, inbox processing, cycle templates, and AI platform folders
+
+### Shared AI Assets (`.ai/`)
+
+Reusable cross-platform assets:
+
+- [`.ai/README.md`](.ai/README.md) - Canonical shared layer
+- `.ai/skills/` - Reusable skills mirrored into platform folders
+- `.ai/checklists/`, `.ai/data/`, `.ai/templates/`, `.ai/utils/` - Shared supporting assets
+
+### Skills (`.codex/skills/`, `.claude/skills/`, `.github/skills/`, `.gemini/skills/`)
+
+Imported skill libraries for project analysis, planning, debugging, code review, specification workflows, and agent operating discipline.
 
 ### Core Agents (`.github/agents/`)
 
