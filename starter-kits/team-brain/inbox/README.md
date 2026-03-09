@@ -20,7 +20,7 @@ yyyy-mm-dd-type-short-description.md
 
 Examples:
 
-- `2026-03-09-daily-growth.md`
+- `2026-03-09-daily-team.md`
 - `2026-03-09-customer-call-acme.md`
 - `2026-03-10-retro-product.md`
 

@@ -2,7 +2,7 @@
 
 This starter kit turns a repository into an operational memory system for a team that works with humans and AI agents in the same loop.
 
-It is based on the structure used in `growth-tasks`, but everything here is generic on purpose. The goal is to give you a clean template you can adapt to your company, function, or project without carrying over team-specific data.
+It is based on a real AI-first operating repository, but everything here is generic on purpose. The goal is to give you a clean template you can adapt to your company, function, or project without carrying over team-specific data.
 
 ## What this gives you
 
