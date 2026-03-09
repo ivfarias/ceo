@@ -1,29 +1,33 @@
 ![CEO-Led Orchestration System Logo](public/canva.png)
 
-# CEO-Led Orchestration System
+# CEO Agent Orchestration + Team Brain System
 
-A streamlined framework for coordinating specialized AI agents across multiple AI platforms (GitHub Copilot CLI, OpenAI Codex CLI, Claude Code, and Gemini CLI). Inspired by BMAD-style agent orchestration but designed specifically for **solo entrepreneurs** and **semi-tech people** who need a streamlined and lean way to orchestrate multiple agents.
+A streamlined framework for coordinating specialized AI agents across multiple AI platforms (GitHub Copilot CLI, OpenAI Codex CLI, Claude Code, and Gemini CLI) while also giving those agents a durable operating-memory repository. Inspired by BMAD-style agent orchestration, but adapted for **solo operators, small teams, and semi-technical builders** who need both lean agent workflows and a structured team brain.
 
-This repository now also includes a reusable **AI-first team brain starter kit** at [`starter-kits/team-brain/`](starter-kits/team-brain/README.md). Use it when you want a repository that stores durable operating context, cycle history, and raw notes for both humans and AI agents.
+This repository now includes two first-class pieces:
+
+- agent orchestration assets in the root `.codex/`, `.claude/`, `.github/`, and `.gemini/` folders
+- reusable repository starter kits in [`starter-kits/`](starter-kits/README.md), including the AI-first [`starter-kits/team-brain/`](starter-kits/team-brain/README.md)
 
 **Why This Exists:**
 
-The BMAD method is powerful but felt like overkill for solo professionals. This system strips away the complexity while keeping the core orchestration benefits:
+The BMAD method is powerful but felt like overkill for many real projects. This system strips away the complexity while keeping the core benefits:
 
 - **Token-efficient**: Dramatically reduced token usage vs. full BMAD implementations
 - **Multi-model support**: Works with GitHub Copilot CLI (GPT-4/Claude), OpenAI Codex CLI (GPT-5-Codex), Claude Code (Claude Sonnet 4.5), and Gemini CLI (Gemini 2.5 Pro)
 - **Model-optimized**: Each platform folder follows official prompting best practices for its AI model
-- **Solo-friendly**: Built for one person wearing many hats, not enterprise teams
+- **Memory-aware**: Includes a durable team-brain repository pattern, not just agent prompts
+- **Solo-friendly and team-usable**: Works for one person wearing many hats or a small AI-first team
 - **Lean by default**: No heavy processes unless you actually need them
 
-Think of it as building your own AI startup team with you as the CEO that routes work to the right specialists—without the enterprise overhead.
+Think of it as building your own AI startup team with you as the CEO, plus the shared memory system that keeps that team aligned over time.
 
 ## Two Layers: Orchestration And Memory
 
 This repository is now opinionated about two complementary layers:
 
 - **Orchestration layer**: the root `.codex/`, `.claude/`, `.github/`, and `.gemini/` folders that define agents, tasks, prompts, and checklists
-- **Memory layer**: [`starter-kits/team-brain/`](starter-kits/team-brain/README.md), a template repository for persistent context, inbox processing, and cycle-based execution
+- **Memory layer**: [`starter-kits/`](starter-kits/README.md), starting with [`starter-kits/team-brain/`](starter-kits/team-brain/README.md), for persistent context, inbox processing, and cycle-based execution
 
 If you only have orchestration, your agents stay smart for one session.
 If you only have memory, your repository becomes organized but under-automated.
@@ -38,11 +42,15 @@ Working with AI for complex projects often leads to:
 - **No Structure:** Long chat histories are a poor substitute for organized workflows
 - **Quality Degradation:** Initial progress quickly devolves into unmaintainable chaos
 
-This system provides the structure and methodology missing from unstructured "AI coding." It establishes clear, repeatable workflows with specialized agents, turning chaos into focused productivity.
+This system provides the structure missing from unstructured "AI coding." It combines repeatable agent workflows with a durable repository shape for context, decisions, learnings, and execution history.
 
 ## How It Works
 
-This system uses **profile-based agent switching**:
+This system has two connected parts.
+
+### Part 1: Agent orchestration
+
+The orchestration side uses **profile-based agent switching**:
 
 1. **CEO Agent (Cleo)** - Workflow consultant that analyzes your request and prescribes complete workflows
 2. **Specialist Agents** - Focused experts (Developer, PM, QA, etc.) that execute specific tasks
@@ -61,13 +69,24 @@ CEO Output:
 └── What data to reference
 ```
 
-The CEO doesn't execute work—it provides **complete, actionable guidance** so you know exactly what to do.
+The CEO doesn't execute work in the Codex profile workflow. It provides **complete, actionable guidance** so you know exactly what to do.
+
+### Part 2: Team brain repository
+
+The team-brain side gives those agents somewhere consistent to read from and write to:
+
+- `context/` for durable knowledge
+- `inbox/` for raw notes that need processing
+- `specs/` for cycle-bound planning and execution
+- hidden AI directories for shared and platform-specific agent assets
+
+That repository shape lives in [`starter-kits/team-brain/`](starter-kits/team-brain/README.md).
 
 ## Quick Start
 
-### 0. Optional: Start With The Team Brain Template
+### 0. Start With The Right Repository Shape
 
-If you want a durable repo where humans and AI can share operating context, start from [`starter-kits/team-brain/`](starter-kits/team-brain/README.md) and then bring in the agent setup from this repository.
+If you want a durable repo where humans and AI share operating context, start from [`starter-kits/team-brain/`](starter-kits/team-brain/README.md). That gives you the memory layer first.
 
 ### 1. Choose Your AI Platform
 
@@ -160,7 +179,15 @@ See platform-specific SETUP.md files for detailed instructions:
 - `.claude/SETUP.md`
 - `.gemini/SETUP.md`
 
-### 3. Start with the CEO
+### 3. Connect Orchestration To Memory
+
+Point your agents at the repository that uses the team-brain shape. In practice that means your prompts, tasks, and docs should read and write against:
+
+- `context/` for durable context
+- `specs/<cycle>/` for active work
+- `inbox/` for raw notes
+
+### 4. Start with the CEO
 
 The CEO agent analyzes your request and prescribes which specialist agents to use.
 
@@ -184,7 +211,7 @@ Step 3: QA (qa agent)
 - Command: codex --profile qa"
 ```
 
-### 4. Follow the Prescribed Workflow
+### 5. Follow the Prescribed Workflow
 
 Execute each step the CEO recommends:
 
@@ -206,6 +233,12 @@ Replace `codex` with `copilot`, `claude`, or `gemini` depending on your platform
 
 ## System Components
 
+### Starter Kits (`starter-kits/`)
+
+Repository scaffolds that give your agents a durable place to operate:
+
+- [`team-brain`](starter-kits/team-brain/README.md) - Persistent context, inbox processing, cycle templates, and AI platform folders
+
 ### Core Agents (`.github/agents/`)
 
 Specialized AI personas for your orchestration workflow:
@@ -221,7 +254,7 @@ Specialized AI personas for your orchestration workflow:
 ### Meta Agent (Separate Tool)
 
 - **prepper** (Pepe) - System optimizer (NOT for regular workflows)
-  - **Purpose:** Tune and optimize the orchestration system itself
+  - **Purpose:** Tune and optimize the orchestration and memory system for a real project
   - **When:** Initial setup, tech stack changes, periodic optimization
   - **How:** Use via web AI (ChatGPT, Claude, Gemini) with flattened codebase
   - **⚠️ High token usage** - See [Prepper Guide](docs/PREPPER-GUIDE.md) for details
@@ -526,10 +559,10 @@ This system supports different orchestration models depending on your platform:
 
 **What Prepper does:**
 
-- Analyzes your project's tech stack and patterns
+- Analyzes your project's tech stack, workflow, and repository shape
 - Optimizes agent configurations to match your needs
 - Tunes task workflows and checklists
-- Aligns the orchestration system with your actual development workflow
+- Aligns the orchestration layer and team-brain patterns with your actual workflow
 
 **Quick Start:**
 
@@ -537,7 +570,7 @@ This system supports different orchestration models depending on your platform:
 2. Open web AI (Claude.ai, ChatGPT, or Gemini)
 3. Load Prepper agent from `.github/agents/prepper.md`
 4. Upload flattened codebase
-5. Request: "Optimize this orchestration system for my project"
+5. Request: "Optimize this agent system and team-brain setup for my project"
 6. Apply recommendations manually
 7. Regenerate indexes
 
@@ -563,13 +596,14 @@ Everything is file-based and version-controlled.
 
 ## Architecture Philosophy
 
-This system is inspired by BMAD-METHOD's orchestration patterns but **radically simplified** for solo entrepreneurs:
+This system is inspired by BMAD-METHOD's orchestration patterns but **radically simplified** for solo builders and small teams:
 
 ### What We Kept from BMAD
 
 - **Agent specialization:** Different roles for different tasks
 - **Structured workflows:** Repeatable processes via tasks and checklists
 - **Knowledge bases:** Centralized data and templates
+- **Persistent context:** A repository shape for storing what the team learns
 
 ### What We Simplified
 
@@ -586,6 +620,7 @@ This system is inspired by BMAD-METHOD's orchestration patterns but **radically 
 - **Workflow prescription:** CEO provides complete guidance, not just routing
 - **Zero-token maintenance:** Indexes generated via bash, not LLM calls
 - **Lean by default:** Simple workflows for simple tasks, complexity only when needed
+- **Repository as memory:** Important context lives in files, not just in chat history
 
 ## Troubleshooting
 
@@ -690,8 +725,8 @@ When adding new agents or resources:
 
 ## License
 
-This is a template framework. Customize freely for your projects.
+This is a template framework. Customize freely for your projects and operating systems.
 
 ---
 
-**You are the CEO. This is your AI company. Let's build something amazing.**
+**You are the CEO. This is your agent system and your team brain.**
